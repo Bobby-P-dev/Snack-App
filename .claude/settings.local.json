@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer require *)",
+      "Bash(npm install *)",
+      "Bash(php artisan *)",
+      "Bash(php -l app/Services/OrderService.php)",
+      "Bash(php -l app/Services/ProductService.php)",
+      "Bash(php -l app/Services/CartService.php)",
+      "Bash(php -l app/Repositories/ProductRepository.php)",
+      "Bash(php -l app/Helpers/CurrencyHelper.php)",
+      "Bash(php -l app/Http/Controllers/Admin/DashboardController.php)",
+      "Bash(php -l app/Http/Controllers/Customer/ShopController.php)",
+      "Bash(php -l app/Http/Controllers/Customer/CheckoutController.php)",
+      "Bash(npm run *)",
+      "Skill(run)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(grep -E \"\\\\.\\(php|vue|js\\)$\")",
+      "Bash(composer show *)",
+      "Bash(php -m)",
+      "Bash(php -l app/Http/Controllers/Admin/ProductController.php)",
+      "Bash(php -l app/Http/Controllers/Admin/CategoryController.php)"
+    ]
+  }
+}
