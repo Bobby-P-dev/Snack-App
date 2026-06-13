@@ -39,7 +39,7 @@ export function useCartStore() {
                         id: product.id,
                         name: product.name,
                         price: product.sell_price || product.price,
-                        image: product.image_url || null,
+                        image: product.image_url || product.image || null,
                         qty: incomingQty,
                         type,
                     })
@@ -52,16 +52,40 @@ export function useCartStore() {
 
     function removeItem(productId) {
         state.items = state.items.filter(item => item.id !== productId)
+        fetch('/cart/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            },
+            body: JSON.stringify({ product_id: productId })
+        }).catch(e => console.error(e))
     }
 
     function updateQty(productId, newQty) {
         if (newQty <= 0) { removeItem(productId); return }
         const item = state.items.find(i => i.id === productId)
-        if (item) item.qty = newQty
+        if (item) {
+            item.qty = newQty
+            fetch('/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                },
+                body: JSON.stringify({ product_id: productId, quantity: newQty })
+            }).catch(e => console.error(e))
+        }
     }
 
     function clearCart() {
         state.items = []
+        fetch('/cart/clear', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            }
+        }).catch(e => console.error(e))
     }
 
     function openCart() { state.isOpen = true }

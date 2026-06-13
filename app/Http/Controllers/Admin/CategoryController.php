@@ -25,7 +25,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-        $perPage = 15;
+        $perPage = 10;
 
         $query = Category::query();
 
@@ -39,7 +39,7 @@ class CategoryController extends Controller
         $categories = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return Inertia::render('Admin/Category/Index', [
-            'categories' => CategoryResource::collection($categories->items()),
+            'categories' => CategoryResource::collection($categories->items())->resolve(request()),
             'pagination' => [
                 'current_page' => $categories->currentPage(),
                 'last_page' => $categories->lastPage(),
@@ -55,9 +55,12 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $this->categoryRepository->create($request->validated());
-
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil ditambahkan');
+        try {
+            $this->categoryRepository->create($request->validated());
+            return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil ditambahkan');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan kategori: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -65,14 +68,20 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:categories,slug,' . $category->id,
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'slug' => 'nullable|string|max:255|unique:categories,slug,' . $category->id,
+            ]);
 
-        $this->categoryRepository->update($category->id, $validated);
+            $this->categoryRepository->update($category->id, $validated);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui');
+            return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal, periksa kembali input Anda');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui kategori: ' . $e->getMessage());
+        }
     }
 
     /**

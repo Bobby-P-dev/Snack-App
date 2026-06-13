@@ -60,15 +60,13 @@ class CheckoutController extends Controller
     public function store(StoreOrderRequest $request)
     {
         $cart = session()->get('cart', []);
+        $cartItems = $request->input('items', []);
 
-        if (empty($cart)) {
+        if (empty($cartItems)) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Keranjang Anda kosong'], 422);
+            }
             return redirect()->route('customer.shop.index')->with('error', 'Keranjang Anda kosong');
-        }
-
-        // Validate cart items again
-        $validation = $this->cartService->validateCartItems($cart);
-        if (!$validation['valid']) {
-            return redirect()->route('customer.shop.index')->with('error', 'Ada produk yang tidak tersedia');
         }
 
         try {
@@ -81,17 +79,36 @@ class CheckoutController extends Controller
                     'type' => $item['type'] ?? 'satuan',
                     'box_group_id' => $item['box_group_id'] ?? null,
                 ];
-            }, $cart);
+            }, $cartItems);
 
             // Create order
             $order = $this->orderService->createOrder($request->validated(), $items);
 
             // Generate WhatsApp URL
-            $adminPhone = '6281234567890'; // TODO: Get from config
-            $whatsappUrl = $this->orderService->generateWhatsAppUrl($order, $adminPhone);
+            // Mengambil nomor WA admin dari CMS Setting jika ada, default ke 6281234567890
+            $adminPhoneSetting = \App\Models\CmsSetting::where('key', 'admin_whatsapp')->first();
+            $adminPhone = $adminPhoneSetting ? $adminPhoneSetting->value : '6281234567890';
+
+            // Format phone number jika mulai dari 0 diubah ke 62
+            if (strpos($adminPhone, '0') === 0) {
+                $adminPhone = '62' . substr($adminPhone, 1);
+            }
+
+            $businessNameSetting = \App\Models\CmsSetting::where('key', 'business_name')->first();
+            $businessName = $businessNameSetting ? $businessNameSetting->value : 'Snack Box Custom';
+
+            $whatsappUrl = $this->orderService->generateWhatsAppUrl($order, $adminPhone, $businessName);
 
             // Clear cart
             session()->forget('cart');
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'order' => new OrderResource($order),
+                    'whatsappUrl' => $whatsappUrl
+                ]);
+            }
 
             return Inertia::render('Customer/Checkout/Success', [
                 'order' => new OrderResource($order),
@@ -99,6 +116,13 @@ class CheckoutController extends Controller
                 'title' => 'Pesanan Berhasil Dibuat',
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Checkout Error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Terjadi kesalahan Server: ' . $e->getMessage(),
+                    'error' => true
+                ], 500);
+            }
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

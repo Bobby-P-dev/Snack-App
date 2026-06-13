@@ -20,8 +20,8 @@ class SupplierResource extends JsonResource
             'phone' => $this->phone,
             'address' => $this->address,
             'daily_capacity' => $this->daily_capacity,
-            'product_count' => $this->products->count(),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'product_count' => $this->products_count ?? $this->products?->count() ?? 0,
+            'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
         ];
     }
 }

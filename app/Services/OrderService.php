@@ -42,7 +42,9 @@ class OrderService
         $message = "INVOICE PESANAN - {$businessName}\n";
         $message .= "No Pesanan: {$order->order_number}\n";
         $message .= "Nama: {$order->customer_name}\n";
-        $message .= "Pengambilan: " . $order->pickup_date->format('d-m-Y H:i') . "\n\n";
+        $pickupDate = is_string($order->pickup_date) ? \Carbon\Carbon::parse($order->pickup_date) : $order->pickup_date;
+        $message .= "Waktu: " . $pickupDate->format('d-m-Y H:i') . "\n";
+        $message .= "Lokasi: {$order->location}\n\n";
 
         $customBoxes = $order->items()->where('type', 'kustom_box')->get();
         $singleItems = $order->items()->where('type', 'satuan')->get();

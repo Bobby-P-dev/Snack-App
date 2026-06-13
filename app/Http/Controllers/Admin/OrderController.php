@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Repositories\OrderRepository;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -18,19 +19,53 @@ class OrderController extends Controller
     }
 
     /**
-     * Display a listing of orders
+     * Display a listing of orders with search & filters
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = $this->orderRepository->paginate(15);
+        $search = $request->get('search', '');
+        $status = $request->get('status', '');
+        $startDate = $request->get('start_date', '');
+        $endDate = $request->get('end_date', '');
+        $perPage = 10;
+
+        $query = Order::with(['items.product.supplier', 'items.product.category']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(order_number) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(customer_name) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(customer_phone) LIKE ?', ['%' . strtolower($search) . '%']);
+            });
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($startDate) {
+            $query->whereDate('pickup_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('pickup_date', '<=', $endDate);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return Inertia::render('Admin/Order/Index', [
-            'orders' => OrderResource::collection($orders->items()),
+            'orders' => OrderResource::collection($orders->items())->resolve(request()),
             'pagination' => [
                 'current_page' => $orders->currentPage(),
                 'last_page' => $orders->lastPage(),
                 'total' => $orders->total(),
                 'per_page' => $orders->perPage(),
+            ],
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
             ],
             'title' => 'Daftar Pesanan',
         ]);
@@ -48,40 +83,41 @@ class OrderController extends Controller
     }
 
     /**
-     * Confirm order status
+     * Update order status
      */
-    public function confirm(Order $order)
+    public function updateStatus(Request $request, Order $order)
     {
-        if ($order->status !== 'pending') {
-            return redirect()->back()->with('error', 'Hanya pesanan pending yang dapat dikonfirmasi');
-        }
+        $request->validate(['status' => 'required|in:pending,diterima,diproses,dikemas,dikirim,selesai']);
 
-        $this->orderRepository->update($order->id, ['status' => 'confirmed']);
+        $newStatus = $request->input('status');
 
-        return redirect()->back()->with('success', 'Pesanan berhasil dikonfirmasi');
+        $this->orderRepository->update($order->id, ['status' => $newStatus]);
+
+        $statusLabel = $this->statusLabel($newStatus);
+        return redirect()->back()->with('success', 'Pesanan berhasil diubah ke "' . $statusLabel . '"');
     }
 
     /**
-     * Complete order status
+     * Get human-readable status label
      */
-    public function complete(Order $order)
+    private function statusLabel($status): string
     {
-        if ($order->status !== 'confirmed') {
-            return redirect()->back()->with('error', 'Hanya pesanan confirmed yang dapat diselesaikan');
-        }
-
-        $this->orderRepository->update($order->id, ['status' => 'completed']);
-
-        return redirect()->back()->with('success', 'Pesanan berhasil diselesaikan');
+        $labels = [
+            'pending' => 'Pending',
+            'diterima' => 'Diterima',
+            'diproses' => 'Diproses',
+            'dikemas' => 'Dikemas',
+            'dikirim' => 'Dikirim',
+            'selesai' => 'Selesai',
+        ];
+        return $labels[$status] ?? $status;
     }
 
     /**
-     * Get orders by status (API endpoint)
+     * Get orders by status filter
      */
     public function getByStatus($status)
     {
-        $this->authorize('view_orders');
-
         $orders = $this->orderRepository->getByStatus($status);
 
         return response()->json([

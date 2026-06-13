@@ -63,4 +63,15 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Get the full S3/MinIO URL for the product image.
+     * Jika image_url sudah full URL, kembalikan apa adanya.
+     */
+    public function getImageUrlAttribute($value): ?string
+    {
+        if (!$value) return null;
+        if (str_starts_with($value, 'http')) return $value;
+        return \Illuminate\Support\Facades\Storage::disk('s3')->url($value);
+    }
 }

@@ -29,6 +29,13 @@ Route::prefix('cart')->group(function () {
     Route::get('/count', [CartController::class, 'getCount'])->name('cart.count');
 });
 
+// Checkout routes
+Route::prefix('checkout')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Customer\CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/', [\App\Http\Controllers\Customer\CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/data', [\App\Http\Controllers\Customer\CheckoutController::class, 'getCheckoutData'])->name('checkout.data');
+});
+
 // Auth required customer routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -40,17 +47,16 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('products', ProductController::class, ['as' => 'admin']);
+    Route::resource('products', ProductController::class);
     Route::post('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
 
-    Route::resource('categories', CategoryController::class, ['as' => 'admin']);
-    Route::resource('suppliers', SupplierController::class, ['as' => 'admin']);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('suppliers', SupplierController::class);
 
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
         Route::get('/{order}', [AdminOrderController::class, 'show'])->name('show');
-        Route::post('/{order}/confirm', [AdminOrderController::class, 'confirm'])->name('confirm');
-        Route::post('/{order}/complete', [AdminOrderController::class, 'complete'])->name('complete');
+        Route::post('/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('updateStatus');
         Route::get('/status/{status}', [AdminOrderController::class, 'getByStatus'])->name('getByStatus');
     });
 
@@ -61,6 +67,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::put('/settings/{cmsSetting}', [\App\Http\Controllers\Admin\CmsSettingController::class, 'update'])->name('settings.update');
 
         Route::resource('carousels', \App\Http\Controllers\Admin\CmsCarouselController::class)->except(['create', 'show', 'edit']);
+        Route::post('carousels/reorder', [\App\Http\Controllers\Admin\CmsCarouselController::class, 'reorder'])->name('carousels.reorder');
         Route::resource('social-media', \App\Http\Controllers\Admin\CmsSocialMediaController::class)->except(['create', 'show', 'edit']);
     });
 });

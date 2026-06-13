@@ -4,7 +4,7 @@
     <div class="relative bg-gray-200 h-48 overflow-hidden">
       <img
         v-if="product.image_url"
-        :src="`/storage/${product.image_url}`"
+        :src="getImageUrl(product.image_url)"
         :alt="product.name"
         class="w-full h-full object-cover hover:scale-110 transition duration-300"
       />
@@ -60,6 +60,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { getImageUrl } from '@/helpers.js'
 
 const props = defineProps({
   product: {

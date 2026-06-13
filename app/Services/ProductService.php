@@ -55,14 +55,14 @@ class ProductService
      */
     public function uploadAndCompressImage($imageFile): string
     {
-        // Read image
-        $image = $this->imageManager->read($imageFile->getRealPath());
+        // Read image using v4 syntax
+        $image = $this->imageManager->decodePath($imageFile->getRealPath());
 
         // Resize to max 800x800 while maintaining aspect ratio
-        $image->resize(width: 800, height: 800);
+        $image->scaleDown(width: 800, height: 800);
 
         // Encode to WebP with 75% quality
-        $encoded = $image->encodeUsingFormat(Format::WEBP, quality: 75);
+        $encoded = $image->encodeUsingFileExtension('webp', quality: 75);
 
         // Generate unique filename
         $filename = 'products/' . uniqid() . '.webp';

@@ -21,93 +21,59 @@
                             </div>
 
                             <!-- Items List -->
-                            <div class="divide-y divide-gray-200">
+                            <div class="divide-y divide-gray-100">
                                 <div
                                     v-for="item in cartItems"
                                     :key="item.product_id"
-                                    class="p-4 md:p-6 hover:bg-gray-50 transition"
+                                    class="px-4 md:px-6 py-3 hover:bg-gray-50 transition"
                                 >
-                                    <div class="flex gap-4 md:gap-6">
+                                    <div class="flex gap-3 items-center">
                                         <!-- Product Image -->
-                                        <div class="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 bg-gray-200 rounded-lg overflow-hidden">
+                                        <div class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gray-100 rounded-lg overflow-hidden">
                                             <img
                                                 v-if="item.product?.image_url"
-                                                :src="`/storage/${item.product.image_url}`"
+                                                :src="getImageUrl(item.product.image_url)"
                                                 :alt="item.product?.name || 'Product'"
                                                 class="w-full h-full object-cover"
                                             />
-                                            <div v-else class="w-full h-full flex items-center justify-center bg-gray-300">
-                                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div v-else class="w-full h-full flex items-center justify-center bg-gray-200">
+                                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                                 </svg>
                                             </div>
                                         </div>
 
                                         <!-- Product Details -->
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex justify-between items-start gap-2 mb-2">
-                                                <div class="min-w-0">
-                                                    <h3 class="text-base md:text-lg font-semibold text-gray-900 line-clamp-2">
-                                                        {{ item.product?.name || 'Produk tidak ditemukan' }}
-                                                    </h3>
-                                                    <p class="text-xs md:text-sm text-gray-500 mt-1">
-                                                        {{ item.product?.supplier?.name || 'Supplier tidak ditemukan' }}
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    @click="removeItem(item.product_id)"
-                                                    class="text-red-500 hover:text-red-700 transition p-1 flex-shrink-0"
-                                                >
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
+                                        <div class="flex-1 min-w-0 flex items-center gap-3">
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-sm font-semibold text-gray-900 truncate">
+                                                    {{ item.product?.name || 'Produk tidak ditemukan' }}
+                                                </h3>
+                                                <p class="text-xs text-gray-500">{{ item.product?.supplier?.name || '' }}</p>
                                             </div>
 
-                                            <!-- Price & Quantity -->
-                                            <div class="flex justify-between items-end gap-4">
-                                                <div>
-                                                    <p class="text-lg md:text-xl font-bold text-blue-600">
-                                                        Rp {{ formatNumber(item.product?.sell_price || 0) }}
-                                                    </p>
-                                                </div>
-
+                                            <div class="text-right flex-shrink-0">
+                                                <p class="text-sm font-bold text-blue-600">
+                                                    Rp {{ formatNumber(item.product?.sell_price || 0) }}
+                                                </p>
                                                 <!-- Quantity Controls -->
-                                                <div class="flex items-center bg-gray-100 rounded-lg">
-                                                    <button
-                                                        @click="updateQuantity(item.product_id, item.quantity - 1)"
-                                                        class="px-2 md:px-3 py-1 md:py-2 hover:bg-gray-200 transition"
-                                                    >
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                                        </svg>
+                                                <div class="flex items-center bg-gray-100 rounded-md mt-1">
+                                                    <button @click="updateQuantity(item.product_id, item.quantity - 1)" class="px-1.5 py-0.5 hover:bg-gray-200 transition rounded-l-md">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
                                                     </button>
-                                                    <span class="px-3 md:px-4 py-1 md:py-2 font-semibold text-sm md:text-base">{{ item.quantity || 0 }}</span>
-                                                    <button
-                                                        @click="updateQuantity(item.product_id, item.quantity + 1)"
-                                                        class="px-2 md:px-3 py-1 md:py-2 hover:bg-gray-200 transition"
-                                                    >
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                                        </svg>
+                                                    <span class="px-2 py-0.5 font-semibold text-xs min-w-[20px] text-center">{{ item.quantity || 0 }}</span>
+                                                    <button @click="updateQuantity(item.product_id, item.quantity + 1)" class="px-1.5 py-0.5 hover:bg-gray-200 transition rounded-r-md">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            <!-- Subtotal -->
-                                            <p class="text-sm md:text-base text-gray-600 mt-3">
-                                                Subtotal: <span class="font-semibold">Rp {{ formatNumber((item.quantity || 0) * (item.product?.sell_price || 0)) }}</span>
-                                            </p>
+                                            <button @click="removeItem(item.product_id)" class="text-red-400 hover:text-red-600 transition flex-shrink-0 p-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Continue Shopping Button -->
-                            <div class="px-4 md:px-6 py-4 bg-gray-50 border-t border-gray-200">
-                                <Link href="/shop" class="text-blue-600 hover:text-blue-700 font-medium text-sm md:text-base transition">
-                                    ← Lanjut Belanja
-                                </Link>
                             </div>
                         </div>
                     </div>
@@ -201,6 +167,7 @@ import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { ref, computed, watch, reactive } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Footer from '@/Components/Domain/Footer.vue';
+import { getImageUrl } from '@/helpers.js';
 
 const page = usePage();
 const cms = computed(() => page.props.cms?.settings || {});

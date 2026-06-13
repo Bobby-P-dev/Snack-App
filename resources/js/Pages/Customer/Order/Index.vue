@@ -272,7 +272,6 @@ const getStatusLabel = (status) => {
 // Copy order number to clipboard
 const copyOrderNumber = (orderNumber) => {
     navigator.clipboard.writeText(orderNumber);
-    alert('Nomor pesanan disalin ke clipboard!');
 };
 </script>
 

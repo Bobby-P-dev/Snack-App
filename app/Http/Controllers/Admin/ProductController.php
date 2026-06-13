@@ -36,8 +36,8 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->get('search', '');
-        $categoryId = $request->get('category_id', '');
+        $search = $request->filled('search');
+        $categoryId = $request->filled('category_id', '');
         $supplierId = $request->get('supplier_id', '');
 
         $query = Product::with(['category', 'supplier']);
@@ -45,7 +45,7 @@ class ProductController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('supplier', fn($s) => $s->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('supplier', fn($s) => $s->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -57,10 +57,10 @@ class ProductController extends Controller
             $query->where('supplier_id', $supplierId);
         }
 
-        $products = $query->orderBy('created_at', 'desc')->paginate(15);
+        $products = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return Inertia::render('Admin/Product/Index', [
-            'products' => ProductResource::collection($products->items()),
+            'products' => ProductResource::collection($products->items())->resolve(request()),
             'pagination' => [
                 'current_page' => $products->currentPage(),
                 'last_page' => $products->lastPage(),
@@ -78,19 +78,26 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'base_price' => 'required|numeric|min:0',
-            'sell_price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:5120',
-            'is_active' => 'boolean',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'supplier_id' => 'required|exists:suppliers,id',
+                'base_price' => 'required|numeric|min:0',
+                'sell_price' => 'required|numeric|min:0',
+                'image' => 'nullable|image|max:5120',
+            ]);
 
-        $this->productService->createProduct($validated, $request->file('image'));
+            $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan');
+            $this->productService->createProduct($validated, $request->file('image'));
+
+            return redirect()->back()->with('success', 'Produk berhasil ditambahkan');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal, periksa kembali input Anda');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan produk: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -98,19 +105,26 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'base_price' => 'required|numeric|min:0',
-            'sell_price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:5120',
-            'is_active' => 'boolean',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'supplier_id' => 'required|exists:suppliers,id',
+                'base_price' => 'required|numeric|min:0',
+                'sell_price' => 'required|numeric|min:0',
+                'image' => 'nullable|image|max:5120',
+            ]);
 
-        $this->productService->updateProduct($product->id, $validated, $request->file('image'));
+            $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui');
+            $this->productService->updateProduct($product->id, $validated, $request->file('image'));
+
+            return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal, periksa kembali input Anda');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui produk: ' . $e->getMessage());
+        }
     }
 
     /**

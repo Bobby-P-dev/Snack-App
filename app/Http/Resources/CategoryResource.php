@@ -18,8 +18,8 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'product_count' => $this->products->count(),
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'product_count' => $this->products_count ?? $this->products?->count() ?? 0,
+            'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
         ];
     }
 }

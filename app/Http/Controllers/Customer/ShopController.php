@@ -9,6 +9,7 @@ use App\Repositories\ProductRepository;
 use App\Repositories\CategoryRepository;
 use App\Services\CmsService;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ShopController extends Controller
@@ -54,16 +55,45 @@ class ShopController extends Controller
     }
 
     /**
-     * Display shop page with all products
+     * Display shop page with all products (paginated)
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = $this->productRepository->all();
+        $search = $request->get('search', '');
+        $categoryId = $request->get('category_id', '');
+        $page = $request->get('page', 1);
+        $perPage = 9;
+
+        $query = \App\Models\Product::with(['category', 'supplier'])
+            ->where('is_active', true);
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('supplier', fn($s) => $s->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
         $categories = $this->categoryRepository->all();
 
         return Inertia::render('Customer/Shop/Index', [
-            'products' => ProductResource::collection($products)->resolve(request()),
+            'products' => ProductResource::collection($products->items())->resolve(request()),
             'categories' => CategoryResource::collection($categories)->resolve(request()),
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+            ],
+            'filters' => [
+                'search' => $search,
+                'category_id' => $categoryId,
+            ],
             'title' => 'Shop',
         ]);
     }

@@ -37,12 +37,19 @@ class CmsCarouselController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'required|image|max:5120', // max 5MB
+            'image' => 'required|image|max:5120',
             'description' => 'nullable|string',
             'link_url' => 'nullable|url',
             'order' => 'nullable|integer',
+            'duration' => 'nullable|integer|min:1|max:30',
             'is_active' => 'boolean',
         ]);
+
+        // Auto-set order to last
+        if (!$request->filled('order')) {
+            $maxOrder = CmsCarousel::max('order');
+            $validated['order'] = ($maxOrder ?? 0) + 1;
+        }
 
         // Upload image to S3/MinIO
         if ($request->hasFile('image')) {
@@ -52,17 +59,15 @@ class CmsCarouselController extends Controller
         }
 
         CmsCarousel::create($validated);
-
-        // Clear cache
         $this->cmsService->clearCache('carousels');
 
-        return redirect()->back()->with('message', 'Carousel created successfully');
+        return redirect()->back()->with('success', 'Banner berhasil ditambahkan');
     }
 
     /**
      * Update carousel
      */
-    public function update(Request $request, CmsCarousel $cmsCarousel)
+    public function update(Request $request, CmsCarousel $carousel)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -70,44 +75,58 @@ class CmsCarouselController extends Controller
             'description' => 'nullable|string',
             'link_url' => 'nullable|url',
             'order' => 'nullable|integer',
+            'duration' => 'nullable|integer|min:1|max:30',
             'is_active' => 'boolean',
         ]);
 
         // Upload new image if provided
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($cmsCarousel->image_url) {
-                Storage::disk('s3')->delete($cmsCarousel->image_url);
+            if ($carousel->image_url) {
+                Storage::disk('s3')->delete($carousel->image_url);
             }
-
             $path = $request->file('image')->store('carousel', 's3');
             $validated['image_url'] = $path;
             unset($validated['image']);
         }
 
-        $cmsCarousel->update($validated);
-
-        // Clear cache
+        $carousel->update($validated);
         $this->cmsService->clearCache('carousels');
 
-        return redirect()->back()->with('message', 'Carousel updated successfully');
+        return redirect()->back()->with('success', 'Banner berhasil diperbarui');
+    }
+
+    /**
+     * Reorder carousels (drag & drop)
+     */
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:cms_carousels,id',
+            'items.*.order' => 'required|integer|min:1',
+        ]);
+
+        foreach ($request->items as $item) {
+            CmsCarousel::where('id', $item['id'])->update(['order' => $item['order']]);
+        }
+
+        $this->cmsService->clearCache('carousels');
+
+        return redirect()->back()->with('success', 'Urutan banner berhasil diperbarui');
     }
 
     /**
      * Delete carousel
      */
-    public function destroy(CmsCarousel $cmsCarousel)
+    public function destroy(CmsCarousel $carousel)
     {
-        // Delete image from S3
-        if ($cmsCarousel->image_url) {
-            Storage::disk('s3')->delete($cmsCarousel->image_url);
+        if ($carousel->image_url) {
+            Storage::disk('s3')->delete($carousel->image_url);
         }
 
-        $cmsCarousel->delete();
-
-        // Clear cache
+        $carousel->delete();
         $this->cmsService->clearCache('carousels');
 
-        return redirect()->back()->with('message', 'Carousel deleted successfully');
+        return redirect()->back()->with('success', 'Banner berhasil dihapus');
     }
 }

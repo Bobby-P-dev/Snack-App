@@ -32,10 +32,10 @@
                                             v-model="form.customer_name"
                                             type="text"
                                             required
-                                            class="w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base"
+                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('customer_name') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
                                             placeholder="Masukkan nama Anda"
                                         />
-                                        <p v-if="errors.customer_name" class="text-red-500 text-xs md:text-sm mt-1">{{ errors.customer_name[0] }}</p>
+                                        <p v-if="fieldError('customer_name')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('customer_name') }}</p>
                                     </div>
 
                                     <!-- Phone -->
@@ -45,10 +45,10 @@
                                             v-model="form.customer_phone"
                                             type="tel"
                                             required
-                                            class="w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base"
+                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('customer_phone') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
                                             placeholder="Contoh: 08123456789"
                                         />
-                                        <p v-if="errors.customer_phone" class="text-red-500 text-xs md:text-sm mt-1">{{ errors.customer_phone[0] }}</p>
+                                        <p v-if="fieldError('customer_phone')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('customer_phone') }}</p>
                                         <p class="text-gray-500 text-xs md:text-sm mt-1">💬 Kami akan menghubungi Anda via WhatsApp</p>
                                     </div>
                                 </div>
@@ -59,23 +59,36 @@
                                 <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 md:px-6 py-4 border-b border-gray-200">
                                     <h2 class="font-bold text-gray-900 text-lg flex items-center">
                                         <span class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm mr-3">2</span>
-                                        Tanggal Pengambilan
+                                        Pengambilan / Pengiriman
                                     </h2>
                                 </div>
 
-                                <div class="px-4 md:px-6 py-6">
+                                <div class="px-4 md:px-6 py-6 space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal & Jam</label>
                                         <input
                                             v-model="form.pickup_date"
                                             type="datetime-local"
                                             required
-                                            class="w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base"
+                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('pickup_date') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
                                         />
-                                        <p v-if="errors.pickup_date" class="text-red-500 text-xs md:text-sm mt-1">{{ errors.pickup_date[0] }}</p>
+                                        <p v-if="fieldError('pickup_date')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('pickup_date') }}</p>
                                         <p class="text-gray-500 text-xs md:text-sm mt-2">
                                             ⏰ Pilih tanggal minimal besok, jam kerja kami 09:00 - 18:00
                                         </p>
+                                    </div>
+                                    
+                                    <!-- Location -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi / Alamat Pengiriman</label>
+                                        <textarea
+                                            v-model="form.location"
+                                            required
+                                            rows="3"
+                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('location') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
+                                            placeholder="Masukkan alamat lengkap pengiriman atau lokasi pengambilan"
+                                        ></textarea>
+                                        <p v-if="fieldError('location')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('location') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -206,12 +219,36 @@
             </div>
         </div>
     </CustomerLayout>
+
+    <!-- Validation Error Modal -->
+    <Modal
+        v-model="validationModal"
+        variant="warning"
+        title="Lengkapi Data Berikut"
+        confirmText="Mengerti"
+    >
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-2">
+            <ul class="space-y-2">
+                <li
+                    v-for="(err, idx) in validationErrors"
+                    :key="idx"
+                    class="flex items-start gap-2 text-sm text-amber-800"
+                >
+                    <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span>{{ err }}</span>
+                </li>
+            </ul>
+        </div>
+    </Modal>
 </template>
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import Modal from '@/Components/UI/Modal.vue';
 
 const props = defineProps({
     cart: {
@@ -223,11 +260,14 @@ const props = defineProps({
 const cart = ref(props.cart);
 const loading = ref(false);
 const errors = ref({});
+const validationModal = ref(false);
+const validationErrors = ref([]);
 
 const form = ref({
     customer_name: '',
     customer_phone: '',
     pickup_date: '',
+    location: '',
     items: props.cart,
     terms_agreed: false,
 });
@@ -253,44 +293,46 @@ const remainingPayment = computed(() => {
     return total.value - dp.value;
 });
 
+// Check if a field has an error
+const fieldError = (field) => errors.value[field] ? errors.value[field][0] : null
+
 // Format number to IDR
 const formatNumber = (num) => {
     return new Intl.NumberFormat('id-ID').format(num);
 };
 
 // Submit order
-const submitOrder = async () => {
+const submitOrder = () => {
+    // Client-side validation check
+    validationErrors.value = [];
+    if (!form.value.customer_name.trim()) validationErrors.value.push("Nama Lengkap belum diisi.");
+    if (!form.value.customer_phone.trim()) validationErrors.value.push("Nomor WhatsApp belum diisi.");
+    if (!form.value.pickup_date) validationErrors.value.push("Tanggal & Jam pengambilan belum dipilih.");
+    if (!form.value.location.trim()) validationErrors.value.push("Lokasi / Alamat pengiriman belum diisi.");
+    if (!form.value.terms_agreed) validationErrors.value.push("Anda harus menyetujui syarat & ketentuan.");
+
+    if (validationErrors.value.length > 0) {
+        validationModal.value = true;
+        return;
+    }
+
     loading.value = true;
     errors.value = {};
 
-    try {
-        const response = await fetch('/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-            },
-            body: JSON.stringify(form.value),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Redirect to WhatsApp
-            if (data.whatsappUrl) {
-                window.location.href = data.whatsappUrl;
-            }
-        } else if (response.status === 422) {
-            errors.value = data.errors || {};
-        } else {
-            alert(data.message || 'Terjadi kesalahan');
+    router.post('/checkout', form.value, {
+        onError: (errs) => {
+            errors.value = errs;
+            validationErrors.value = Object.values(errs).flat();
+            validationModal.value = true;
+            loading.value = false;
+        },
+        onSuccess: () => {
+            loading.value = false;
+        },
+        onFinish: () => {
+            loading.value = false;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat memproses pesanan');
-    } finally {
-        loading.value = false;
-    }
+    });
 };
 </script>
 

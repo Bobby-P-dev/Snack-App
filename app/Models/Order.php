@@ -17,6 +17,7 @@ class Order extends Model
         'customer_name',
         'customer_phone',
         'pickup_date',
+        'location',
         'total_amount',
         'dp_amount',
         'status',

@@ -178,20 +178,21 @@
                   <img :src="imagePreview" class="w-full h-full object-cover">
                 </div>
                 <div class="flex-1">
-                  <label class="flex flex-col items-center justify-center w-full px-4 py-4 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition">
-                    <svg class="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span class="text-xs text-gray-500">Klik untuk upload gambar</span>
-                    <input type="file" @input="handleFile" accept="image/*" class="hidden">
+                  <label class="flex items-center justify-center gap-2 w-full px-4 py-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition bg-white">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="text-sm text-gray-600">{{ imagePreview ? 'Ganti gambar' : 'Pilih gambar' }}</span>
+                    <input type="file" @change="handleFile" accept="image/*" class="hidden">
                   </label>
+                  <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, WEBP. Maks 5MB.</p>
                 </div>
               </div>
             </div>
 
             <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-              <div class="relative inline-flex items-center cursor-pointer">
+              <label for="isActive" class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="form.is_active" id="isActive" class="sr-only peer">
                 <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-              </div>
+              </label>
               <label for="isActive" class="text-sm font-medium text-gray-700 cursor-pointer">Produk Aktif</label>
             </div>
           </div>
@@ -201,7 +202,7 @@
             <button type="submit" :disabled="form.processing" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition disabled:opacity-50 shadow-lg shadow-blue-200 flex items-center gap-2">
               <span v-if="form.processing" class="flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    Menyimpan...
+                  Menyimpan...
               </span>
               <span v-else>
                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -237,6 +238,7 @@
 import { ref } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { getImageUrl, formatNumber } from '@/helpers.js'
 
 const props = defineProps({
   products: { type: Array, default: () => [] },
@@ -272,11 +274,6 @@ const goToPage = (page) => {
     category_id: filterCategory.value,
     supplier_id: filterSupplier.value
   }, { preserveState: true, replace: true })
-}
-
-const getImageUrl = (url) => {
-  if (!url) return ''
-  return url.startsWith('http') ? url : `/storage/${url}`
 }
 
 // Modal
@@ -326,10 +323,11 @@ const handleFile = (e) => {
     form.image = file
     imagePreview.value = URL.createObjectURL(file)
   }
+  e.target.value = ''
 }
 
 const submitForm = () => {
-  if (editingProduct.value) {
+  if (editingProduct.value && editingProduct.value.id) {
     form.transform((data) => ({
       ...data,
       _method: 'PUT'
@@ -339,6 +337,7 @@ const submitForm = () => {
     })
   } else {
     form.post('/admin/products', {
+      forceFormData: true,
       onSuccess: () => closeModal()
     })
   }
@@ -364,10 +363,7 @@ const deleteProduct = () => {
   })
 }
 
-const formatNumber = (num) => {
-  if (num === null || num === undefined || num === '') return '0'
-  return new Intl.NumberFormat('id-ID').format(num)
-}
+// formatNumber is imported from helpers.js
 </script>
 
 <style scoped>

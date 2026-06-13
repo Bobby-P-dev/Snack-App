@@ -24,6 +24,7 @@ class StoreOrderRequest extends FormRequest
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_phone' => ['required', 'string', 'regex:/^(\+62|0)[0-9]{9,12}$/'],
             'pickup_date' => ['required', 'date', 'after:today'],
+            'location' => ['required', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -59,10 +60,23 @@ class StoreOrderRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        if ($this->pickup_date) {
+        // Inject items from session cart into request data before validation
+        $cart = session()->get('cart', []);
+
+        if (!empty($cart) && empty($this->items)) {
             $this->merge([
-                'pickup_date' => Carbon::parse($this->pickup_date)->format('Y-m-d H:i:00'),
+                'items' => array_values($cart)
             ]);
+        }
+
+        if ($this->pickup_date) {
+            try {
+                $this->merge([
+                    'pickup_date' => Carbon::parse($this->pickup_date)->format('Y-m-d H:i:00'),
+                ]);
+            } catch (\Exception $e) {
+                // If parsing fails, let the date validator catch it
+            }
         }
     }
 }

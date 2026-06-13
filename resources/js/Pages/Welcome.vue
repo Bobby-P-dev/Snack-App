@@ -1,9 +1,11 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Footer from '@/Components/Domain/Footer.vue';
 import { useCartStore } from '@/Stores/CartStore.js';
+import { useSelectedItemsStore } from '@/Stores/SelectedItemsStore.js';
+import { getImageUrl } from '@/helpers.js';
 
 const props = defineProps({
     products: { type: Array, default: () => [] },
@@ -16,27 +18,47 @@ const page = usePage();
 const cms = computed(() => page.props.cms?.settings || {});
 
 const { addToCart } = useCartStore();
+const { items: selectedItems, count: selectedCount, addItem: addSelected, removeItem: removeSelected, clearItems: clearSelected } = useSelectedItemsStore();
 
 // ─── Hero Carousel ───
-// Fallback if no carousels in DB
 const fallbackImages = [
-    { src: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80', alt: 'Koleksi Snack Box Premium' }
+    { src: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80', alt: 'Koleksi Snack Box Premium', duration: 5 }
 ];
 
 const images = computed(() => {
     if (props.carousels && props.carousels.length > 0) {
         return props.carousels.map(c => ({
-            src: c.image_url.startsWith('http') ? c.image_url : `/storage/${c.image_url}`,
+            src: getImageUrl(c.image_url),
             alt: c.title,
-            link: c.link_url
+            link: c.link_url,
+            duration: c.duration || 5
         }));
     }
     return fallbackImages;
 });
 
 const currentSlide = ref(0);
-const prevSlide = () => { currentSlide.value = (currentSlide.value - 1 + images.value.length) % images.value.length; };
-const nextSlide = () => { currentSlide.value = (currentSlide.value + 1) % images.value.length; };
+let autoSlideTimer = null;
+
+const startAutoSlide = () => {
+    stopAutoSlide();
+    if (images.value.length <= 1) return;
+    const duration = (images.value[currentSlide.value]?.duration || 5) * 1000;
+    autoSlideTimer = setInterval(() => {
+        currentSlide.value = (currentSlide.value + 1) % images.value.length;
+    }, duration);
+};
+
+const stopAutoSlide = () => {
+    if (autoSlideTimer) {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = null;
+    }
+};
+
+watch(currentSlide, () => { startAutoSlide(); });
+onMounted(() => { startAutoSlide(); });
+onUnmounted(() => { stopAutoSlide(); });
 
 // ─── Tipe Produk ───
 const activeType = ref('box');
@@ -67,38 +89,13 @@ const decQty = (product) => {
 };
 
 // ─── Selected (yang sudah ditambah ke keranjang) ───
-const selectedItems = ref([]);
-
-const addSelected = (product) => {
-    const qty = quantities.value[product.id] || currentMinQty.value;
-    const existing = selectedItems.value.find(i => i.id === product.id);
-    if (existing) {
-        existing.qty += qty;
-    } else {
-        selectedItems.value.push({
-            id: product.id,
-            name: product.name,
-            price: product.sell_price,
-            qty,
-            type: activeType.value === 'box' ? 'snack_box' : 'satuan',
-        });
-    }
-    quantities.value[product.id] = currentMinQty.value;
-};
-
-const removeSelected = (id) => {
-    selectedItems.value = selectedItems.value.filter(i => i.id !== id);
-};
 
 const sendToCart = () => {
-    if (selectedItems.value.length === 0) {
-        alert('Pilih minimal 1 produk');
-        return;
-    }
+    if (selectedItems.value.length === 0) return;
     selectedItems.value.forEach(item => {
-        addToCart(item, item.type);
+        addToCart(item, item.type || 'kustom_box');
     });
-    selectedItems.value = [];
+    clearSelected();
 };
 
 const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
@@ -135,19 +132,13 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
                         <p class="text-base md:text-xl text-gray-200 mb-8 max-w-lg">
                             {{ cms.hero_subtitle }}
                         </p>
-                        <!-- Jika ada CTA dari Carousel -->
                         <a v-if="images[currentSlide]?.link" :href="images[currentSlide].link" class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition">
                             Lihat Promo
                         </a>
                     </div>
                 </div>
             </div>
-            <button @click="prevSlide" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition backdrop-blur-sm z-20">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            <button @click="nextSlide" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition backdrop-blur-sm z-20">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            </button>
+            <!-- Slide indicator dots -->
             <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3">
                 <button v-for="(_, idx) in images" :key="idx" @click="currentSlide = idx" class="h-2 rounded-full transition-all duration-300" :class="idx === currentSlide ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/80'"></button>
             </div>
@@ -176,8 +167,9 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div v-if="displayedProducts.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
                 <div v-for="(product, idx) in displayedProducts" :key="'p-' + idx" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
-                    <div class="h-28 sm:h-32 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="h-28 sm:h-32 bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <img v-if="product.image_url" :src="getImageUrl(product.image_url)" :alt="product.name" class="w-full h-full object-cover" />
+                        <svg v-else class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
@@ -189,7 +181,7 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
                             <input :value="getQty(product)" @input="(e) => { const v = parseInt(e.target.value); if (v >= 10) quantities[product.id] = v; }" type="number" class="flex-1 min-w-0 text-center font-bold border border-gray-300 rounded-lg py-1.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" min="10" />
                             <button @click="incQty(product)" class="w-9 h-9 bg-gray-100 rounded-lg hover:bg-blue-100 transition font-bold text-lg flex items-center justify-center flex-shrink-0 text-gray-700">+</button>
                         </div>
-                        <button @click="addSelected(product)" class="w-full py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">Tambah</button>
+                        <button @click="addSelected(product, getQty(product), activeType === 'box' ? 'kustom_box' : 'satuan'); quantities[product.id] = currentMinQty.value;" class="w-full py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">Tambah</button>
                     </div>
                 </div>
             </div>
@@ -197,22 +189,31 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
         </section>
 
         <!-- ─── PANEL PRODUK DIPILIH ─── -->
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-            <div v-if="selectedItems.length > 0" class="bg-blue-50 border border-blue-200 rounded-2xl p-4 md:p-6">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                    <div>
-                        <p class="font-bold text-blue-900">{{ selectedItems.length }} produk dipilih</p>
-                        <p class="text-sm text-blue-700">Klik tombol untuk memasukkan ke keranjang</p>
-                    </div>
-                    <button @click="sendToCart" class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg w-full sm:w-auto">Masukkan ke Keranjang</button>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <div v-for="item in selectedItems" :key="item.id" class="bg-white rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm">
-                        <span class="text-sm font-medium text-gray-900">{{ item.name }}</span>
-                        <span class="text-xs text-blue-600 font-semibold">{{ item.qty }}x</span>
-                        <button @click="removeSelected(item.id)" class="text-red-500 hover:text-red-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+        <section v-if="selectedItems.length > 0" class="fixed bottom-0 left-0 right-0 z-40 px-4 pb-4 md:pb-6 pointer-events-none">
+            <div class="max-w-7xl mx-auto">
+                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] pointer-events-auto transform transition-transform duration-300">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex-1 w-full">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="font-bold text-blue-900">{{ selectedItems.length }} produk dipilih</p>
+                                <button @click="sendToCart" class="sm:hidden px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold shadow-md text-sm">Masuk Keranjang</button>
+                            </div>
+                            <div class="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
+                                <div v-for="item in selectedItems" :key="item.id" class="bg-white rounded-lg px-3 py-1.5 flex items-center gap-2 shadow-sm border border-blue-100 flex-shrink-0">
+                                    <span class="text-sm font-medium text-gray-900 truncate max-w-[120px]">{{ item.name }}</span>
+                                    <span class="text-xs text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">{{ item.qty }}x</span>
+                                    <button @click="removeSelected(item.id)" class="text-red-400 hover:text-red-600 transition p-0.5 hover:bg-red-50 rounded">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden sm:block">
+                            <button @click="sendToCart" class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg flex items-center gap-2 whitespace-nowrap hover:-translate-y-0.5 duration-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                                Masukkan ke Keranjang
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
