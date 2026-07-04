@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Pdf\InvoicePdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ProductController;
@@ -70,6 +71,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::post('carousels/reorder', [\App\Http\Controllers\Admin\CmsCarouselController::class, 'reorder'])->name('carousels.reorder');
         Route::resource('social-media', \App\Http\Controllers\Admin\CmsSocialMediaController::class)->except(['create', 'show', 'edit']);
     });
+
+    Route::prefix('pdf')->name('pdf.')->group(function () {
+        Route::get('/invoice/{order}', [InvoicePdfController::class, 'index'])->name('invoice');
+    });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
