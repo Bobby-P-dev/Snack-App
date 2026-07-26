@@ -17,14 +17,8 @@ class CmsService
      */
     public function getSetting(string $key, $default = null)
     {
-        return Cache::remember(
-            self::CACHE_PREFIX . $key,
-            self::CACHE_TTL,
-            function () use ($key, $default) {
-                $setting = CmsSetting::where('key', $key)->first();
-                return $setting?->value ?? $default;
-            }
-        );
+        $setting = CmsSetting::where('key', $key)->first();
+        return $setting?->value ?? $default;
     }
 
     /**
@@ -32,14 +26,8 @@ class CmsService
      */
     public function getAllSettings()
     {
-        return Cache::remember(
-            self::CACHE_PREFIX . 'all_settings',
-            self::CACHE_TTL,
-            function () {
-                $settings = CmsSetting::all();
-                return $settings->pluck('value', 'key')->toArray();
-            }
-        );
+        $settings = CmsSetting::all();
+        return $settings->pluck('value', 'key')->toArray();
     }
 
     /**
@@ -47,16 +35,10 @@ class CmsService
      */
     public function getCarousels()
     {
-        return Cache::remember(
-            self::CACHE_PREFIX . 'carousels',
-            self::CACHE_TTL,
-            function () {
-                return CmsCarousel::where('is_active', true)
-                    ->orderBy('order')
-                    ->get()
-                    ->toArray();
-            }
-        );
+        return CmsCarousel::where('is_active', true)
+            ->orderBy('order')
+            ->get()
+            ->toArray();
     }
 
     /**
@@ -64,16 +46,10 @@ class CmsService
      */
     public function getSocialMedia()
     {
-        return Cache::remember(
-            self::CACHE_PREFIX . 'social_media',
-            self::CACHE_TTL,
-            function () {
-                return CmsSocialMedia::where('is_active', true)
-                    ->orderBy('order')
-                    ->get()
-                    ->toArray();
-            }
-        );
+        return CmsSocialMedia::where('is_active', true)
+            ->orderBy('order')
+            ->get()
+            ->toArray();
     }
 
     /**

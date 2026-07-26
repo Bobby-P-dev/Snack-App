@@ -933,8 +933,8 @@ const deleteProduct = () => {
     });
 };
 
-const downloadInvoice = (orderId = 1) => {
-    window.open(`pdf/invoice/${orderId}`, "_blank");
+const downloadInvoice = (orderId = 6) => {
+    window.open(`/pdf/invoice/${orderId}`, "_blank");
 };
 
 // formatNumber is imported from helpers.js

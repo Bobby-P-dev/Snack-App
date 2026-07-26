@@ -1,4 +1,5 @@
 import { reactive, computed } from 'vue'
+import axios from 'axios'
 
 const state = reactive({
     items: [],
@@ -14,20 +15,17 @@ export function useCartStore() {
         const incomingQty = product.qty || 1
 
         // Send to backend API
-        fetch('/cart/add', {
-            method: 'POST',
+        axios.post('/cart/add', {
+            product_id: product.id,
+            quantity: incomingQty,
+            type: type,
+        }, {
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
-            },
-            body: JSON.stringify({
-                product_id: product.id,
-                quantity: incomingQty,
-                type: type,
-            }),
+                'Accept': 'application/json',
+            }
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(response => {
+            const data = response.data;
             console.log('Add to cart response:', data);
             if (data.success) {
                 // Update local store for UI feedback
@@ -52,13 +50,8 @@ export function useCartStore() {
 
     function removeItem(productId) {
         state.items = state.items.filter(item => item.id !== productId)
-        fetch('/cart/remove', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
-            },
-            body: JSON.stringify({ product_id: productId })
+        axios.post('/cart/remove', { product_id: productId }, {
+            headers: { 'Accept': 'application/json' }
         }).catch(e => console.error(e))
     }
 
@@ -67,24 +60,16 @@ export function useCartStore() {
         const item = state.items.find(i => i.id === productId)
         if (item) {
             item.qty = newQty
-            fetch('/cart/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                },
-                body: JSON.stringify({ product_id: productId, quantity: newQty })
+            axios.post('/cart/update', { product_id: productId, quantity: newQty }, {
+                headers: { 'Accept': 'application/json' }
             }).catch(e => console.error(e))
         }
     }
 
     function clearCart() {
         state.items = []
-        fetch('/cart/clear', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
-            }
+        axios.post('/cart/clear', {}, {
+            headers: { 'Accept': 'application/json' }
         }).catch(e => console.error(e))
     }
 

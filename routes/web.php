@@ -12,7 +12,7 @@ use App\Http\Controllers\Customer\CartController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes - Home & Shop
-Route::get('/', [ShopController::class, 'home'])->middleware('admin_redirect')->name('home');
+Route::get('/', [ShopController::class, 'home'])->name('home');
 
 Route::prefix('shop')->group(function () {
     Route::get('/', [ShopController::class, 'index'])->name('customer.shop.index');
@@ -35,6 +35,10 @@ Route::prefix('checkout')->group(function () {
     Route::get('/', [\App\Http\Controllers\Customer\CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/', [\App\Http\Controllers\Customer\CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/data', [\App\Http\Controllers\Customer\CheckoutController::class, 'getCheckoutData'])->name('checkout.data');
+});
+
+Route::prefix('pdf')->name('pdf.')->group(function () {
+    Route::get('/invoice/{order}', [App\Http\Controllers\Pdf\InvoicePdfController::class, 'index'])->name('invoice');
 });
 
 // Auth required customer routes
@@ -70,10 +74,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::resource('carousels', \App\Http\Controllers\Admin\CmsCarouselController::class)->except(['create', 'show', 'edit']);
         Route::post('carousels/reorder', [\App\Http\Controllers\Admin\CmsCarouselController::class, 'reorder'])->name('carousels.reorder');
         Route::resource('social-media', \App\Http\Controllers\Admin\CmsSocialMediaController::class)->except(['create', 'show', 'edit']);
-    });
-
-    Route::prefix('pdf')->name('pdf.')->group(function () {
-        Route::get('/invoice/{order}', [InvoicePdfController::class, 'index'])->name('invoice');
     });
 });
 

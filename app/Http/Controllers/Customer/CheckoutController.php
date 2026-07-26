@@ -85,8 +85,8 @@ class CheckoutController extends Controller
             $order = $this->orderService->createOrder($request->validated(), $items);
 
             // Generate WhatsApp URL
-            // Mengambil nomor WA admin dari CMS Setting jika ada, default ke 6281234567890
-            $adminPhoneSetting = \App\Models\CmsSetting::where('key', 'admin_whatsapp')->first();
+            // Mengambil nomor WA admin dari CMS Setting jika ada
+            $adminPhoneSetting = \App\Models\CmsSetting::where('key', 'contact_phone')->first();
             $adminPhone = $adminPhoneSetting ? $adminPhoneSetting->value : '6281234567890';
 
             // Format phone number jika mulai dari 0 diubah ke 62

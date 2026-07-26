@@ -166,7 +166,8 @@
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { ref, computed, watch, reactive } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
-import Footer from '@/Components/Domain/Footer.vue';
+import Footer from '@/Pages/Customer/Components/Landing/Footer.vue';
+import { useCartStore } from '@/Stores/CartStore.js';
 import { getImageUrl } from '@/helpers.js';
 
 const page = usePage();
