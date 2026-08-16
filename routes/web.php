@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Customer\ShopController;
 use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\TrackingController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes - Home & Shop
@@ -19,6 +20,9 @@ Route::prefix('shop')->group(function () {
     Route::get('/category/{slug}', [ShopController::class, 'category'])->name('customer.shop.category');
     Route::get('/{id}', [ShopController::class, 'show'])->name('customer.shop.show');
 });
+
+// Tracking route
+Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
 
 // Cart routes (public, no auth required for initial add)
 Route::prefix('cart')->group(function () {

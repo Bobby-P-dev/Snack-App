@@ -1,0 +1,65 @@
+<template>
+    <section class="bg-cream-100 py-8 border-b border-cream-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center text-sm text-gray-500 mb-6 space-x-2">
+                <Link href="/" class="hover:text-brand-600 flex items-center transition font-medium">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Beranda
+                </Link>
+                <span class="text-gray-400">&rsaquo;</span>
+                <span class="text-brown-800 font-semibold">Produk</span>
+            </nav>
+
+            <!-- Title & Description -->
+            <div class="mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-brown-800 mb-3 tracking-tight">
+                    {{ activeType === 'box' ? 'Snack Box' : 'Kue Satuan' }}
+                </h1>
+                <p class="text-brown-600 text-base md:text-lg max-w-3xl">
+                    {{ activeType === 'box' 
+                        ? 'Pilihan snack box premium untuk berbagai acara Anda.' 
+                        : 'Pilih kue satuan favorit Anda dari berbagai supplier terbaik.' }}
+                </p>
+            </div>
+
+            <!-- Features -->
+            <div class="grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:gap-4 md:gap-8 mt-6">
+                <div class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-sm font-semibold text-brown-800 text-center sm:text-left">
+                    <Leaf class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
+                    <span class="hidden sm:inline">Fresh Setiap Hari</span>
+                    <span class="sm:hidden">Fresh</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-sm font-semibold text-brown-800 text-center sm:text-left">
+                    <PackageOpen class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
+                    <span class="hidden sm:inline">Bisa Custom Isi</span>
+                    <span class="sm:hidden">Custom</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-sm font-semibold text-brown-800 text-center sm:text-left">
+                   <Truck class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
+                    <span class="hidden sm:inline">Pengiriman Tepat Waktu</span>
+                    <span class="sm:hidden">Tepat Waktu</span>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-sm font-semibold text-brown-800 text-center sm:text-left">
+                    <ShieldCheck class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
+                    <span class="hidden sm:inline">100% Halal</span>
+                    <span class="sm:hidden">Halal</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>
+
+<script setup>
+import { Link } from '@inertiajs/vue3';
+import { Leaf, PackageOpen, ShieldCheck, Truck } from 'lucide-vue-next';
+
+defineProps({
+    activeType: {
+        type: String,
+        default: 'box'
+    }
+});
+</script>

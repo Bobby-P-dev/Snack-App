@@ -49,50 +49,50 @@ onUnmounted(() => { stopAutoSlide(); });
 </script>
 
 <template>
-    <section class="relative bg-slate-50 overflow-hidden border-b border-gray-100">
-        <div class="relative flex flex-col lg:block min-h-[500px] lg:min-h-[600px] xl:min-h-[700px]">
+    <section class="relative bg-cream-100 overflow-hidden border-b border-cream-200">
+        <div class="relative flex flex-col-reverse lg:block min-h-[500px] lg:min-h-[600px] xl:min-h-[700px]">
             <!-- Kiri: Konten Teks -->
-            <div class="w-full lg:w-[50%] flex items-center pt-28 pb-12 lg:py-24 px-4 sm:px-6 lg:px-12 xl:px-20 z-10 relative lg:min-h-[600px] xl:min-h-[700px]">
+            <div class="w-full lg:w-[50%] flex items-center pt-8 pb-16 lg:pt-28 lg:pb-24 px-4 sm:px-6 lg:px-12 xl:px-20 z-10 relative lg:min-h-[600px] xl:min-h-[700px]">
                 <div class="max-w-2xl w-full mx-auto lg:mx-0 lg:mr-auto">
                     
                     <!-- Badge -->
-                    <p class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-600 font-bold tracking-widest text-xs md:text-sm uppercase mb-6 rounded-full border border-blue-100 shadow-sm">
+                    <p class="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-50 text-brand-600 font-bold tracking-widest text-xs md:text-sm uppercase mb-6 rounded-full border border-brand-100 shadow-sm">
                         <Sparkles class="h-4 w-4" />
                         <span>{{ cms.badge }}</span>
                     </p>
                     
                     <!-- Title -->
-                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-extrabold text-gray-900 mb-6 leading-[1.15] tracking-tight">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-extrabold text-brown-800 mb-6 leading-[1.15] tracking-tight">
                         {{ cms.hero_title_1 }}
                     </h1>
                     
                     <!-- Subtitle -->
-                    <p class="text-base md:text-xl text-gray-600 mb-10 max-w-xl leading-relaxed">
+                    <p class="text-base md:text-xl text-brown-600 mb-10 max-w-xl leading-relaxed">
                         {{ cms.hero_subtitle }}
                     </p>
                     
                     <!-- Propositions -->
                     <div class="flex flex-wrap items-center gap-5 md:gap-8 mb-10">
-                        <p class="flex items-center gap-2.5 text-gray-800 text-sm md:text-base font-semibold">
-                            <Leaf class="h-5 w-5 text-blue-600 flex-shrink-0" />
+                        <p class="flex items-center gap-2.5 text-brown-800 text-sm md:text-base font-semibold">
+                            <Leaf class="h-5 w-5 text-brand-500 flex-shrink-0" />
                             <span>{{ cms.propotition1 }}</span>
                         </p>
-                        <p class="flex items-center gap-2.5 text-gray-800 text-sm md:text-base font-semibold">
-                            <PackageOpen class="h-5 w-5 text-blue-600 flex-shrink-0" />
+                        <p class="flex items-center gap-2.5 text-brown-800 text-sm md:text-base font-semibold">
+                            <PackageOpen class="h-5 w-5 text-brand-500 flex-shrink-0" />
                             <span>{{ cms.propotition2 }}</span>
                         </p>
-                        <p class="flex items-center gap-2.5 text-gray-800 text-sm md:text-base font-semibold">
-                            <Truck class="h-5 w-5 text-blue-600 flex-shrink-0" />
+                        <p class="flex items-center gap-2.5 text-brown-800 text-sm md:text-base font-semibold">
+                            <Truck class="h-5 w-5 text-brand-500 flex-shrink-0" />
                             <span>{{ cms.propotition3 }}</span>
                         </p>
                     </div>
                     
                     <!-- Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <button class="inline-flex items-center justify-center px-8 py-3.5 md:py-4 text-base font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-1 transition-all duration-300">
+                        <button class="inline-flex items-center justify-center px-8 py-3.5 md:py-4 text-base font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-md shadow-brand-500/30 hover:-translate-y-1 transition-all duration-300">
                             Pesan Sekarang
                         </button>
-                        <button class="inline-flex items-center justify-center px-8 py-3.5 md:py-4 text-base font-bold text-blue-600 bg-white border-2 border-blue-100 hover:border-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-sm">
+                        <button class="inline-flex items-center justify-center px-8 py-3.5 md:py-4 text-base font-bold text-brand-600 bg-white border-2 border-brand-100 hover:border-brand-500 hover:bg-brand-50 rounded-xl transition-all duration-300 hover:-translate-y-1 shadow-sm">
                             Lihat Menu
                         </button>
                     </div>

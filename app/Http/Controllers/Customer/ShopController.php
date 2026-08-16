@@ -62,7 +62,7 @@ class ShopController extends Controller
         $search = $request->get('search', '');
         $categoryId = $request->get('category_id', '');
         $page = $request->get('page', 1);
-        $perPage = 9;
+        $perPage = 8;
 
         $query = \App\Models\Product::with(['category', 'supplier'])
             ->where('is_active', true);

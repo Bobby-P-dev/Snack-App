@@ -1,12 +1,12 @@
 <template>
-    <div class="flex flex-col min-h-screen bg-gray-50">
+    <div class="flex flex-col min-h-screen bg-cream-100">
         <!-- Sticky Navbar -->
         <nav class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <Link href="/" class="flex items-center space-x-2">
                         <div
-                            class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                            class="w-10 h-10 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-lg"
                         >
                             SB
                         </div>
@@ -17,24 +17,29 @@
                     <div class="hidden md:flex items-center space-x-8">
                         <Link
                             href="/"
-                            class="text-gray-700 hover:text-blue-600 transition font-medium"
+                            class="text-gray-700 hover:text-brand-600 transition font-medium"
                             >Beranda</Link
                         >
                         <Link
-                            href="/shop"
-                            class="text-gray-700 hover:text-blue-600 transition font-medium"
-                            >Shop</Link
+                            href="/about"
+                            class="text-gray-700 hover:text-brand-600 transition font-medium"
+                            >Tentang Kami</Link
                         >
                         <Link
                             href="/shop"
-                            class="text-gray-700 hover:text-blue-600 transition font-medium"
-                            >Tracking</Link
+                            class="text-gray-700 hover:text-brand-600 transition font-medium"
+                            >Produk</Link
+                        >
+                        <Link
+                            href="/tracking"
+                            class="text-gray-700 hover:text-brand-600 transition font-medium"
+                            >Lacak Pesanan</Link
                         >
                     </div>
                     <div class="flex items-center space-x-4">
                         <button
                             @click="toggleCart"
-                            class="relative text-gray-700 hover:text-blue-600 transition p-2"
+                            class="relative text-gray-700 hover:text-brand-600 transition p-2"
                         >
                             <svg
                                 class="w-6 h-6"
@@ -55,15 +60,33 @@
                                 >{{ count }}</span
                             >
                         </button>
-                        <Link
-                            v-if="isAuthenticated"
-                            :href="route('admin.dashboard')"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm"
-                            >Dashboard</Link
-                        >
+                        <!-- Mobile Menu Toggle -->
+                        <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden p-2 text-gray-600 hover:text-brand-600 focus:outline-none transition-colors rounded-lg hover:bg-gray-100">
+                            <svg v-if="!isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                     </div>
                 </div>
             </div>
+            
+            <!-- Mobile Menu Dropdown -->
+            <transition
+                enter-active-class="transition ease-out duration-200"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition ease-in duration-150"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-2"
+            >
+                <div v-show="isMobileMenuOpen" class="md:hidden border-t border-gray-100 bg-white absolute w-full shadow-lg">
+                    <div class="px-4 pt-2 pb-4 space-y-2">
+                        <Link href="/" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition" @click="isMobileMenuOpen = false">Beranda</Link>
+                        <Link href="/about" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition" @click="isMobileMenuOpen = false">Tentang Kami</Link>
+                        <Link href="/shop" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition" @click="isMobileMenuOpen = false">Produk</Link>
+                        <Link href="/tracking" class="block px-3 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition" @click="isMobileMenuOpen = false">Lacak Pesanan</Link>
+                    </div>
+                </div>
+            </transition>
         </nav>
 
         <!-- Client-side Toast for non-Inertia actions -->
@@ -81,7 +104,7 @@
                         ? 'border-green-200 border-l-4 border-l-green-500'
                         : clientToast.variant === 'error'
                           ? 'border-red-200 border-l-4 border-l-red-500'
-                          : 'border-blue-200 border-l-4 border-l-blue-500',
+                          : 'border-brand-200 border-l-4 border-l-brand-500',
                 ]"
             >
                 <svg
@@ -114,7 +137,7 @@
                 </svg>
                 <svg
                     v-else
-                    class="w-5 h-5 text-blue-500 flex-shrink-0"
+                    class="w-5 h-5 text-brand-500 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -165,7 +188,7 @@
                     class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col"
                 >
                     <div
-                        class="bg-blue-600 text-white px-6 py-4 flex items-center justify-between"
+                        class="bg-brand-500 text-white px-6 py-4 flex items-center justify-between"
                     >
                         <h2 class="text-lg font-bold">Keranjang Pesanan</h2>
                         <button
@@ -336,7 +359,7 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    <p class="font-bold text-blue-600 text-xs">
+                                    <p class="font-bold text-brand-600 text-xs">
                                         Rp
                                         {{
                                             formatNumber(item.price * item.qty)
@@ -362,7 +385,7 @@
                                     v-model="customerName"
                                     type="text"
                                     placeholder="Contoh: Budi Santoso"
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition text-sm"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 transition text-sm"
                                 />
                             </div>
                             <div>
@@ -374,7 +397,7 @@
                                     v-model="customerPhone"
                                     type="tel"
                                     placeholder="Contoh: 08123456789"
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition text-sm"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 transition text-sm"
                                 />
                             </div>
                             <div>
@@ -385,7 +408,7 @@
                                 <input
                                     v-model="pickupDate"
                                     type="datetime-local"
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition text-sm"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 transition text-sm"
                                 />
                             </div>
                             <div>
@@ -397,7 +420,7 @@
                                     v-model="customerLocation"
                                     rows="2"
                                     placeholder="Contoh: Jl. Raya No. 123, Jakarta"
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition text-sm resize-none"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 transition text-sm resize-none"
                                 ></textarea>
                             </div>
                             <div>
@@ -409,7 +432,7 @@
                                     v-model="notes"
                                     rows="2"
                                     placeholder="Misal: tambahan pesan atau permintaan khusus"
-                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition text-sm resize-none"
+                                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 transition text-sm resize-none"
                                 ></textarea>
                             </div>
                         </div>
@@ -478,6 +501,8 @@
 
 <script setup>
 import { ref, computed } from "vue";
+
+const isMobileMenuOpen = ref(false);
 import { usePage, Link, router } from "@inertiajs/vue3";
 import { useCartStore } from "@/Stores/CartStore.js";
 import Toast from "@/Components/UI/Toast.vue";

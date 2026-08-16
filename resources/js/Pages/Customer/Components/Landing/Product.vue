@@ -4,6 +4,7 @@ import { Package, CakeSlice, Coffee, Users, ShoppingCart, ArrowRight } from 'luc
 import { useSelectedItemsStore } from '@/Stores/SelectedItemsStore.js';
 import { getImageUrl } from '@/helpers.js';
 import { Link } from '@inertiajs/vue3';
+import ProductCard from '@/Pages/Customer/Components/ProductCard.vue';
 
 const props = defineProps({
     products: { type: Array, default: () => [] },
@@ -77,37 +78,12 @@ const handleAddToCart = (product) => {
 
                 <!-- Product Grid -->
                 <div v-if="displayedProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div v-for="(product, idx) in displayedProducts" :key="idx" class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
-                        
-                        <!-- Image Container -->
-                        <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                            <img v-if="product.image_url" :src="getImageUrl(product.image_url)" :alt="product.name" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                            <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
-                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Card Content -->
-                        <div class="p-5 flex flex-col flex-1">
-                            <h3 class="font-bold text-gray-900 text-base mb-1 line-clamp-1">{{ product.name }}</h3>
-                            <p class="text-xs text-gray-500 line-clamp-2 mb-4 flex-1 leading-relaxed">
-                                {{ product.description || 'Pilihan lengkap untuk acara spesial Anda dengan cita rasa premium.' }}
-                            </p>
-                            
-                            <p class="text-sm font-bold text-gray-900 mb-5">Rp {{ formatNumber(product.sell_price) }}</p>
-                            
-                            <div class="flex items-center gap-2 mt-auto">
-                                <Link :href="'/shop/' + product.id" class="flex-1 py-2 px-4 text-center border-2 border-gray-200 text-gray-900 font-bold rounded-xl hover:border-gray-300 hover:bg-gray-50 transition text-xs">
-                                    Lihat Detail
-                                </Link>
-                                <button @click="handleAddToCart(product)" class="w-9 h-9 flex items-center justify-center border-2 border-gray-200 text-gray-900 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition shrink-0" title="Tambah ke Keranjang">
-                                    <ShoppingCart class="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <ProductCard 
+                        v-for="(product, idx) in displayedProducts" 
+                        :key="idx" 
+                        :product="product" 
+                        @add-to-cart="handleAddToCart(product)" 
+                    />
                 </div>
 
                 <div v-else class="text-center py-20 bg-white rounded-2xl border border-gray-100 border-dashed">
