@@ -70,32 +70,51 @@ class CheckoutController extends Controller
         }
 
         try {
-            // Prepare items for order
-            $items = array_map(function ($item) {
-                return [
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'price_at_order' => $this->productRepository->find($item['product_id'])->sell_price,
-                    'type' => $item['type'] ?? 'satuan',
-                    'box_group_id' => $item['box_group_id'] ?? null,
-                ];
-            }, $cartItems);
+            // Eager fetch all active products for the order in a single query (prevent N+1)
+            $productIds = collect($cartItems)->pluck('product_id')->unique()->filter()->all();
+            $products = \App\Models\Product::whereIn('id', $productIds)
+                ->where('is_active', true)
+                ->get()
+                ->keyBy('id');
 
-            // Create order
+            $items = [];
+            foreach ($cartItems as $cartItem) {
+                $productId = $cartItem['product_id'] ?? null;
+                $product = $products->get($productId);
+
+                if (!$product) {
+                    $msg = 'Satu atau lebih produk tidak tersedia atau sudah dinonaktifkan.';
+                    if ($request->wantsJson()) {
+                        return response()->json(['message' => $msg], 422);
+                    }
+                    return redirect()->back()->with('error', $msg);
+                }
+
+                $quantity = max(1, (int) ($cartItem['quantity'] ?? 1));
+                $items[] = [
+                    'product_id' => $product->id,
+                    'quantity' => $quantity,
+                    'price_at_order' => $product->sell_price, // Backend trusted calculation
+                    'type' => $cartItem['type'] ?? 'satuan',
+                    'box_group_id' => $cartItem['box_group_id'] ?? null,
+                ];
+            }
+
+            // Create order in DB transaction via OrderService
             $order = $this->orderService->createOrder($request->validated(), $items);
 
-            // Generate WhatsApp URL
-            // Mengambil nomor WA admin dari CMS Setting jika ada
+            // Generate WhatsApp URL from CMS settings
             $adminPhoneSetting = \App\Models\CmsSetting::where('key', 'contact_phone')->first();
             $adminPhone = $adminPhoneSetting ? $adminPhoneSetting->value : '6281234567890';
 
-            // Format phone number jika mulai dari 0 diubah ke 62
-            if (strpos($adminPhone, '0') === 0) {
+            // Sanitize phone number (replace leading 0 with 62)
+            $adminPhone = preg_replace('/[^0-9]/', '', $adminPhone);
+            if (str_starts_with($adminPhone, '0')) {
                 $adminPhone = '62' . substr($adminPhone, 1);
             }
 
-            $businessNameSetting = \App\Models\CmsSetting::where('key', 'business_name')->first();
-            $businessName = $businessNameSetting ? $businessNameSetting->value : 'Snack Box Custom';
+            $businessNameSetting = \App\Models\CmsSetting::where('key', 'company_name')->first();
+            $businessName = $businessNameSetting ? $businessNameSetting->value : 'Padu Kue';
 
             $whatsappUrl = $this->orderService->generateWhatsAppUrl($order, $adminPhone, $businessName);
 

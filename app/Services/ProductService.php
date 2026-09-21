@@ -39,9 +39,10 @@ class ProductService
         if ($imageFile) {
             $product = $this->productRepository->find($productId);
 
-            // Delete old image if exists
-            if ($product->image_url) {
-                Storage::disk('s3')->delete($product->image_url);
+            // Delete old image if exists using the raw storage key
+            $rawImage = $product->getRawOriginal('image_url');
+            if ($rawImage && Storage::disk('s3')->exists($rawImage)) {
+                Storage::disk('s3')->delete($rawImage);
             }
 
             $data['image_url'] = $this->uploadAndCompressImage($imageFile);
@@ -80,9 +81,10 @@ class ProductService
     {
         $product = $this->productRepository->find($productId);
 
-        // Delete image if exists
-        if ($product->image_url) {
-            Storage::disk('s3')->delete($product->image_url);
+        // Delete image if exists using raw storage key
+        $rawImage = $product->getRawOriginal('image_url');
+        if ($rawImage && Storage::disk('s3')->exists($rawImage)) {
+            Storage::disk('s3')->delete($rawImage);
         }
 
         return $this->productRepository->delete($productId);

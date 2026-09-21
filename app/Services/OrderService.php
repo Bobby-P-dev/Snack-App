@@ -6,6 +6,7 @@ use App\Models\CmsSetting;
 use App\Models\Order;
 use App\Repositories\OrderRepository;
 use App\Repositories\ProductRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -23,87 +24,150 @@ class OrderService
     }
 
     /**
-     * Generate unique order number
-     * Format: ORD-YYYYMMDD-XXXXX
+     * Generate secure, unique, non-sequential order number
+     * Format: PK-XXXXXXXX (e.g. PK-7K4MP9QX)
      */
     public function generateOrderNumber(): string
     {
-        $date = Carbon::now()->format('Ymd');
-        $count = Order::whereDate('created_at', Carbon::today())->count() + 1;
-        $number = str_pad($count, 5, '0', STR_PAD_LEFT);
+        $chars = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+        do {
+            $random = '';
+            for ($i = 0; $i < 8; $i++) {
+                $random .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            $orderNumber = "PK-{$random}";
+        } while (Order::where('order_number', $orderNumber)->exists());
 
-        return "ORD-{$date}-{$number}";
+        return $orderNumber;
     }
 
     /**
      * Generate WhatsApp message from order
-     * Format sesuai CLAUDE.md
      */
-    public function generateWhatsAppMessage($order): string
+    public function generateWhatsAppMessage($order, ?string $businessNameOverride = null): string
     {
-        $template = "INVOICE PESANAN tes aja - {company_name}\n"
-            . "No Pesanan: {order_number}\n"
-            . "Nama: {customer_name}\n"
-            . "WhatsApp: {customer_phone}\n"
-            . "Pengambilan: {pickup_date}\n"
-            . "Lokasi: {customer_location}\n"
-            . "Catatan: {notes}\n\n"
-            . "{order_list}\n"
-            . "TOTAL TAGIHAN: Rp {total_amount}\n"
-            . "DP ({dp_percentage}%): Rp {dp_amount}\n"
-            . "Sisa bayar: Rp {remaining_amount} (dibayar saat pengambilan)";
-
-        $pickupDate = is_string($order->pickup_date) ? Carbon::parse($order->pickup_date) : $order->pickup_date;
-        $pickupDate->locale('id'); // Set locale ke bahasa Indonesia
+        $templateSetting = CmsSetting::where('key', 'wa_checkout_template')->first();
+        $template = $templateSetting?->value;
 
         $dpSetting = CmsSetting::where('key', 'dp_percentage')->first();
-        $dpPercentage = $dpSetting ? (int) $dpSetting->value : 70;
-        $dpAmount = ($order->total_amount * $dpPercentage) / 100;
-        $remaining = $order->total_amount - $dpAmount;
+        $defaultDpPercentage = $dpSetting ? (int) $dpSetting->value : 70;
+        $isFull = (($order->payment_type ?? 'dp') === 'full' || (float)$order->dp_amount >= (float)$order->total_amount);
+
+        $dpAmount = (float) $order->dp_amount;
+        $remaining = max(0, (float)$order->total_amount - $dpAmount);
+        $dpPercentage = $isFull ? 100 : $defaultDpPercentage;
+
+        if (empty($template)) {
+            if ($isFull) {
+                $template = "INVOICE PESANAN - {company_name}\n"
+                    . "No Pesanan: {order_number}\n"
+                    . "Nama: {customer_name}\n"
+                    . "WhatsApp: {customer_phone}\n"
+                    . "Pengambilan: {pickup_date}\n"
+                    . "Lokasi: {customer_location}\n"
+                    . "Catatan: {notes}\n\n"
+                    . "{order_list}\n\n"
+                    . "TOTAL TAGIHAN: Rp {total_amount}\n"
+                    . "PEMBAYARAN: Bayar Penuh (100%) - Rp {total_amount}\n"
+                    . "Sisa bayar: Rp 0 (Lunas)\n\n"
+                    . "Download Invoice PDF Anda di sini:\n{invoice_url}\n\n"
+                    . "Pantau status pesanan Anda di sini:\n{tracking_url}";
+            } else {
+                $template = "INVOICE PESANAN - {company_name}\n"
+                    . "No Pesanan: {order_number}\n"
+                    . "Nama: {customer_name}\n"
+                    . "WhatsApp: {customer_phone}\n"
+                    . "Pengambilan: {pickup_date}\n"
+                    . "Lokasi: {customer_location}\n"
+                    . "Catatan: {notes}\n\n"
+                    . "{order_list}\n\n"
+                    . "TOTAL TAGIHAN: Rp {total_amount}\n"
+                    . "DP ({dp_percentage}%): Rp {dp_amount}\n"
+                    . "Sisa bayar: Rp {remaining_amount} (dibayar saat pengambilan)\n\n"
+                    . "Download Invoice PDF Anda di sini:\n{invoice_url}\n\n"
+                    . "Pantau status pesanan Anda di sini:\n{tracking_url}";
+            }
+        } else {
+            // Ensure clean blank line between product list and total tagihan
+            $template = preg_replace('/\{order_list\}\s*\n\s*TOTAL TAGIHAN/i', "{order_list}\n\nTOTAL TAGIHAN", $template);
+
+            if ($isFull) {
+                // If template contains the standard DP lines, automatically adapt to Bayar Penuh
+                $dpPattern = '/DP\s*\(\s*\{dp_percentage\}%\s*\):\s*Rp\s*\{dp_amount\}\s*\n\s*Sisa bayar:\s*Rp\s*\{remaining_amount\}\s*\(dibayar saat pengambilan\)/i';
+                if (preg_match($dpPattern, $template)) {
+                    $template = preg_replace(
+                        $dpPattern,
+                        "PEMBAYARAN: Bayar Penuh (100%) - Rp {total_amount}\nSisa bayar: Rp 0 (Lunas)",
+                        $template
+                    );
+                }
+            }
+        }
+
+        $pickupDate = is_string($order->pickup_date) ? Carbon::parse($order->pickup_date) : $order->pickup_date;
+        $pickupDate->locale('id');
 
         $orderListStr = "";
         $customBoxes = $order->items()->where('type', 'kustom_box')->get();
         $singleItems = $order->items()->where('type', 'satuan')->get();
 
-        if ($customBoxes->isNotEmpty()) {
-            $orderListStr .= "[1] Pesanan Snack Box (Custom)\n";
+        $hasCustomBoxes = $customBoxes->isNotEmpty();
+        $hasSingleItems = $singleItems->isNotEmpty();
+
+        if ($hasCustomBoxes) {
+            $orderListStr .= $hasSingleItems ? "[1] Pesanan Snack Box (Custom)\n" : "Pesanan Snack Box (Custom)\n";
             $groupedBoxes = $customBoxes->groupBy('box_group_id');
             foreach ($groupedBoxes as $groupId => $items) {
-                $itemNames = $items->map(fn($item) => "  - " . $item->product->name)->implode("\n");
-                $quantity = $items->sum('quantity');
-                $pricePerBox = $items->first()->price_at_order;
-                $subtotal = $quantity * $pricePerBox;
+                // Calculate box quantity using greatest common divisor of item quantities
+                $gcd = function ($a, $b) use (&$gcd) {
+                    return $b ? $gcd($b, $a % $b) : $a;
+                };
+                $boxQuantity = $items->pluck('quantity')->reduce(fn($carry, $q) => $carry ? $gcd($carry, (int)$q) : (int)$q, 0);
+                if ($boxQuantity <= 0) {
+                    $boxQuantity = (int) $items->first()->quantity;
+                }
 
-                $orderListStr .= "- Jumlah: {$quantity} Box\n";
+                $subtotal = (float) $items->sum(fn($item) => $item->quantity * $item->price_at_order);
+                $pricePerBox = $boxQuantity > 0 ? (int) round($subtotal / $boxQuantity) : (int) $subtotal;
+
+                $itemNames = $items->map(function ($item) use ($boxQuantity) {
+                    $name = $item->product ? $item->product->name : 'Produk';
+                    $qtyPerBox = $boxQuantity > 0 ? (int) round($item->quantity / $boxQuantity) : 1;
+                    return $qtyPerBox > 1 ? "  - {$qtyPerBox}x {$name}" : "  - {$name}";
+                })->implode("\n");
+
+                $orderListStr .= "- Jumlah: {$boxQuantity} Box\n";
                 $orderListStr .= "- Isi per Box:\n{$itemNames}\n";
                 $orderListStr .= "- Harga per Box: Rp " . number_format($pricePerBox, 0, ',', '.') . "\n";
-                $orderListStr .= "  Subtotal: Rp " . number_format($subtotal, 0, ',', '.') . "\n\n";
+                $orderListStr .= "- Subtotal: Rp " . number_format($subtotal, 0, ',', '.') . "\n\n";
             }
         }
 
-        if ($singleItems->isNotEmpty()) {
-            $orderListStr .= "[2] Pesanan Kue Satuan\n";
+        if ($hasSingleItems) {
+            $orderListStr .= $hasCustomBoxes ? "[2] Pesanan Kue Satuan\n" : "Pesanan Kue Satuan\n";
             foreach ($singleItems as $item) {
                 $quantity = $item->quantity;
-                $itemName = $item->product->name;
+                $itemName = $item->product ? $item->product->name : 'Produk';
                 $price = $item->price_at_order;
                 $subtotal = $quantity * $price;
 
-                $orderListStr .= "- {$quantity}x {$itemName}\n";
-                $orderListStr .= "  Subtotal: Rp " . number_format($subtotal, 0, ',', '.') . "\n";
+                $orderListStr .= "- {$quantity}x {$itemName}: Rp " . number_format($subtotal, 0, ',', '.') . "\n";
             }
             $orderListStr .= "\n";
         }
 
-        $businnesName = CmsSetting::where('key', 'company_name')->first();
-        if (!$businnesName) {
-            $businnesName = 'Padu Kue';
+        if ($businessNameOverride) {
+            $companyName = $businessNameOverride;
         } else {
-            $businnesName = $businnesName->value;
+            $businessName = CmsSetting::where('key', 'company_name')->first();
+            $companyName = $businessName ? $businessName->value : 'Padu Kue';
         }
 
+        $invoiceUrl = route('pdf.invoice', $order->order_number);
+        $trackingUrl = route('tracking.index', ['order_number' => $order->order_number]);
+
         $replacements = [
-            '{company_name}' => $businnesName,
+            '{company_name}' => $companyName,
             '{order_number}' => $order->order_number,
             '{customer_name}' => $order->customer_name,
             '{customer_phone}' => $order->customer_phone,
@@ -115,13 +179,22 @@ class OrderService
             '{dp_percentage}' => $dpPercentage,
             '{dp_amount}' => number_format($dpAmount, 0, ',', '.'),
             '{remaining_amount}' => number_format($remaining, 0, ',', '.'),
+            '{payment_type}' => $isFull ? 'Bayar Full (100%)' : "DP ({$dpPercentage}%)",
+            '{invoice_url}' => $invoiceUrl,
+            '{tracking_url}' => $trackingUrl,
         ];
 
-        // Replace semua keyword {..} dengan data aslinya
         $message = str_replace(array_keys($replacements), array_values($replacements), $template);
 
-        // Lampirkan link download invoice PDF di bagian terbawah
-        $message .= "\n\nDownload Invoice PDF Anda di sini:\n" . route('pdf.invoice', $order->id);
+        // If custom template didn't provide {invoice_url}, append it for safety
+        if (!str_contains($template, '{invoice_url}')) {
+            $message .= "\n\nDownload Invoice PDF Anda di sini:\n" . $invoiceUrl;
+        }
+
+        // If custom template didn't provide {tracking_url}, append it for convenience
+        if (!str_contains($template, '{tracking_url}')) {
+            $message .= "\n\nPantau status pesanan Anda di sini:\n" . $trackingUrl;
+        }
 
         return trim($message);
     }
@@ -129,7 +202,7 @@ class OrderService
     /**
      * Generate WhatsApp URL for checkout
      */
-    public function generateWhatsAppUrl($order, $adminPhone, $businessName = 'Snack Box Custom'): string
+    public function generateWhatsAppUrl($order, $adminPhone, $businessName = 'Padu Kue'): string
     {
         $message = $this->generateWhatsAppMessage($order, $businessName);
         $encodedMessage = urlencode($message);
@@ -138,34 +211,44 @@ class OrderService
     }
 
     /**
-     * Create order with items
+     * Create order with items inside a database transaction
      */
     public function createOrder(array $orderData, array $items): \App\Models\Order
     {
-        // Generate order number
-        $orderData['order_number'] = $this->generateOrderNumber();
+        return DB::transaction(function () use ($orderData, $items) {
+            // Generate secure random order number
+            $orderData['order_number'] = $this->generateOrderNumber();
+            $orderData['status'] = 'pending';
 
-        // Calculate total and DP
-        $total = 0;
-        foreach ($items as $item) {
-            $total += $item['price_at_order'] * $item['quantity'];
-        }
+            // Calculate total and DP
+            $total = 0;
+            foreach ($items as $item) {
+                $total += $item['price_at_order'] * $item['quantity'];
+            }
 
-        $orderData['total_amount'] = $total;
+            $orderData['total_amount'] = $total;
 
-        $dpSetting = \App\Models\CmsSetting::where('key', 'dp_percentage')->first();
-        $dpPercentage = $dpSetting ? (int) $dpSetting->value : 50;
-        $orderData['dp_amount'] = ($total * $dpPercentage) / 100;
+            $paymentType = $orderData['payment_type'] ?? 'dp';
+            if ($paymentType === 'full') {
+                $orderData['payment_type'] = 'full';
+                $orderData['dp_amount'] = $total;
+            } else {
+                $orderData['payment_type'] = 'dp';
+                $dpSetting = CmsSetting::where('key', 'dp_percentage')->first();
+                $dpPercentage = $dpSetting ? (int) $dpSetting->value : 70;
+                $orderData['dp_amount'] = ($total * $dpPercentage) / 100;
+            }
 
-        // Create order
-        $order = $this->orderRepository->create($orderData);
+            // Create order
+            $order = $this->orderRepository->create($orderData);
 
-        // Create order items
-        foreach ($items as $item) {
-            $order->items()->create($item);
-        }
+            // Create order items
+            foreach ($items as $item) {
+                $order->items()->create($item);
+            }
 
-        return $order;
+            return $order;
+        });
     }
 
     /**
@@ -181,7 +264,7 @@ class OrderService
      */
     public function confirmOrder($orderId): \App\Models\Order
     {
-        return $this->updateOrderStatus($orderId, 'confirmed');
+        return $this->updateOrderStatus($orderId, 'diterima');
     }
 
     /**
@@ -189,6 +272,6 @@ class OrderService
      */
     public function completeOrder($orderId): \App\Models\Order
     {
-        return $this->updateOrderStatus($orderId, 'completed');
+        return $this->updateOrderStatus($orderId, 'selesai');
     }
 }

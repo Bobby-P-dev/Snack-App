@@ -13,18 +13,10 @@
       ]"
     >
       <!-- Icon -->
-      <svg v-if="toast.variant === 'success'" class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-      </svg>
-      <svg v-else-if="toast.variant === 'error'" class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-      <svg v-else-if="toast.variant === 'warning'" class="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-      <svg v-else class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+      <CheckCircle2 v-if="toast.variant === 'success'" class="w-5 h-5 text-green-500 flex-shrink-0" />
+      <AlertCircle v-else-if="toast.variant === 'error'" class="w-5 h-5 text-red-500 flex-shrink-0" />
+      <AlertTriangle v-else-if="toast.variant === 'warning'" class="w-5 h-5 text-amber-500 flex-shrink-0" />
+      <Info v-else class="w-5 h-5 text-blue-500 flex-shrink-0" />
 
       <div class="flex-1 min-w-0">
         <p v-if="toast.title" class="text-sm font-bold text-gray-900">{{ toast.title }}</p>
@@ -32,9 +24,7 @@
       </div>
 
       <button @click="remove(toast.id)" class="flex-shrink-0 text-gray-400 hover:text-gray-700 transition p-0.5">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <X class="w-4 h-4" />
       </button>
     </div>
   </TransitionGroup>
@@ -43,6 +33,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-vue-next'
 
 const page = usePage()
 const toasts = ref([])

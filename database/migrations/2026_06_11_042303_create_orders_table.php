@@ -19,7 +19,7 @@ return new class extends Migration
             $table->dateTime('pickup_date');
             $table->decimal('total_amount', 12, 2);
             $table->decimal('dp_amount', 12, 2);
-            $table->enum('status', ['pending', 'confirmed', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'diterima', 'diproses', 'dikemas', 'dikirim', 'selesai', 'batal', 'confirmed', 'completed'])->default('pending');
             $table->timestamps();
         });
     }

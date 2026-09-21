@@ -149,6 +149,41 @@ class SampleDataSeeder extends Seeder
         if (!$supplierUser->hasRole('supplier')) {
             $supplierUser->assignRole('supplier');
         }
+
+        // Create default snack box packages
+        $packages = [
+            [
+                'name' => 'Snack Box 3 Kue',
+                'slug' => 'snack-box-3-kue',
+                'capacity' => 3,
+                'box_price' => 2500,
+                'description' => 'Paket hemat untuk acara santai, arisan, atau snack rapat singkat.',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Snack Box 4 Kue',
+                'slug' => 'snack-box-4-kue',
+                'capacity' => 4,
+                'box_price' => 2500,
+                'description' => 'Paling populer! Kombinasi pas 2 kue manis, 1 asin gurih, dan 1 puding/roti.',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Snack Box 5 Kue',
+                'slug' => 'snack-box-5-kue',
+                'capacity' => 5,
+                'box_price' => 3000,
+                'description' => 'Paket komplit premium untuk acara resmi, pernikahan, atau seminar besar.',
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($packages as $packageData) {
+            \App\Models\SnackBoxPackage::firstOrCreate(
+                ['slug' => $packageData['slug']],
+                $packageData
+            );
+        }
     }
 }
 

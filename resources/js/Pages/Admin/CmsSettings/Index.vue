@@ -7,8 +7,8 @@
           <h2 class="text-2xl font-bold text-gray-800">Web Settings</h2>
           <p class="text-gray-600 text-sm mt-1">Kelola konten teks dan pengaturan website</p>
         </div>
-        <button @click="showCreateModal = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+        <button @click="showCreateModal = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+          <Plus class="w-4 h-4" />
           Tambah Setting Baru
         </button>
       </div>
@@ -81,9 +81,31 @@
 
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Value <span class="text-red-500">*</span></label>
-                  <textarea v-if="['textarea', 'json'].includes(form.type)" v-model="form.value" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-mono text-sm" required></textarea>
+                  <textarea v-if="['textarea', 'json'].includes(form.type)" v-model="form.value" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 font-mono text-sm" required></textarea>
                   <input v-else v-model="form.value" :type="form.type === 'email' ? 'email' : (form.type === 'url' ? 'url' : 'text')" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
                   <p v-if="form.errors.value" class="text-red-500 text-xs mt-1">{{ form.errors.value }}</p>
+
+                  <!-- Dynamic WhatsApp Variables Helper -->
+                  <div v-if="getAvailableTags(form.key).length > 0" class="mt-2.5 p-3 bg-amber-50/70 rounded-xl border border-amber-200/80">
+                    <p class="text-xs font-bold text-amber-900 mb-1.5 flex items-center gap-1.5">
+                      <span>💡 Variabel Dinamis (Klik untuk menyisipkan ke teks):</span>
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                      <button
+                        v-for="item in getAvailableTags(form.key)"
+                        :key="item.tag"
+                        type="button"
+                        @click="insertTag(item.tag)"
+                        class="px-2 py-1 bg-white hover:bg-amber-100 text-amber-900 border border-amber-200 rounded text-xs font-mono transition-colors shadow-2xs cursor-pointer"
+                        :title="item.desc"
+                      >
+                        {{ item.tag }}
+                      </button>
+                    </div>
+                    <p class="text-[11px] text-amber-800/80 mt-2 leading-relaxed">
+                      Sistem akan secara otomatis mengganti variabel di atas dengan data riil saat pesan digenerate.
+                    </p>
+                  </div>
                 </div>
 
                 <div>
@@ -113,6 +135,7 @@
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Plus } from 'lucide-vue-next';
 
 const props = defineProps({
     settings: {
@@ -131,20 +154,57 @@ const form = useForm({
     description: ''
 });
 
+const getAvailableTags = (key) => {
+    if (!key) return [];
+    if (key === 'wa_checkout_template') {
+        return [
+            { tag: '{company_name}', desc: 'Nama brand / toko' },
+            { tag: '{order_number}', desc: 'No pesanan unik (PK-XXXXXXXX)' },
+            { tag: '{customer_name}', desc: 'Nama customer' },
+            { tag: '{customer_phone}', desc: 'No WhatsApp customer' },
+            { tag: '{pickup_date}', desc: 'Jadwal pengambilan' },
+            { tag: '{customer_location}', desc: 'Lokasi customer' },
+            { tag: '{notes}', desc: 'Catatan tambahan' },
+            { tag: '{order_list}', desc: 'Rincian produk & custom box' },
+            { tag: '{total_amount}', desc: 'Total tagihan (Rp)' },
+            { tag: '{dp_percentage}', desc: 'Persentase DP (%)' },
+            { tag: '{dp_amount}', desc: 'Nominal DP (Rp)' },
+            { tag: '{remaining_amount}', desc: 'Sisa pelunasan (Rp)' },
+            { tag: '{tracking_url}', desc: 'Link langsung tracking status pesanan' },
+            { tag: '{invoice_url}', desc: 'Link resmi unduh PDF invoice' },
+        ];
+    }
+    if (key === 'wa_tracking_help_message') {
+        return [
+            { tag: '{company_name}', desc: 'Nama brand / toko' },
+            { tag: '{order_number}', desc: 'No pesanan (PK-XXXXXXXX)' },
+        ];
+    }
+    if (key === 'wa_consultation_message' || key === 'wa_tracking_not_found_message') {
+        return [
+            { tag: '{company_name}', desc: 'Nama brand / toko' },
+        ];
+    }
+    return [];
+};
+
+const insertTag = (tag) => {
+    if (!form.value) {
+        form.value = tag;
+    } else {
+        form.value += ' ' + tag;
+    }
+};
+
 const editSetting = (setting) => {
     editingSetting.value = setting;
-
-    // Map textarea back to valid enum types if needed (backend doesn't accept textarea)
-    let safeType = setting.type;
-    if (setting.type === 'textarea') safeType = 'text';
-
     form.key = setting.key;
     form.value = setting.value;
-    form.type = safeType;
+    form.type = setting.type || 'text';
     form.description = setting.description;
 
     // UI mapping for large text
-    if (setting.type === 'text' && setting.value.length > 100) {
+    if (setting.type === 'text' && setting.value && setting.value.length > 100) {
         form.type = 'textarea';
     }
 };
@@ -157,16 +217,12 @@ const closeModal = () => {
 };
 
 const submitForm = () => {
-    // Map textarea to text before submitting to backend
-    const submitData = { ...form };
-    if (submitData.type === 'textarea' || submitData.type === 'url') submitData.type = 'text';
-
     if (editingSetting.value) {
-        form.transform(() => submitData).put(route('admin.cms.settings.update', editingSetting.value.id), {
+        form.put(route('admin.cms.settings.update', editingSetting.value.id), {
             onSuccess: () => closeModal(),
         });
     } else {
-        form.transform(() => submitData).post(route('admin.cms.settings.store'), {
+        form.post(route('admin.cms.settings.store'), {
             onSuccess: () => closeModal(),
         });
     }

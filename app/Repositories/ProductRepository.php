@@ -26,7 +26,7 @@ class ProductRepository implements RepositoryInterface
      */
     public function find($id)
     {
-        return $this->model::with(['supplier', 'category', 'orderItems'])
+        return $this->model::with(['supplier', 'category'])
             ->findOrFail($id);
     }
 

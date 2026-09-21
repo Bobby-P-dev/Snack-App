@@ -25,11 +25,13 @@ class StoreOrderRequest extends FormRequest
             'customer_phone' => ['required', 'string', 'regex:/^(\+62|0)[0-9]{9,12}$/'],
             'pickup_date' => ['required', 'date', 'after:today'],
             'location' => ['required', 'string', 'max:1000'],
+            'notes' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.type' => ['required', 'in:kustom_box,satuan'],
             'items.*.box_group_id' => ['nullable', 'integer'],
+            'payment_type' => ['nullable', 'string', 'in:dp,full'],
         ];
     }
 

@@ -20,5 +20,8 @@ class DatabaseSeeder extends Seeder
 
         // Then seed sample data
         $this->call(SampleDataSeeder::class);
+
+        // Seed CMS settings, carousels, and social media
+        $this->call(CmsSeeder::class);
     }
 }

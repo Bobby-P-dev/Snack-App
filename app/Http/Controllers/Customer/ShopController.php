@@ -61,6 +61,7 @@ class ShopController extends Controller
     {
         $search = $request->get('search', '');
         $categoryId = $request->get('category_id', '');
+        $sort = $request->get('sort', 'latest');
         $page = $request->get('page', 1);
         $perPage = 8;
 
@@ -78,7 +79,20 @@ class ShopController extends Controller
             });
         }
 
-        $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('sell_price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('sell_price', 'desc');
+                break;
+            case 'latest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $products = $query->paginate($perPage);
         $categories = $this->categoryRepository->all();
 
         return Inertia::render('Customer/Shop/Index', [
@@ -93,6 +107,7 @@ class ShopController extends Controller
             'filters' => [
                 'search' => $search,
                 'category_id' => $categoryId,
+                'sort' => $sort,
             ],
             'title' => 'Shop',
         ]);
@@ -126,7 +141,7 @@ class ShopController extends Controller
             ->take(4);
 
         return Inertia::render('Customer/Shop/Show', [
-            'product' => new ProductResource($product),
+            'product' => (new ProductResource($product))->resolve(request()),
             'relatedProducts' => ProductResource::collection($relatedProducts)->resolve(request()),
             'title' => $product->name,
         ]);

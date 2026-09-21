@@ -4,9 +4,7 @@
             <!-- Breadcrumb -->
             <nav class="flex items-center text-sm text-gray-500 mb-6 space-x-2">
                 <Link href="/" class="hover:text-brand-600 flex items-center transition font-medium">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
+                    <ArrowLeft class="w-4 h-4 mr-1.5" />
                     Beranda
                 </Link>
                 <span class="text-gray-400">&rsaquo;</span>
@@ -21,7 +19,7 @@
                 <p class="text-brown-600 text-base md:text-lg max-w-3xl">
                     {{ activeType === 'box' 
                         ? 'Pilihan snack box premium untuk berbagai acara Anda.' 
-                        : 'Pilih kue satuan favorit Anda dari berbagai supplier terbaik.' }}
+                        : 'Pilih aneka kue dan jajanan pasar favorit dengan cita rasa lezat berkualitas.' }}
                 </p>
             </div>
 
@@ -54,7 +52,7 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Leaf, PackageOpen, ShieldCheck, Truck } from 'lucide-vue-next';
+import { Leaf, PackageOpen, ShieldCheck, Truck, ArrowLeft } from 'lucide-vue-next';
 
 defineProps({
     activeType: {

@@ -20,7 +20,7 @@
                             :class="[
                                 'px-4 py-2 rounded-full font-medium whitespace-nowrap transition',
                                 filterStatus === null
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-brand-500 text-white'
                                     : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
                             ]"
                         >
@@ -42,7 +42,7 @@
                             :class="[
                                 'px-4 py-2 rounded-full font-medium whitespace-nowrap transition',
                                 filterStatus === 'confirmed'
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-brand-500 text-white'
                                     : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'
                             ]"
                         >
@@ -92,7 +92,7 @@
                                             :class="[
                                                 'inline-block px-3 py-1 rounded-full text-xs md:text-sm font-semibold',
                                                 order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '',
-                                                order.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : '',
+                                                order.status === 'confirmed' ? 'bg-amber-100 text-amber-800' : '',
                                                 order.status === 'completed' ? 'bg-green-100 text-green-800' : ''
                                             ]"
                                         >
@@ -104,7 +104,7 @@
                                 <!-- Total Amount -->
                                 <div>
                                     <p class="text-xs text-gray-500 uppercase tracking-wide">Total</p>
-                                    <p class="font-bold text-blue-600 text-sm md:text-lg mt-1">Rp {{ formatNumber(order.total_amount) }}</p>
+                                    <p class="font-bold text-brand-600 text-sm md:text-lg mt-1">Rp {{ formatNumber(order.total_amount) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -127,13 +127,13 @@
                                 <!-- DP Amount -->
                                 <div>
                                     <p class="text-xs text-gray-500 mb-1">DP (50%)</p>
-                                    <p class="font-medium text-orange-600 text-sm md:text-base">Rp {{ formatNumber(order.dp_amount) }}</p>
+                                    <p class="font-medium text-amber-600 text-sm md:text-base">Rp {{ formatNumber(order.dp_amount) }}</p>
                                 </div>
 
                                 <!-- Remaining Amount -->
                                 <div>
                                     <p class="text-xs text-gray-500 mb-1">Sisa Pembayaran</p>
-                                    <p class="font-medium text-blue-600 text-sm md:text-base">Rp {{ formatNumber(order.total_amount - order.dp_amount) }}</p>
+                                    <p class="font-medium text-brand-600 text-sm md:text-base">Rp {{ formatNumber(order.total_amount - order.dp_amount) }}</p>
                                 </div>
                             </div>
 
@@ -160,25 +160,18 @@
                             <div class="flex flex-col sm:flex-row gap-2 mt-4">
                                 <button
                                     @click="copyOrderNumber(order.order_number)"
-                                    class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium text-xs md:text-sm transition"
+                                    class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium text-xs md:text-sm transition inline-flex items-center justify-center gap-1.5 cursor-pointer"
                                 >
-                                    📋 Salin No. Pesanan
+                                    <Copy class="w-4 h-4 text-gray-600" />
+                                    <span>Salin No. Pesanan</span>
                                 </button>
 
                                 <a
-                                    v-if="order.status === 'pending'"
-                                    :href="`/order/${order.order_number}/status`"
-                                    class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-sm transition text-center"
+                                    :href="`/tracking?order_number=${order.order_number}`"
+                                    class="flex-1 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium text-xs md:text-sm transition text-center inline-flex items-center justify-center gap-1.5"
                                 >
-                                    ✓ Lihat Detail
-                                </a>
-
-                                <a
-                                    v-else
-                                    :href="`/orders/${order.id}`"
-                                    class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-sm transition text-center"
-                                >
-                                    → Lihat Detail
+                                    <Truck class="w-4 h-4" />
+                                    <span>Lacak Pesanan</span>
                                 </a>
                             </div>
                         </div>
@@ -188,14 +181,12 @@
                 <!-- Empty State -->
                 <div v-else class="text-center py-12 md:py-16">
                     <div class="bg-white rounded-xl shadow-sm p-8 md:p-12 max-w-md mx-auto">
-                        <svg class="w-20 h-20 md:w-24 md:h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                        <ShoppingBag class="w-20 h-20 md:w-24 md:h-24 mx-auto text-gray-300 mb-6" />
                         <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-3">Belum Ada Pesanan</h3>
                         <p class="text-gray-500 mb-6 text-sm md:text-base">Anda belum membuat pesanan apapun. Mulai belanja sekarang!</p>
                         <Link
                             href="/shop"
-                            class="inline-block px-6 md:px-8 py-2 md:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm md:text-base"
+                            class="inline-block px-6 md:px-8 py-2 md:py-3 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition font-semibold text-sm md:text-base"
                         >
                             Mulai Belanja
                         </Link>
@@ -209,6 +200,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { Copy, Truck, ShoppingBag } from 'lucide-vue-next';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 
 const props = defineProps({

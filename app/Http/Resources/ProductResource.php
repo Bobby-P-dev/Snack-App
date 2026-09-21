@@ -22,19 +22,19 @@ class ProductResource extends JsonResource
             'image_url' => $this->image_url,
             'is_active' => $this->is_active,
             'category' => [
-                'id' => $this->category->id,
-                'name' => $this->category->name,
-                'slug' => $this->category->slug,
-            ],
-            'supplier' => [
-                'id' => $this->supplier->id,
-                'name' => $this->supplier->name,
+                'id' => $this->category ? $this->category->id : null,
+                'name' => $this->category ? $this->category->name : '',
+                'slug' => $this->category ? $this->category->slug : '',
             ],
         ];
 
-        // Show base_price for admin users
-        if ($request->user()) {
+        // Show sensitive supplier data and base_price only for authenticated admin users
+        if ($request->user() || auth()->check()) {
             $data['base_price'] = $this->base_price;
+            $data['supplier'] = [
+                'id' => $this->supplier ? $this->supplier->id : null,
+                'name' => $this->supplier ? $this->supplier->name : '',
+            ];
         }
 
         return $data;

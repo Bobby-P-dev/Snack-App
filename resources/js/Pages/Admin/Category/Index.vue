@@ -8,7 +8,7 @@
           <p class="text-gray-500 text-sm mt-1">Manage product categories</p>
         </div>
         <button @click="openCreateModal" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition font-medium text-sm shadow-lg shadow-blue-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <Plus class="w-4 h-4" />
           Tambah Kategori
         </button>
       </div>
@@ -16,7 +16,7 @@
       <!-- Search -->
       <div class="mb-6">
         <div class="relative max-w-md">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input v-model="searchQuery" @input="search" type="text" placeholder="Cari kategori..." class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
         </div>
       </div>
@@ -44,18 +44,18 @@
                 <td class="px-6 py-4 text-sm text-gray-500">{{ formatDate(category.created_at) }}</td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-1.5">
-                    <button @click="openEditModal(category)" class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-all text-xs font-medium" title="Edit">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <button @click="openEditModal(category)" class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-all text-xs font-medium" title="Edit" aria-label="Edit kategori">
+                      <Pencil class="w-4 h-4" />
                     </button>
-                    <button @click="confirmDelete(category)" class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all text-xs font-medium" title="Delete">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <button @click="confirmDelete(category)" class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all text-xs font-medium" title="Delete" aria-label="Hapus kategori">
+                      <Trash2 class="w-4 h-4" />
                     </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="!categories || categories.length === 0">
                 <td colspan="5" class="px-6 py-16 text-center text-gray-400">
-                  <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                  <Tags class="w-12 h-12 mx-auto mb-3 text-gray-300" />
                   <p class="text-gray-500 font-medium">Belum ada kategori</p>
                   <p class="text-sm mt-1">Klik "Tambah Kategori" untuk membuat baru.</p>
                 </td>
@@ -69,8 +69,14 @@
       <div v-if="pagination && pagination.last_page > 1" class="flex items-center justify-between mt-6">
         <p class="text-sm text-gray-500">Page {{ pagination.current_page }} of {{ pagination.last_page }} ({{ pagination.total }} items)</p>
         <div class="flex gap-2">
-          <button :disabled="pagination.current_page <= 1" @click="goToPage(pagination.current_page - 1)" class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-50 transition">← Prev</button>
-          <button :disabled="pagination.current_page >= pagination.last_page" @click="goToPage(pagination.current_page + 1)" class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-50 transition">Next →</button>
+          <button :disabled="pagination.current_page <= 1" @click="goToPage(pagination.current_page - 1)" class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-50 transition flex items-center gap-1">
+            <ChevronLeft class="w-4 h-4" />
+            Prev
+          </button>
+          <button :disabled="pagination.current_page >= pagination.last_page" @click="goToPage(pagination.current_page + 1)" class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-50 transition flex items-center gap-1">
+            Next
+            <ChevronRight class="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>
@@ -107,7 +113,7 @@
       <div class="fixed inset-0 bg-black/50" @click="showDeleteModal = false"></div>
       <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 z-10 text-center">
         <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          <AlertTriangle class="w-6 h-6 text-red-600" />
         </div>
         <h3 class="text-lg font-bold text-gray-900 mb-2">Hapus Kategori</h3>
         <p class="text-sm text-gray-500 mb-6">Apakah Anda yakin ingin menghapus <strong>{{ deletingCategory?.name }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
@@ -125,6 +131,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
+import { Plus, Search, Pencil, Trash2, Tags, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-vue-next'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const props = defineProps({

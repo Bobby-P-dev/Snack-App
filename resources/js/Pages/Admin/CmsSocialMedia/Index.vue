@@ -7,8 +7,8 @@
           <h2 class="text-2xl font-bold text-gray-800">Social Media</h2>
           <p class="text-gray-600 text-sm mt-1">Kelola tautan sosial media di footer</p>
         </div>
-        <button @click="showCreateModal = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+        <button @click="showCreateModal = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+          <Plus class="w-4 h-4" />
           Tambah Sosial Media
         </button>
       </div>
@@ -41,7 +41,7 @@
                 <td class="px-6 py-4">
                   <a :href="social.url" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1">
                     {{ social.url }}
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    <ExternalLink class="w-3.5 h-3.5" />
                   </a>
                 </td>
                 <td class="px-6 py-4 text-center">
@@ -132,6 +132,7 @@
 import { ref } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Plus, ExternalLink } from 'lucide-vue-next';
 
 const props = defineProps({
     socials: {

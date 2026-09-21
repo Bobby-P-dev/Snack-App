@@ -35,6 +35,27 @@ class HandleInertiaRequests extends Middleware
         $cart = session()->get('cart', []);
         $cartCount = count($cart);
 
+        $enrichedCart = [];
+        if (!empty($cart)) {
+            $productIds = collect($cart)->pluck('product_id')->unique()->filter()->values()->all();
+            $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            foreach ($cart as $item) {
+                $product = $products->get($item['product_id']);
+                if ($product) {
+                    $enrichedCart[] = [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'price' => (int) $product->sell_price,
+                        'image' => $product->image_url,
+                        'qty' => (int) $item['quantity'],
+                        'type' => $item['type'] ?? 'satuan',
+                        'box_group_id' => $item['box_group_id'] ?? null,
+                    ];
+                }
+            }
+        }
+
         // Get CMS Data
         $cmsService = app(CmsService::class);
         $cmsSettings = $cmsService->getAllSettings();
@@ -51,6 +72,7 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn () => $request->session()->get('info'),
                 'warning' => fn () => $request->session()->get('warning'),
             ],
+            'cart' => $enrichedCart,
             'cartCount' => $cartCount,
             'cms' => [
                 'settings' => $cmsSettings,

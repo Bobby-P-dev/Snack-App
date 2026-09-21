@@ -21,12 +21,20 @@ Route::prefix('shop')->group(function () {
     Route::get('/{id}', [ShopController::class, 'show'])->name('customer.shop.show');
 });
 
+// Custom Snack Box routes
+Route::prefix('snack-box')->name('snackbox.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Customer\SnackBoxController::class, 'index'])->name('index');
+    Route::get('/{package:slug}', [\App\Http\Controllers\Customer\SnackBoxController::class, 'builder'])->name('builder');
+    Route::post('/add-to-cart', [\App\Http\Controllers\Customer\SnackBoxController::class, 'addBoxToCart'])->name('addToCart');
+});
+
 // Tracking route
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
 
 // Cart routes (public, no auth required for initial add)
 Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/items', [CartController::class, 'getItems'])->name('cart.items');
     Route::post('/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
@@ -42,7 +50,7 @@ Route::prefix('checkout')->group(function () {
 });
 
 Route::prefix('pdf')->name('pdf.')->group(function () {
-    Route::get('/invoice/{order}', [App\Http\Controllers\Pdf\InvoicePdfController::class, 'index'])->name('invoice');
+    Route::get('/invoice/{order:order_number}', [App\Http\Controllers\Pdf\InvoicePdfController::class, 'index'])->name('invoice');
 });
 
 // Auth required customer routes

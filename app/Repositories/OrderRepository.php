@@ -57,19 +57,19 @@ class OrderRepository implements RepositoryInterface
     }
 
     /**
-     * Get confirmed orders
+     * Get confirmed / diterima orders
      */
     public function getConfirmed()
     {
-        return $this->getByStatus('confirmed');
+        return $this->getByStatus('diterima');
     }
 
     /**
-     * Get completed orders
+     * Get completed / selesai orders
      */
     public function getCompleted()
     {
-        return $this->getByStatus('completed');
+        return $this->getByStatus('selesai');
     }
 
     /**

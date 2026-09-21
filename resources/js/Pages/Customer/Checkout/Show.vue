@@ -16,10 +16,10 @@
                     <div class="lg:col-span-2">
                         <form @submit.prevent="submitOrder" class="space-y-6">
                             <!-- Personal Info Card -->
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 md:px-6 py-4 border-b border-gray-200">
-                                    <h2 class="font-bold text-gray-900 text-lg flex items-center">
-                                        <span class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm mr-3">1</span>
+                            <div class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-50 to-cream-100 px-4 md:px-6 py-4 border-b border-cream-200/80">
+                                    <h2 class="font-bold text-brown-900 text-base md:text-lg flex items-center">
+                                        <span class="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 shadow-2xs">1</span>
                                         Informasi Pemesan
                                     </h2>
                                 </div>
@@ -27,12 +27,12 @@
                                 <div class="px-4 md:px-6 py-6 space-y-4">
                                     <!-- Name -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">Nama Lengkap</label>
                                         <input
                                             v-model="form.customer_name"
                                             type="text"
                                             required
-                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('customer_name') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
+                                            :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30', fieldError('customer_name') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
                                             placeholder="Masukkan nama Anda"
                                         />
                                         <p v-if="fieldError('customer_name')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('customer_name') }}</p>
@@ -40,53 +40,55 @@
 
                                     <!-- Phone -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nomor WhatsApp</label>
+                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">Nomor WhatsApp</label>
                                         <input
                                             v-model="form.customer_phone"
                                             type="tel"
+                                            inputmode="tel"
+                                            autocomplete="tel"
                                             required
-                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('customer_phone') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
+                                            :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30', fieldError('customer_phone') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
                                             placeholder="Contoh: 08123456789"
                                         />
                                         <p v-if="fieldError('customer_phone')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('customer_phone') }}</p>
-                                        <p class="text-gray-500 text-xs md:text-sm mt-1">💬 Kami akan menghubungi Anda via WhatsApp</p>
+                                        <p class="text-brown-500 text-xs mt-1.5">💬 Konfirmasi pesanan & invoice akan dikirim ke nomor ini</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Pickup Info Card -->
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 md:px-6 py-4 border-b border-gray-200">
-                                    <h2 class="font-bold text-gray-900 text-lg flex items-center">
-                                        <span class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm mr-3">2</span>
+                            <div class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-50 to-cream-100 px-4 md:px-6 py-4 border-b border-cream-200/80">
+                                    <h2 class="font-bold text-brown-900 text-base md:text-lg flex items-center">
+                                        <span class="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 shadow-2xs">2</span>
                                         Pengambilan / Pengiriman
                                     </h2>
                                 </div>
 
                                 <div class="px-4 md:px-6 py-6 space-y-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal & Jam</label>
+                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">Pilih Tanggal & Jam</label>
                                         <input
                                             v-model="form.pickup_date"
                                             type="datetime-local"
                                             required
-                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('pickup_date') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
+                                            :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30', fieldError('pickup_date') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
                                         />
                                         <p v-if="fieldError('pickup_date')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('pickup_date') }}</p>
-                                        <p class="text-gray-500 text-xs md:text-sm mt-2">
-                                            ⏰ Pilih tanggal minimal besok, jam kerja kami 09:00 - 18:00
+                                        <p class="text-brown-500 text-xs mt-1.5">
+                                            ⏰ Pesanan disiapkan segar dari dapur sesuai jadwal yang Anda tentukan
                                         </p>
                                     </div>
                                     
                                     <!-- Location -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi / Alamat Pengiriman</label>
+                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">Lokasi / Alamat Pengiriman</label>
                                         <textarea
                                             v-model="form.location"
                                             required
                                             rows="3"
-                                            :class="['w-full px-4 py-2 md:py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm md:text-base', fieldError('location') ? 'border-red-400 bg-red-50' : 'border-gray-300']"
-                                            placeholder="Masukkan alamat lengkap pengiriman atau lokasi pengambilan"
+                                            :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30 resize-none', fieldError('location') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
+                                            placeholder="Masukkan alamat lengkap pengiriman atau lokasi acara Anda"
                                         ></textarea>
                                         <p v-if="fieldError('location')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('location') }}</p>
                                     </div>
@@ -94,40 +96,40 @@
                             </div>
 
                             <!-- Order Items Card -->
-                            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 md:px-6 py-4 border-b border-gray-200">
-                                    <h2 class="font-bold text-gray-900 text-lg flex items-center">
-                                        <span class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm mr-3">3</span>
-                                        Ringkasan Pesanan ({{ cart.length }} Produk)
+                            <div class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-50 to-cream-100 px-4 md:px-6 py-4 border-b border-cream-200/80">
+                                    <h2 class="font-bold text-brown-900 text-base md:text-lg flex items-center">
+                                        <span class="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 shadow-2xs">3</span>
+                                        Rincian Pesanan ({{ cart.length }} Produk)
                                     </h2>
                                 </div>
 
-                                <div class="px-4 md:px-6 py-4 divide-y divide-gray-200 max-h-64 overflow-y-auto">
+                                <div class="px-4 md:px-6 py-4 divide-y divide-cream-100 max-h-64 overflow-y-auto">
                                     <div
                                         v-for="item in cart"
                                         :key="item.product_id"
-                                        class="py-3 flex justify-between items-center text-sm md:text-base"
+                                        class="py-3 flex justify-between items-center text-xs sm:text-sm"
                                     >
                                         <div>
-                                            <p class="font-medium text-gray-900">{{ item.product.name }}</p>
-                                            <p class="text-gray-500 text-xs md:text-sm">{{ item.quantity }}x @ Rp {{ formatNumber(item.product.sell_price) }}</p>
+                                            <p class="font-bold text-brown-900">{{ item.product.name }}</p>
+                                            <p class="text-brown-500 text-xs">{{ item.quantity }}x @ Rp {{ formatNumber(item.product.sell_price) }}</p>
                                         </div>
-                                        <p class="font-semibold text-blue-600">Rp {{ formatNumber(item.quantity * item.product.sell_price) }}</p>
+                                        <p class="font-bold text-brand-600 font-mono">Rp {{ formatNumber(item.quantity * item.product.sell_price) }}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Terms & Conditions -->
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 md:p-6">
+                            <div class="bg-cream-50 border border-cream-200 rounded-2xl p-4 md:p-6">
                                 <label class="flex items-start space-x-3 cursor-pointer">
                                     <input
                                         v-model="form.terms_agreed"
                                         type="checkbox"
                                         required
-                                        class="mt-1 w-4 h-4 accent-blue-600 rounded"
+                                        class="mt-1 w-4 h-4 accent-brand-600 rounded cursor-pointer"
                                     />
-                                    <span class="text-xs md:text-sm text-gray-700">
-                                        Saya setuju untuk membayar DP 50% via WhatsApp dan saldo akhir saat pengambilan. Pesanan tidak dapat dibatalkan setelah dikonfirmasi.
+                                    <span class="text-xs sm:text-sm text-brown-700 leading-relaxed">
+                                        Saya setuju untuk membayar DP sesuai instruksi WhatsApp dan saldo akhir saat pengambilan/pengiriman.
                                     </span>
                                 </label>
                             </div>
@@ -136,81 +138,153 @@
                             <button
                                 type="submit"
                                 :disabled="loading"
-                                class="w-full bg-blue-600 text-white py-3 md:py-4 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition font-semibold text-base md:text-lg"
+                                class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white py-4 px-6 rounded-2xl font-bold text-base md:text-lg shadow-lg shadow-emerald-600/20 disabled:bg-gray-400 transition flex items-center justify-center gap-2 cursor-pointer"
                             >
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
+                                </svg>
                                 <span v-if="!loading">Lanjutkan ke WhatsApp</span>
-                                <span v-else>Memproses...</span>
+                                <span v-else>Memproses Pesanan...</span>
                             </button>
 
                             <!-- Back to Cart -->
                             <Link
                                 href="/cart"
-                                class="block text-center text-blue-600 hover:text-blue-700 font-medium text-sm md:text-base"
+                                class="inline-flex items-center justify-center gap-1.5 w-full text-center text-brown-600 hover:text-brand-600 font-semibold text-sm transition"
                             >
-                                ← Kembali ke Keranjang
+                                <ArrowLeft class="w-4 h-4" />
+                                Kembali ke Keranjang
                             </Link>
                         </form>
                     </div>
 
                     <!-- Summary Card -->
                     <div class="lg:col-span-1">
-                        <div class="bg-white rounded-xl shadow-sm overflow-hidden sticky top-24">
+                        <div class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden sticky top-24">
                             <!-- Header -->
-                            <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 md:px-6 py-4 border-b border-gray-200">
-                                <h2 class="font-bold text-gray-900 text-lg">Total Pembayaran</h2>
+                            <div class="bg-gradient-to-r from-brand-50 to-cream-100 px-4 md:px-6 py-4 border-b border-cream-200/80">
+                                <h2 class="font-bold text-brown-900 text-base md:text-lg">Total Pembayaran</h2>
                             </div>
 
                             <!-- Summary Content -->
                             <div class="px-4 md:px-6 py-6 space-y-4">
                                 <!-- Breakdown -->
-                                <div class="space-y-3 pb-4 border-b border-gray-200">
+                                <div class="space-y-3 pb-4 border-b border-cream-100">
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Subtotal</span>
-                                        <span class="font-semibold">Rp {{ formatNumber(subtotal) }}</span>
+                                        <span class="text-brown-600">Subtotal</span>
+                                        <span class="font-bold text-brown-900 font-mono">Rp {{ formatNumber(subtotal) }}</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Pajak (10%)</span>
-                                        <span class="font-semibold">Rp {{ formatNumber(tax) }}</span>
+                                        <span class="text-brown-600">Pajak / Biaya</span>
+                                        <span class="font-bold text-emerald-600 font-mono">Gratis</span>
                                     </div>
                                 </div>
 
                                 <!-- Total -->
                                 <div>
-                                    <p class="text-gray-600 text-sm mb-2">Total Pembayaran</p>
-                                    <p class="text-3xl md:text-4xl font-bold text-blue-600">
+                                    <p class="text-brown-600 text-xs mb-1">Total Tagihan</p>
+                                    <p class="text-2xl md:text-3xl font-black text-brand-600 font-mono">
                                         Rp {{ formatNumber(total) }}
                                     </p>
                                 </div>
 
-                                <!-- DP Info -->
-                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                    <p class="text-sm font-semibold text-orange-900 mb-2">Pembayaran DP</p>
-                                    <p class="text-2xl md:text-3xl font-bold text-orange-600 mb-3">
-                                        Rp {{ formatNumber(dp) }}
+                                <!-- Opsi Pembayaran (DP vs Full) -->
+                                <div class="border-t border-cream-200 pt-4 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-xs font-bold text-brown-800 uppercase tracking-wider">Opsi Pembayaran</label>
+                                        <span class="text-[11px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">
+                                            {{ paymentType === 'full' ? 'Bayar Penuh (100%)' : `DP (${dpPercentage}%)` }}
+                                        </span>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-2.5">
+                                        <!-- Opsi DP 70% -->
+                                        <button
+                                            type="button"
+                                            @click="setPaymentOption('dp')"
+                                            :class="[
+                                                'p-3 rounded-2xl border text-left transition-all cursor-pointer relative',
+                                                paymentType === 'dp'
+                                                    ? 'border-brand-500 bg-brand-50/70 shadow-xs ring-2 ring-brand-500/15'
+                                                    : 'border-cream-200 bg-white hover:bg-cream-50/50 text-brown-700'
+                                            ]"
+                                        >
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs font-bold text-brown-900">DP {{ dpPercentage }}%</span>
+                                                <span v-if="paymentType === 'dp'" class="w-4 h-4 rounded-full bg-brand-500 text-white flex items-center justify-center">
+                                                    <Check class="w-2.5 h-2.5" />
+                                                </span>
+                                            </div>
+                                            <p class="text-xs font-black text-brand-600 font-mono">Rp {{ formatNumber(dp) }}</p>
+                                            <p class="text-[10px] text-brown-500 mt-1 leading-tight">Sisa saat ambil</p>
+                                        </button>
+
+                                        <!-- Opsi Bayar Full (100%) -->
+                                        <button
+                                            type="button"
+                                            @click="setPaymentOption('full')"
+                                            :class="[
+                                                'p-3 rounded-2xl border text-left transition-all cursor-pointer relative',
+                                                paymentType === 'full'
+                                                    ? 'border-emerald-500 bg-emerald-50/70 shadow-xs ring-2 ring-emerald-500/15'
+                                                    : 'border-cream-200 bg-white hover:bg-cream-50/50 text-brown-700'
+                                            ]"
+                                        >
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs font-bold text-brown-900">Bayar Full</span>
+                                                <span v-if="paymentType === 'full'" class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                                                    <Check class="w-2.5 h-2.5" />
+                                                </span>
+                                            </div>
+                                            <p class="text-xs font-black text-emerald-600 font-mono">Rp {{ formatNumber(total) }}</p>
+                                            <p class="text-[10px] text-emerald-600 font-medium mt-1 leading-tight">Lunas langsung (100%)</p>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Breakdown Details -->
+                                <div 
+                                    v-if="paymentType === 'dp'"
+                                    class="bg-amber-50/80 border border-amber-200 rounded-xl p-4 space-y-1.5"
+                                >
+                                    <div class="flex justify-between text-xs sm:text-sm text-brown-900 font-semibold">
+                                        <span>Uang Muka / DP ({{ dpPercentage }}%):</span>
+                                        <span class="text-brand-600 font-bold font-mono">Rp {{ formatNumber(dp) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-brown-600 border-t border-dashed border-amber-200/80 pt-1.5 font-medium">
+                                        <span>Sisa Pelunasan Saat Ambil:</span>
+                                        <span class="font-bold font-mono text-brown-800">Rp {{ formatNumber(remainingPayment) }}</span>
+                                    </div>
+                                    <p class="text-[11px] text-brown-500 mt-1 leading-relaxed">
+                                        💡 Transfer DP via konfirmasi WhatsApp, sisa pelunasan saat kue diambil/dikirim.
                                     </p>
-                                    <p class="text-xs text-orange-800">
-                                        Bayar 50% sekarang via WhatsApp, saldo Rp {{ formatNumber(remainingPayment) }} saat pengambilan
+                                </div>
+                                <div 
+                                    v-else
+                                    class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-4 space-y-1.5"
+                                >
+                                    <div class="flex justify-between text-xs sm:text-sm text-emerald-900 font-semibold">
+                                        <span>Pembayaran Penuh (100%):</span>
+                                        <span class="text-emerald-700 font-bold font-mono">Rp {{ formatNumber(total) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-emerald-700 border-t border-dashed border-emerald-200/80 pt-1.5 font-medium">
+                                        <span>Sisa Tagihan Saat Ambil:</span>
+                                        <span class="font-bold font-mono text-emerald-800">Rp 0 (LUNAS)</span>
+                                    </div>
+                                    <p class="text-[11px] text-emerald-600 mt-1 leading-relaxed">
+                                        ✨ Bebas repot! Langsung bayar penuh saat konfirmasi, tanpa tanggungan pelunasan lagi.
                                     </p>
                                 </div>
 
                                 <!-- Payment Method -->
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                    <p class="text-sm font-semibold text-blue-900 mb-2">Metode Pembayaran</p>
+                                <div class="bg-emerald-50/60 border border-emerald-200/70 rounded-xl p-4">
+                                    <p class="text-xs font-bold text-emerald-900 mb-1.5">Metode Konfirmasi & Pembayaran</p>
                                     <div class="flex items-center space-x-2">
-                                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17 10.5V7a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z" />
+                                        <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
                                         </svg>
-                                        <span class="text-sm font-medium text-blue-900">WhatsApp Chat</span>
+                                        <span class="text-xs sm:text-sm font-bold text-emerald-900">Direct WhatsApp Admin</span>
                                     </div>
-                                </div>
-
-                                <!-- Info Box -->
-                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                    <p class="text-xs md:text-sm text-gray-700 space-y-2">
-                                        <span class="block">✓ Pesanan akan dikonfirmasi via WhatsApp</span>
-                                        <span class="block">✓ Pembayaran DP dikirim langsung ke nomor admin</span>
-                                        <span class="block">✓ Saldo akhir dibayarkan saat pengambilan</span>
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -234,9 +308,7 @@
                     :key="idx"
                     class="flex items-start gap-2 text-sm text-amber-800"
                 >
-                    <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+                    <AlertTriangle class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                     <span>{{ err }}</span>
                 </li>
             </ul>
@@ -245,10 +317,12 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Modal from '@/Components/UI/Modal.vue';
+import { ArrowLeft, AlertTriangle, Check } from 'lucide-vue-next';
+import { useCartStore } from '@/Stores/CartStore.js';
 
 const props = defineProps({
     cart: {
@@ -256,6 +330,33 @@ const props = defineProps({
         default: () => [],
     },
 });
+
+const page = usePage();
+const cms = computed(() => page.props.cms?.settings || {});
+const dpPercentage = computed(() => parseInt(cms.value.dp_percentage) || 70);
+
+const { paymentType: storePaymentType, setPaymentType: setStorePaymentType } = useCartStore();
+
+// Read payment_type from URL query param if present, or fallback to store, or default 'dp'
+const getInitialPaymentType = () => {
+    if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryType = urlParams.get('payment_type');
+        if (queryType === 'full' || queryType === 'dp') {
+            return queryType;
+        }
+    }
+    return storePaymentType.value || 'dp';
+};
+
+const paymentType = ref(getInitialPaymentType());
+setStorePaymentType(paymentType.value);
+
+const setPaymentOption = (type) => {
+    paymentType.value = type;
+    setStorePaymentType(type);
+    form.value.payment_type = type;
+};
 
 const cart = ref(props.cart);
 const loading = ref(false);
@@ -269,6 +370,7 @@ const form = ref({
     pickup_date: '',
     location: '',
     items: props.cart,
+    payment_type: paymentType.value,
     terms_agreed: false,
 });
 
@@ -277,20 +379,19 @@ const subtotal = computed(() => {
     return cart.value.reduce((sum, item) => sum + (item.quantity * item.product.sell_price), 0);
 });
 
-const tax = computed(() => {
-    return Math.round(subtotal.value * 0.1);
-});
-
 const total = computed(() => {
-    return subtotal.value + tax.value;
+    return subtotal.value;
 });
 
 const dp = computed(() => {
-    return Math.round(total.value * 0.5);
+    return Math.round(total.value * (dpPercentage.value / 100));
 });
 
 const remainingPayment = computed(() => {
-    return total.value - dp.value;
+    if (paymentType.value === 'full') {
+        return 0;
+    }
+    return Math.max(0, total.value - dp.value);
 });
 
 // Check if a field has an error

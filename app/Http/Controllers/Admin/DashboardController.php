@@ -19,9 +19,9 @@ class DashboardController extends Controller
         $stats = [
             'totalOrders' => Order::count(),
             'pendingOrders' => Order::where('status', 'pending')->count(),
-            'confirmedOrders' => Order::where('status', 'confirmed')->count(),
-            'completedOrders' => Order::where('status', 'completed')->count(),
-            'totalRevenue' => Order::where('status', 'completed')->sum('total_amount'),
+            'confirmedOrders' => Order::whereIn('status', ['diterima', 'diproses', 'dikemas', 'dikirim'])->count(),
+            'completedOrders' => Order::where('status', 'selesai')->count(),
+            'totalRevenue' => Order::where('status', 'selesai')->sum('total_amount'),
             'totalProducts' => Product::count(),
             'activeProducts' => Product::where('is_active', true)->count(),
         ];

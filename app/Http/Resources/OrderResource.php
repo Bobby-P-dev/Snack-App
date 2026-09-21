@@ -25,10 +25,12 @@ class OrderResource extends JsonResource
             'customer_phone' => $this->customer_phone,
             'pickup_date' => $pickupDate ? $pickupDate->format('Y-m-d H:i:s') : null,
             'location' => $this->location,
+            'notes' => $this->notes,
             'total_amount' => $this->total_amount,
+            'payment_type' => $this->payment_type ?? 'dp',
             'dp_amount' => $this->dp_amount,
             'status' => $this->status,
-            'items' => OrderItemResource::collection($this->items),
+            'items' => $this->items ? OrderItemResource::collection($this->items)->resolve($request) : [],
             'created_at' => $createdAt ? $createdAt->format('Y-m-d H:i:s') : null,
             'updated_at' => $updatedAt ? $updatedAt->format('Y-m-d H:i:s') : null,
         ];

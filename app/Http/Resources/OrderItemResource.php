@@ -16,7 +16,7 @@ class OrderItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'product' => new ProductResource($this->product),
+            'product' => $this->product ? (new ProductResource($this->product))->resolve($request) : null,
             'quantity' => $this->quantity,
             'price_at_order' => $this->price_at_order,
             'type' => $this->type,

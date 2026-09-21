@@ -63,15 +63,15 @@
 
             <!-- Reset Filter -->
             <button @click="$emit('reset-filter')" class="w-full py-2.5 px-4 border border-gray-300 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <RotateCcw class="w-4 h-4" />
                 Reset Filter
             </button>
         </div>
 
-        <div class="lg:hidden overflow-x-auto pb-2 mb-6 scrollbar-hide">
+        <div class="lg:hidden overflow-x-auto pb-2 mb-6 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             <div class="flex space-x-2">
-                <button @click="$emit('select-category', '')" :class="['px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition', !selectedCategory ? 'bg-brand-500 text-white' : 'bg-white text-gray-700 border border-gray-200 shadow-sm']">Semua</button>
-                <button v-for="category in categories" :key="category.id" @click="$emit('select-category', category.id)" :class="['px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition', selectedCategory == category.id ? 'bg-brand-500 text-white' : 'bg-white text-gray-700 border border-gray-200 shadow-sm']">{{ category.name }}</button>
+                <button @click="$emit('select-category', '')" :class="['px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer', !selectedCategory ? 'bg-brand-500 text-white font-bold shadow-sm shadow-brand-500/25' : 'bg-white text-brown-700 font-semibold border border-cream-200 shadow-2xs hover:bg-cream-50']">Semua Kategori</button>
+                <button v-for="category in categories" :key="category.id" @click="$emit('select-category', category.id)" :class="['px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer', selectedCategory == category.id ? 'bg-brand-500 text-white font-bold shadow-sm shadow-brand-500/25' : 'bg-white text-brown-700 font-semibold border border-cream-200 shadow-2xs hover:bg-cream-50']">{{ category.name }}</button>
             </div>
         </div>
     </div>
@@ -79,6 +79,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { RotateCcw } from 'lucide-vue-next';
 
 const props = defineProps({
     categories: {

@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ShoppingBag, Package, Settings, Mail, Lock, Loader2 } from 'lucide-vue-next';
 
 defineProps({
     canResetPassword: {
@@ -29,69 +30,58 @@ const submit = () => {
     <!-- Background Split Layout -->
     <div class="min-h-screen flex">
         <!-- Left: Brand/Info Panel -->
-        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden">
+        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brown-800 via-brand-700 to-amber-800 relative overflow-hidden">
             <!-- Decorative circles -->
             <div class="absolute -top-40 -right-40 w-96 h-96 bg-white/5 rounded-full"></div>
             <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-white/5 rounded-full"></div>
-            <div class="absolute top-1/3 -left-10 w-48 h-48 bg-blue-500/20 rounded-full blur-2xl"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-indigo-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute top-1/3 -left-10 w-48 h-48 bg-brand-400/20 rounded-full blur-2xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-amber-400/20 rounded-full blur-2xl"></div>
 
             <div class="relative z-10 flex flex-col justify-center items-center w-full p-12">
                 <!-- Logo -->
-                <div class="mb-8 flex items-center gap-4">
-                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl">
-                        <span class="text-3xl font-extrabold text-blue-600">SB</span>
-                    </div>
+                <div class="mb-8 flex items-center justify-center">
+                    <img src="/images/padukue-logo.png" alt="Padu Kue" class="h-36 w-auto object-contain bg-white/95 rounded-2xl p-4 shadow-xl backdrop-blur-xs" />
                 </div>
 
-                <h1 class="text-4xl font-bold text-white mb-4 text-center">Snack Box Admin</h1>
-                <p class="text-blue-200 text-lg text-center max-w-md">
+                <h1 class="text-3xl font-black text-white mb-3 text-center tracking-tight">Padu Kue Admin</h1>
+                <p class="text-cream-200 text-base text-center max-w-md">
                     Kelola pesanan, produk, supplier, dan konten website Anda dalam satu dashboard terintegrasi.
                 </p>
 
                 <!-- Feature List -->
-                <div class="mt-12 space-y-4 w-full max-w-sm">
-                    <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                        <div class="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center text-white">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
+                <div class="mt-10 space-y-3.5 w-full max-w-sm">
+                    <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-3.5 border border-white/10">
+                        <div class="w-10 h-10 bg-brand-500/30 rounded-lg flex items-center justify-center text-white">
+                            <ShoppingBag class="w-5 h-5" />
                         </div>
-                        <span class="text-white font-medium">Manajemen Pesanan</span>
+                        <span class="text-white font-medium text-sm">Manajemen Pesanan</span>
                     </div>
-                    <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                        <div class="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center text-white">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                            </svg>
+                    <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-3.5 border border-white/10">
+                        <div class="w-10 h-10 bg-brand-500/30 rounded-lg flex items-center justify-center text-white">
+                            <Package class="w-5 h-5" />
                         </div>
-                        <span class="text-white font-medium">Produk & Kategori</span>
+                        <span class="text-white font-medium text-sm">Produk & Kategori</span>
                     </div>
-                    <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                        <div class="w-10 h-10 bg-blue-500/30 rounded-lg flex items-center justify-center text-white">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
+                    <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-3.5 border border-white/10">
+                        <div class="w-10 h-10 bg-brand-500/30 rounded-lg flex items-center justify-center text-white">
+                            <Settings class="w-5 h-5" />
                         </div>
-                        <span class="text-white font-medium">Pengaturan Website (CMS)</span>
+                        <span class="text-white font-medium text-sm">Pengaturan Website (CMS)</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Right: Login Form -->
-        <div class="flex-1 flex items-center justify-center bg-gray-50 px-6 py-12">
+        <div class="flex-1 flex items-center justify-center bg-cream-50/50 px-6 py-12">
             <div class="w-full max-w-md">
                 <!-- Header -->
                 <div class="text-center mb-10">
-                    <div class="lg:hidden flex items-center justify-center gap-3 mb-6">
-                        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                            <span class="text-xl font-extrabold text-white">SB</span>
-                        </div>
+                    <div class="lg:hidden flex items-center justify-center mb-6">
+                        <img src="/images/padukue-logo.png" alt="Padu Kue" class="h-20 sm:h-24 w-auto object-contain" />
                     </div>
-                    <h2 class="text-3xl font-bold text-gray-900">Welcome Back</h2>
-                    <p class="text-gray-500 mt-2">Silakan masuk ke dashboard admin</p>
+                    <h2 class="text-3xl font-bold text-brown-900">Welcome Back</h2>
+                    <p class="text-brown-500 mt-2 text-sm">Silakan masuk ke dashboard admin</p>
                 </div>
 
                 <!-- Status Message -->
@@ -111,9 +101,7 @@ const submit = () => {
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
+                                <Mail class="w-5 h-5 text-gray-400" />
                             </div>
                             <input
                                 id="email"
@@ -121,20 +109,18 @@ const submit = () => {
                                 v-model="form.email"
                                 required
                                 autocomplete="username"
-                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition placeholder:text-gray-400"
-                                placeholder="admin@snackbox.id"
+                                class="w-full pl-10 pr-4 py-3 border border-cream-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition placeholder:text-brown-300 bg-white"
+                                placeholder="admin@padukue.store"
                             />
                         </div>
                     </div>
 
                     <!-- Password Field -->
                     <div>
-                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                        <label for="password" class="block text-sm font-semibold text-brown-800 mb-2">Password</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
+                                <Lock class="w-5 h-5 text-brown-400" />
                             </div>
                             <input
                                 id="password"
@@ -142,7 +128,7 @@ const submit = () => {
                                 v-model="form.password"
                                 required
                                 autocomplete="current-password"
-                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition placeholder:text-gray-400"
+                                class="w-full pl-10 pr-4 py-3 border border-cream-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition placeholder:text-brown-300 bg-white"
                                 placeholder="Masukkan password"
                             />
                         </div>
@@ -154,14 +140,14 @@ const submit = () => {
                             <input
                                 type="checkbox"
                                 v-model="form.remember"
-                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                                class="w-4 h-4 text-brand-600 border-cream-300 rounded focus:ring-brand-500 cursor-pointer"
                             />
-                            <span class="text-sm text-gray-600">Ingat saya</span>
+                            <span class="text-sm text-brown-600">Ingat saya</span>
                         </label>
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                            class="text-sm font-medium text-brand-600 hover:text-brand-800 hover:underline"
                         >
                             Lupa password?
                         </Link>
@@ -171,13 +157,10 @@ const submit = () => {
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-200"
+                        class="w-full py-3 px-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold rounded-xl hover:from-brand-700 hover:to-brand-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-brand-500/20 cursor-pointer"
                     >
                         <span v-if="form.processing" class="flex items-center justify-center gap-2">
-                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                            <Loader2 class="animate-spin h-5 w-5 text-white" />
                             Memproses...
                         </span>
                         <span v-else>Masuk ke Dashboard</span>
@@ -185,8 +168,8 @@ const submit = () => {
                 </form>
 
                 <!-- Footer -->
-                <p class="text-center text-xs text-gray-400 mt-8">
-                    &copy; 2026 Snack Box. All rights reserved.
+                <p class="text-center text-xs text-brown-400 mt-8">
+                    &copy; 2026 Padu Kue. All rights reserved.
                 </p>
             </div>
         </div>

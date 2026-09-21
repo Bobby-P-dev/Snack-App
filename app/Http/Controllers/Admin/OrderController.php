@@ -72,12 +72,32 @@ class OrderController extends Controller
     }
 
     /**
-     * Display the specified order
+     * Display the specified order (supports JSON fetch and Inertia page)
      */
-    public function show(Order $order)
+    public function show(Request $request, Order $order)
     {
+        $order->load(['items.product.supplier', 'items.product.category']);
+
+        $resource = (new OrderResource($order))->resolve(request());
+
+        // When navigating via Inertia (<Link> or router.visit), ALWAYS return Inertia page
+        if ($request->header('X-Inertia')) {
+            return Inertia::render('Admin/Order/Show', [
+                'order' => $resource,
+                'title' => 'Pesanan: ' . $order->order_number,
+            ]);
+        }
+
+        // Return plain JSON only for explicit API/AJAX requests (e.g. modal quick fetch or getJson)
+        if ($request->query('format') === 'json' || ($request->wantsJson() && ! $request->header('X-Inertia'))) {
+            return response()->json([
+                'success' => true,
+                'data' => $resource,
+            ]);
+        }
+
         return Inertia::render('Admin/Order/Show', [
-            'order' => new OrderResource($order),
+            'order' => $resource,
             'title' => 'Pesanan: ' . $order->order_number,
         ]);
     }

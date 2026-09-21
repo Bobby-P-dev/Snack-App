@@ -74,6 +74,16 @@
                     <span class="text-gray-500 text-sm">Subtotal</span>
                     <span class="font-medium text-gray-800 text-sm">Rp {{ number_format($data['total_amount'], 0, ',', '.') }}</span>
                 </div>
+                @if(!empty($data['is_full']) || ($data['total_amount'] - $data['dp_amount'] <= 0))
+                <div class="flex justify-between py-2.5 border-b border-gray-100">
+                    <span class="text-gray-500 text-sm">Pembayaran Penuh (100%)</span>
+                    <span class="font-medium text-emerald-700 text-sm">Rp {{ number_format($data['dp_amount'], 0, ',', '.') }}</span>
+                </div>
+                <div class="flex justify-between py-4">
+                    <span class="font-bold text-gray-800 text-base">Sisa Tagihan</span>
+                    <span class="font-bold text-emerald-600 text-lg">Rp 0 (LUNAS)</span>
+                </div>
+                @else
                 <div class="flex justify-between py-2.5 border-b border-gray-100">
                     <span class="text-gray-500 text-sm">DP ({{ $data['dp_percentage'] }}%)</span>
                     <span class="font-medium text-gray-800 text-sm">Rp {{ number_format($data['dp_amount'], 0, ',', '.') }}</span>
@@ -82,11 +92,16 @@
                     <span class="font-bold text-gray-800 text-base">Sisa Tagihan</span>
                     <span class="font-bold text-blue-600 text-lg">Rp {{ number_format($data['total_amount'] - $data['dp_amount'], 0, ',', '.') }}</span>
                 </div>
+                @endif
             </div>
         </div>
         
         <div class="mt-16 text-center text-xs text-gray-400">
-            <p>Harap melakukan pelunasan sisa tagihan pada saat pengiriman pesanan.</p>
+            @if(!empty($data['is_full']) || ($data['total_amount'] - $data['dp_amount'] <= 0))
+            <p>Pesanan ini telah dibayar penuh. Terima kasih atas kepercayaan Anda.</p>
+            @else
+            <p>Harap melakukan pelunasan sisa tagihan pada saat pengiriman/pengambilan pesanan.</p>
+            @endif
             <p class="mt-1">Invoice ini sah dan diterbitkan secara otomatis oleh sistem.</p>
         </div>
     </div>

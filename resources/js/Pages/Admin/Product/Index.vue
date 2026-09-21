@@ -15,19 +15,7 @@
                     @click="openCreateModal"
                     class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition font-medium text-sm shadow-lg shadow-blue-200"
                 >
-                    <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 4v16m8-8H4"
-                        />
-                    </svg>
+                    <Plus class="w-4 h-4" />
                     Tambah Produk
                 </button>
             </div>
@@ -35,19 +23,7 @@
             <!-- Search & Filters -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <div class="relative">
-                    <svg
-                        class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                    </svg>
+                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                         v-model="searchQuery"
                         @input="search"
@@ -56,34 +32,24 @@
                         class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition"
                     />
                 </div>
-                <select
+                <CustomSelect
                     v-model="filterCategory"
+                    :options="categoryFilterOptions"
+                    variant="admin"
+                    size="md"
+                    :full-width="true"
+                    placeholder="Semua Kategori"
                     @change="applyFilters"
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition"
-                >
-                    <option value="">Semua Kategori</option>
-                    <option
-                        v-for="cat in categories"
-                        :key="cat.id"
-                        :value="cat.id"
-                    >
-                        {{ cat.name }}
-                    </option>
-                </select>
-                <select
+                />
+                <CustomSelect
                     v-model="filterSupplier"
+                    :options="supplierFilterOptions"
+                    variant="admin"
+                    size="md"
+                    :full-width="true"
+                    placeholder="Semua Supplier"
                     @change="applyFilters"
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition"
-                >
-                    <option value="">Semua Supplier</option>
-                    <option
-                        v-for="sup in suppliers"
-                        :key="sup.id"
-                        :value="sup.id"
-                    >
-                        {{ sup.name }}
-                    </option>
-                </select>
+                />
             </div>
 
             <!-- Info Bar -->
@@ -177,20 +143,10 @@
                                                 "
                                                 class="w-full h-full object-cover"
                                             />
-                                            <svg
+                                            <Image
                                                 v-else
                                                 class="w-5 h-5 text-gray-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                                />
-                                            </svg>
+                                            />
                                         </div>
                                         <span
                                             class="font-semibold text-gray-800"
@@ -248,13 +204,6 @@
                                         class="flex items-center justify-end gap-1.5"
                                     >
                                         <button
-                                            @click="downloadInvoice('1')"
-                                            class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-all text-xs font-medium"
-                                            title="Download"
-                                        >
-                                            Download
-                                        </button>
-                                        <button
                                             @click="toggleStatus(product)"
                                             :title="
                                                 product.is_active
@@ -267,79 +216,32 @@
                                                     ? 'bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700'
                                                     : 'bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700',
                                             ]"
+                                            aria-label="Ubah status aktif"
                                         >
-                                            <svg
+                                            <EyeOff
                                                 v-if="product.is_active"
                                                 class="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.343 6.343a4 4 0 015.657 0l-5.657 5.657a4 4 0 010-5.657zm5.657 0a4 4 0 015.657 5.657l-5.657-5.657z"
-                                                />
-                                            </svg>
-                                            <svg
+                                            />
+                                            <Eye
                                                 v-else
                                                 class="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                />
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                                />
-                                            </svg>
+                                            />
                                         </button>
                                         <button
                                             @click="openEditModal(product)"
                                             class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-all text-xs font-medium"
                                             title="Edit"
+                                            aria-label="Edit produk"
                                         >
-                                            <svg
-                                                class="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                                />
-                                            </svg>
+                                            <Pencil class="w-4 h-4" />
                                         </button>
                                         <button
                                             @click="confirmDelete(product)"
                                             class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all text-xs font-medium"
                                             title="Delete"
+                                            aria-label="Hapus produk"
                                         >
-                                            <svg
-                                                class="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                                />
-                                            </svg>
+                                            <Trash2 class="w-4 h-4" />
                                         </button>
                                     </div>
                                 </td>
@@ -347,19 +249,9 @@
                             <tr v-if="products.length === 0">
                                 <td colspan="8">
                                     <div class="py-16 text-center">
-                                        <svg
+                                        <Package
                                             class="w-16 h-16 mx-auto mb-4 text-gray-300"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                                            />
-                                        </svg>
+                                        />
                                         <p
                                             class="text-lg font-medium text-gray-500 mb-1"
                                         >
@@ -392,19 +284,7 @@
                         @click="goToPage(pagination.current_page - 1)"
                         class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-50 transition flex items-center gap-1"
                     >
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M15 19l-7-7 7-7"
-                            />
-                        </svg>
+                        <ChevronLeft class="w-4 h-4" />
                         Prev
                     </button>
                     <button
@@ -415,19 +295,7 @@
                         class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-gray-50 transition flex items-center gap-1"
                     >
                         Next
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 5l7 7-7 7"
-                            />
-                        </svg>
+                        <ChevronRight class="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -453,20 +321,9 @@
                     <button
                         @click="closeModal"
                         class="p-1.5 rounded-lg hover:bg-gray-100 transition"
+                        aria-label="Tutup modal"
                     >
-                        <svg
-                            class="w-5 h-5 text-gray-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
+                        <X class="w-5 h-5 text-gray-500" />
                     </button>
                 </div>
 
@@ -594,19 +451,7 @@
                                     <label
                                         class="flex items-center justify-center gap-2 w-full px-4 py-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition bg-white"
                                     >
-                                        <svg
-                                            class="w-5 h-5 text-gray-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                            />
-                                        </svg>
+                                        <Image class="w-5 h-5 text-gray-500" />
                                         <span class="text-sm text-gray-600">{{
                                             imagePreview
                                                 ? "Ganti gambar"
@@ -693,19 +538,7 @@
                                 Menyimpan...
                             </span>
                             <span v-else>
-                                <svg
-                                    class="w-4 h-4 inline mr-1"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 13l4 4L19 7"
-                                    />
-                                </svg>
+                                <Check class="w-4 h-4 inline mr-1" />
                                 Simpan
                             </span>
                         </button>
@@ -729,19 +562,7 @@
                 <div
                     class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-red-50"
                 >
-                    <svg
-                        class="w-7 h-7 text-red-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                        />
-                    </svg>
+                    <AlertTriangle class="w-7 h-7 text-red-600" />
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">
                     Hapus Produk
@@ -774,9 +595,25 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
+import {
+    Plus,
+    Search,
+    Image,
+    Eye,
+    EyeOff,
+    Pencil,
+    Trash2,
+    Package,
+    ChevronLeft,
+    ChevronRight,
+    X,
+    Check,
+    AlertTriangle,
+} from "lucide-vue-next";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import CustomSelect from "@/Components/UI/CustomSelect.vue";
 import { getImageUrl, formatNumber } from "@/helpers.js";
 
 const props = defineProps({
@@ -802,6 +639,16 @@ const props = defineProps({
 const searchQuery = ref(props.filters?.search || "");
 const filterCategory = ref(props.filters?.category_id || "");
 const filterSupplier = ref(props.filters?.supplier_id || "");
+
+const categoryFilterOptions = computed(() => [
+    { value: "", label: "Semua Kategori" },
+    ...props.categories.map((cat) => ({ value: cat.id, label: cat.name })),
+]);
+
+const supplierFilterOptions = computed(() => [
+    { value: "", label: "Semua Supplier" },
+    ...props.suppliers.map((sup) => ({ value: sup.id, label: sup.name })),
+]);
 
 let searchTimeout = null;
 const search = () => {

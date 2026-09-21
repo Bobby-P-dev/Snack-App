@@ -41,6 +41,39 @@ class CartController extends Controller
     }
 
     /**
+     * Get cart items with product details for frontend CartStore (API)
+     */
+    public function getItems()
+    {
+        $cart = session()->get('cart', []);
+        $items = [];
+
+        foreach ($cart as $item) {
+            try {
+                $product = $this->productRepository->find($item['product_id']);
+                if ($product) {
+                    $items[] = [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'price' => (int) $product->sell_price,
+                        'image' => $product->image_url,
+                        'qty' => (int) $item['quantity'],
+                        'type' => $item['type'] ?? 'satuan',
+                        'box_group_id' => $item['box_group_id'] ?? null,
+                    ];
+                }
+            } catch (\Exception $e) {
+                // Skip if product not found
+            }
+        }
+
+        return response()->json([
+            'items' => $items,
+            'count' => count($items),
+        ]);
+    }
+
+    /**
      * Add item to cart (API)
      */
     public function add()
