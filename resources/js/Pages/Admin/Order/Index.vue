@@ -85,21 +85,21 @@
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs"
                     title="Pesanan Snack Box"
                   >
-                    <span>📦 Box</span>
+                    <span>Box</span>
                   </span>
                   <span
                     v-else-if="order.package_type === 'campuran'"
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs"
                     title="Pesanan Campuran (Snack Box + Kue Satuan)"
                   >
-                    <span>🍱 Campuran</span>
+                    <span>Campuran</span>
                   </span>
                   <span
                     v-else
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs"
                     title="Pesanan Kue Satuan"
                   >
-                    <span>🧁 Satuan</span>
+                    <span>Satuan</span>
                   </span>
                 </td>
                 <td class="px-6 py-4">
@@ -141,6 +141,16 @@
                       <Eye class="w-3.5 h-3.5" />
                       <span>Detail</span>
                     </button>
+
+                    <!-- Edit Order Action Button -->
+                    <Link
+                      :href="`/admin/orders/${order.id}/edit`"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-xs font-bold transition shadow-xs"
+                      title="Edit Pesanan"
+                    >
+                      <Pencil class="w-3.5 h-3.5 text-amber-600" />
+                      <span>Edit</span>
+                    </Link>
                   </div>
                 </td>
               </tr>
@@ -313,19 +323,19 @@
                           v-if="selectedOrder.package_type === 'snack_box'"
                           class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800"
                         >
-                          📦 Paket Snack Box
+                          Paket Snack Box
                         </span>
                         <span
                           v-else-if="selectedOrder.package_type === 'campuran'"
                           class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800"
                         >
-                          🍱 Campuran (Snack Box & Kue Satuan)
+                          Campuran (Snack Box & Kue Satuan)
                         </span>
                         <span
                           v-else
                           class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800"
                         >
-                          🧁 Kue Satuan
+                          Kue Satuan
                         </span>
                       </div>
                     </div>
@@ -505,6 +515,15 @@
                   <ExternalLink class="w-3.5 h-3.5 text-blue-500" />
                   <span>Buka Halaman Penuh</span>
                 </Link>
+
+                <Link
+                  v-if="selectedOrder?.id"
+                  :href="`/admin/orders/${selectedOrder.id}/edit`"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-xs"
+                >
+                  <Pencil class="w-3.5 h-3.5 text-amber-600" />
+                  <span>Edit Pesanan</span>
+                </Link>
               </div>
 
               <button
@@ -531,6 +550,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  Pencil,
   Copy,
   Check,
   X,

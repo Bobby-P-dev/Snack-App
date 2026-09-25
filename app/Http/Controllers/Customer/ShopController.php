@@ -9,6 +9,7 @@ use App\Repositories\ProductRepository;
 use App\Repositories\CategoryRepository;
 use App\Services\CmsService;
 use App\Models\Category;
+use App\Models\SnackBoxPackage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,7 +30,7 @@ class ShopController extends Controller
     }
 
     /**
-     * Display home page with featured products
+     * Display home page with featured products and snack box packages
      */
     public function home()
     {
@@ -37,16 +38,21 @@ class ShopController extends Controller
         $categories = $this->categoryRepository->all();
         $productsCount = count($products);
 
-        // Take only 4 products for featured display
+        // Take up to 6 products for featured display
         $featuredProducts = array_slice(
             ProductResource::collection($products)->resolve(request()),
-            0, 4
+            0, 6
         );
+
+        $snackBoxPackages = SnackBoxPackage::where('is_active', true)
+            ->orderBy('capacity')
+            ->get();
 
         $carousels = $this->cmsService->getCarousels();
 
         return Inertia::render('Welcome', [
             'products' => $featuredProducts,
+            'snackBoxPackages' => $snackBoxPackages,
             'categories' => CategoryResource::collection($categories)->resolve(request()),
             'productsCount' => $productsCount,
             'carousels' => $carousels,

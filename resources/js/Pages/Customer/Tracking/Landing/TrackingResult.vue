@@ -1,5 +1,8 @@
 <template>
-    <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-cream-200/90 relative">
+    <div class="bg-gradient-to-br from-white via-cream-50/90 to-brand-50/25 rounded-3xl p-6 sm:p-10 shadow-sm border border-cream-200/90 relative overflow-hidden">
+        <!-- Decorative soft background glow -->
+        <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-brand-100/30 blur-2xl pointer-events-none"></div>
+
         <!-- Top Bar: Back Action & Status Badge -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-cream-200">
             <button 
@@ -43,19 +46,19 @@
                     v-if="order.package_type === 'snack_box'"
                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs"
                 >
-                    <span>📦 Paket Snack Box</span>
+                    <span>Paket Snack Box</span>
                 </span>
                 <span 
                     v-else-if="order.package_type === 'campuran'"
                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs"
                 >
-                    <span>🍱 Campuran (Box + Satuan)</span>
+                    <span>Campuran (Box + Satuan)</span>
                 </span>
                 <span 
                     v-else
                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs"
                 >
-                    <span>🧁 Kue Satuan</span>
+                    <span>Kue Satuan</span>
                 </span>
 
                 <span 

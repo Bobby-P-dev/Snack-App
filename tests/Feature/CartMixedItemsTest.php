@@ -225,4 +225,79 @@ class CartMixedItemsTest extends TestCase
             ->where('cart.1.box_group_id', 4004)
         );
     }
+
+    public function test_cart_remove_on_kustom_box_item_removes_entire_box_group_atomically(): void
+    {
+        // Put 2 items of the same box group and 1 satuan item
+        session()->put('cart', [
+            [
+                'product_id' => $this->productA->id,
+                'quantity' => 10,
+                'type' => 'kustom_box',
+                'box_group_id' => 5005,
+            ],
+            [
+                'product_id' => $this->productB->id,
+                'quantity' => 10,
+                'type' => 'kustom_box',
+                'box_group_id' => 5005,
+            ],
+            [
+                'product_id' => $this->productA->id,
+                'quantity' => 10,
+                'type' => 'satuan',
+                'box_group_id' => null,
+            ],
+        ]);
+
+        // Removing productA in box group 5005 via regular /cart/remove
+        $response = $this->postJson('/cart/remove', [
+            'product_id' => $this->productA->id,
+            'type' => 'kustom_box',
+            'box_group_id' => 5005,
+        ]);
+
+        $response->assertStatus(200);
+
+        // Entire box group 5005 must be deleted, leaving only the satuan item
+        $cart = session()->get('cart');
+        $this->assertCount(1, $cart);
+        $this->assertEquals('satuan', $cart[0]['type']);
+        $this->assertEquals($this->productA->id, $cart[0]['product_id']);
+    }
+
+    public function test_cart_update_quantity_on_kustom_box_syncs_all_items_in_box_group(): void
+    {
+        // Put 2 items in the same box group
+        session()->put('cart', [
+            [
+                'product_id' => $this->productA->id,
+                'quantity' => 10,
+                'type' => 'kustom_box',
+                'box_group_id' => 6006,
+            ],
+            [
+                'product_id' => $this->productB->id,
+                'quantity' => 10,
+                'type' => 'kustom_box',
+                'box_group_id' => 6006,
+            ],
+        ]);
+
+        // Update quantity of one item in box group 6006
+        $response = $this->postJson('/cart/update-quantity', [
+            'product_id' => $this->productA->id,
+            'quantity' => 25,
+            'type' => 'kustom_box',
+            'box_group_id' => 6006,
+        ]);
+
+        $response->assertStatus(200);
+
+        // Both items in the box group must now have quantity 25
+        $cart = session()->get('cart');
+        $this->assertCount(2, $cart);
+        $this->assertEquals(25, $cart[0]['quantity']);
+        $this->assertEquals(25, $cart[1]['quantity']);
+    }
 }

@@ -26,7 +26,7 @@ class CartController extends Controller
             $product = $this->productRepository->find($item['product_id']);
             return [
                 'product_id' => $item['product_id'],
-                'product' => new ProductResource($product),
+                'product' => $product ? (new ProductResource($product))->resolve() : null,
                 'quantity' => $item['quantity'],
                 'type' => $item['type'] ?? 'satuan',
                 'box_group_id' => $item['box_group_id'] ?? null,
@@ -132,6 +132,20 @@ class CartController extends Controller
         $boxGroupId = request()->get('box_group_id');
 
         $cart = session()->get('cart', []);
+        if ($boxGroupId && $type === 'kustom_box') {
+            $cart = array_filter($cart, function ($item) use ($boxGroupId) {
+                return ($item['box_group_id'] ?? null) != $boxGroupId;
+            });
+
+            session()->put('cart', array_values($cart));
+
+            return response()->json([
+                'success' => true,
+                'cartCount' => count($cart),
+                'message' => 'Paket snack box dihapus dari keranjang',
+            ]);
+        }
+
         $cart = array_filter($cart, function ($item) use ($productId, $type, $boxGroupId) {
             if ($item['product_id'] != $productId) {
                 return true;
@@ -186,6 +200,25 @@ class CartController extends Controller
         $boxGroupId = request()->get('box_group_id');
 
         $cart = session()->get('cart', []);
+
+        if ($boxGroupId && $type === 'kustom_box') {
+            if ($quantity <= 0) {
+                $cart = array_filter($cart, fn($i) => ($i['box_group_id'] ?? null) != $boxGroupId);
+            } else {
+                foreach ($cart as &$item) {
+                    if (($item['box_group_id'] ?? null) == $boxGroupId && ($item['type'] ?? 'satuan') === 'kustom_box') {
+                        $item['quantity'] = $quantity;
+                    }
+                }
+            }
+
+            session()->put('cart', array_values($cart));
+
+            return response()->json([
+                'success' => true,
+                'cartCount' => count($cart),
+            ]);
+        }
 
         foreach ($cart as &$item) {
             $matchProduct = $item['product_id'] == $productId;

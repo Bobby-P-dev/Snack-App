@@ -63,6 +63,10 @@ export function useCartStore() {
     }
 
     function removeItem(productId, type = null, boxGroupId = null) {
+        if (type === 'kustom_box' && boxGroupId) {
+            removeBoxGroup(boxGroupId);
+            return;
+        }
         state.items = state.items.filter(item => {
             if (item.id !== productId) return true;
             if (type && item.type !== type) return true;
@@ -85,7 +89,30 @@ export function useCartStore() {
         }).catch(e => console.error(e));
     }
 
+    function updateBoxGroupQty(boxGroupId, newQty) {
+        if (newQty <= 0) {
+            removeBoxGroup(boxGroupId);
+            return;
+        }
+        state.items.forEach(item => {
+            if (item.box_group_id === boxGroupId) {
+                item.qty = newQty;
+            }
+        });
+        return axios.post('/cart/update-quantity', { 
+            product_id: null, 
+            quantity: newQty,
+            type: 'kustom_box',
+            box_group_id: boxGroupId,
+        }, {
+            headers: { 'Accept': 'application/json' }
+        }).catch(e => console.error(e));
+    }
+
     function updateQty(productId, newQty, type = null, boxGroupId = null) {
+        if (type === 'kustom_box' && boxGroupId) {
+            return updateBoxGroupQty(boxGroupId, newQty);
+        }
         if (newQty <= 0) { removeItem(productId, type, boxGroupId); return; }
         const item = state.items.find(i => {
             if (i.id !== productId) return false;
@@ -95,7 +122,7 @@ export function useCartStore() {
         });
         if (item) {
             item.qty = newQty;
-            axios.post('/cart/update-quantity', { 
+            return axios.post('/cart/update-quantity', { 
                 product_id: productId, 
                 quantity: newQty,
                 type: type,
@@ -160,6 +187,7 @@ export function useCartStore() {
         removeItem,
         removeBoxGroup,
         updateQty,
+        updateBoxGroupQty,
         clearCart,
         openCart,
         closeCart,

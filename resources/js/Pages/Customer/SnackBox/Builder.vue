@@ -93,11 +93,14 @@
                             <div
                                 v-for="product in filteredProducts"
                                 :key="product.id"
+                                @click="toggleItem(product)"
                                 :class="[
-                                    'bg-white rounded-2xl p-3.5 sm:p-4 border transition-all duration-200 flex flex-col justify-between shadow-sm relative group',
+                                    'bg-white rounded-2xl p-3.5 sm:p-4 border transition-all duration-200 flex flex-col justify-between shadow-sm relative group cursor-pointer select-none',
                                     getItemCount(product.id) > 0
-                                        ? 'border-brand-500 ring-2 ring-brand-100'
-                                        : 'border-gray-100 hover:border-gray-200'
+                                        ? 'border-brand-500 ring-2 ring-brand-100 shadow-md bg-brand-50/10'
+                                        : isBoxFull
+                                            ? 'border-gray-100 opacity-60 hover:opacity-90'
+                                            : 'border-gray-100 hover:border-brand-300 hover:shadow-md'
                                 ]"
                             >
                                 <!-- Product Image -->
@@ -112,13 +115,18 @@
                                         <Image class="w-10 h-10 text-gray-300 stroke-1" />
                                     </div>
 
-                                    <!-- Picked badge -->
-                                    <span
+                                    <!-- Picked badge with unselect hint -->
+                                    <button
                                         v-if="getItemCount(product.id) > 0"
-                                        class="absolute top-2 right-2 bg-brand-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shadow"
+                                        type="button"
+                                        @click.stop="toggleItem(product)"
+                                        class="absolute top-2 right-2 bg-brand-500 hover:bg-rose-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shadow transition-colors cursor-pointer group/badge"
+                                        title="Klik untuk membatalkan pilihan kue ini"
+                                        aria-label="Batalkan pilihan"
                                     >
-                                        {{ getItemCount(product.id) }}
-                                    </span>
+                                        <span class="group-hover/badge:hidden">{{ getItemCount(product.id) }}</span>
+                                        <X class="w-3.5 h-3.5 hidden group-hover/badge:block stroke-[2.5]" />
+                                    </button>
                                 </div>
 
                                 <!-- Product Info -->
@@ -132,11 +140,11 @@
                                 </div>
 
                                 <!-- Controls -->
-                                <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                                <div @click.stop class="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
                                     <button
                                         @click="decreaseItem(product.id)"
                                         :disabled="getItemCount(product.id) === 0"
-                                        class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed text-gray-700 flex items-center justify-center transition font-bold"
+                                        class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed text-gray-700 flex items-center justify-center transition font-bold cursor-pointer"
                                         aria-label="Kurang"
                                     >
                                         -
@@ -147,7 +155,7 @@
                                     <button
                                         @click="increaseItem(product)"
                                         :disabled="isBoxFull"
-                                        class="w-8 h-8 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center transition font-bold"
+                                        class="w-8 h-8 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center transition font-bold cursor-pointer"
                                         aria-label="Tambah"
                                     >
                                         +
@@ -165,20 +173,31 @@
                             </h2>
 
                             <!-- Selected Items List -->
-                            <div v-if="selectedItemsArray.length > 0" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                            <div v-if="selectedItemsArray.length > 0" class="space-y-2 max-h-60 overflow-y-auto pr-1">
                                 <div
                                     v-for="item in selectedItemsArray"
                                     :key="item.product_id"
-                                    class="flex items-center justify-between text-xs sm:text-sm py-1.5 border-b border-gray-50"
+                                    class="flex items-center justify-between text-xs sm:text-sm py-1.5 px-2 border-b border-gray-100 rounded-xl hover:bg-cream-50/70 transition group/summary-item"
                                 >
-                                    <span class="text-gray-700 font-medium truncate max-w-[180px]">
-                                        {{ item.quantity }}x {{ item.name }}
-                                    </span>
-                                    <span class="font-semibold text-gray-900 font-mono">
+                                    <div class="flex items-center gap-2 min-w-0 pr-2">
+                                        <button
+                                            type="button"
+                                            @click.stop="removeItem(item.product_id)"
+                                            class="w-5 h-5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 hover:text-rose-700 flex items-center justify-center shrink-0 transition cursor-pointer"
+                                            title="Hapus kue ini dari rakitan box"
+                                            aria-label="Hapus kue"
+                                        >
+                                            <X class="w-3 h-3 stroke-[2.5]" />
+                                        </button>
+                                        <span class="text-gray-800 font-medium truncate">
+                                            {{ item.quantity }}x {{ item.name }}
+                                        </span>
+                                    </div>
+                                    <span class="font-semibold text-gray-900 font-mono shrink-0">
                                         Rp {{ formatNumber(item.price * item.quantity) }}
                                     </span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs text-gray-500 pt-1">
+                                <div class="flex items-center justify-between text-xs text-gray-500 pt-1 px-2">
                                     <span>Kemasan Box & Tisu</span>
                                     <span>Rp {{ formatNumber(package.box_price || 2500) }}</span>
                                 </div>
@@ -259,10 +278,6 @@
                                         Rp {{ formatNumber(totalOrderAmount) }}
                                     </span>
                                 </div>
-                                <div class="flex justify-between text-orange-700 text-xs bg-orange-50 p-2.5 rounded-xl">
-                                    <span>Uang Muka / DP (50%)</span>
-                                    <span class="font-bold font-mono">Rp {{ formatNumber(totalOrderAmount * 0.5) }}</span>
-                                </div>
                             </div>
 
                             <!-- Add to Cart CTA -->
@@ -292,71 +307,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Mobile Sticky Bottom Bar (Thumb-friendly UX) -->
-            <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-cream-200/90 p-3.5 z-50 shadow-[0_-4px_25px_rgba(0,0,0,0.12)]">
-                <!-- Top Summary Line -->
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                    <div class="flex items-center gap-2">
-                        <span :class="[
-                            'px-2.5 py-0.5 rounded-full text-xs font-extrabold flex items-center gap-1',
-                            isBoxFull ? 'bg-emerald-100 text-emerald-800' : 'bg-brand-100 text-brand-800'
-                        ]">
-                            <span class="w-1.5 h-1.5 rounded-full" :class="isBoxFull ? 'bg-emerald-500' : 'bg-brand-500'"></span>
-                            {{ selectedCount }}/{{ package.capacity }} Terisi
-                        </span>
-                        <span class="text-xs text-brown-600 font-medium font-mono">
-                            Rp {{ formatNumber(pricePerBox) }}/box
-                        </span>
-                    </div>
-                    <!-- Quick box quantity adjuster right on mobile -->
-                    <div class="flex items-center gap-1 bg-cream-100 rounded-xl p-0.5 border border-cream-200">
-                        <button
-                            type="button"
-                            @click="boxQuantity = Math.max(minBoxQty, boxQuantity - 5)"
-                            :disabled="boxQuantity <= minBoxQty"
-                            class="w-7 h-7 bg-white rounded-lg text-xs font-bold text-brown-700 shadow-2xs hover:bg-cream-50 flex items-center justify-center cursor-pointer active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                            aria-label="Kurang 5 box"
-                        >
-                            -5
-                        </button>
-                        <span class="text-xs font-bold text-brown-900 px-1.5 min-w-[36px] text-center font-mono">
-                            {{ boxQuantity }}x
-                        </span>
-                        <button
-                            type="button"
-                            @click="boxQuantity += 5"
-                            class="w-7 h-7 bg-white rounded-lg text-xs font-bold text-brown-700 shadow-2xs hover:bg-cream-50 flex items-center justify-center cursor-pointer active:scale-95 transition"
-                            aria-label="Tambah 5 box"
-                        >
-                            +5
-                        </button>
-                    </div>
-                </div>
-
-                <!-- CTA Button with Total -->
-                <button
-                    @click="handleAddBoxToCart"
-                    :disabled="!isBoxFull || isSubmitting || boxQuantity < minBoxQty"
-                    class="w-full py-3.5 px-4 rounded-xl font-extrabold text-sm text-white transition flex items-center justify-between shadow-md"
-                    :class="[
-                        isBoxFull && boxQuantity >= minBoxQty
-                            ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 shadow-brand-500/25 cursor-pointer'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    ]"
-                >
-                    <span v-if="!isBoxFull">Pilih {{ package.capacity - selectedCount }} Kue Lagi</span>
-                    <span v-else-if="boxQuantity < minBoxQty">Minimal Pemesanan {{ minBoxQty }} Box</span>
-                    <span v-else-if="isSubmitting">Menambahkan...</span>
-                    <template v-else>
-                        <span class="flex items-center gap-2">
-                            <ShoppingCart class="w-4 h-4" />
-                            <span>Tambah {{ boxQuantity }} Box</span>
-                        </span>
-                        <span class="font-mono text-sm font-black">Rp {{ formatNumber(totalOrderAmount) }}</span>
-                    </template>
-                </button>
-            </div>
         </div>
     </CustomerLayout>
 </template>
@@ -367,7 +317,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import { useCartStore } from '@/Stores/CartStore.js';
 import { getImageUrl } from '@/helpers.js';
-import { Image, ShoppingCart, Info } from 'lucide-vue-next';
+import { Image, ShoppingCart, Info, X, Check } from 'lucide-vue-next';
 import axios from 'axios';
 
 const props = defineProps({
@@ -448,6 +398,20 @@ const decreaseItem = (productId) => {
     if (selectedItems.value[productId].quantity <= 0) {
         delete selectedItems.value[productId];
     }
+};
+
+const toggleItem = (product) => {
+    if (getItemCount(product.id) > 0) {
+        delete selectedItems.value[product.id];
+    } else {
+        if (!isBoxFull.value) {
+            increaseItem(product);
+        }
+    }
+};
+
+const removeItem = (productId) => {
+    delete selectedItems.value[productId];
 };
 
 const pricePerBox = computed(() => {

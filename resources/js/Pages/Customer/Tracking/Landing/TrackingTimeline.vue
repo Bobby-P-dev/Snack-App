@@ -37,7 +37,7 @@
                     >
                         <!-- Node Circle -->
                         <div 
-                            class="w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center mb-2.5 transition-all duration-300 border-3 border-white shrink-0"
+                            class="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center mb-2.5 transition-all duration-300 border-3 border-white shrink-0"
                             :class="[
                                 currentStep > step.id 
                                     ? 'bg-brand-500 text-white shadow-sm' 

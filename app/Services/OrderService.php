@@ -286,4 +286,68 @@ class OrderService
     {
         return $this->updateOrderStatus($orderId, 'selesai');
     }
+
+    /**
+     * Update existing order and synchronize its items inside a database transaction
+     */
+    public function updateOrder(Order $order, array $orderData, array $items): Order
+    {
+        return DB::transaction(function () use ($order, $orderData, $items) {
+            // Determine package_type based on items
+            $hasBox = collect($items)->contains(fn ($i) => ($i['type'] ?? '') === 'kustom_box');
+            $hasSatuan = collect($items)->contains(fn ($i) => ($i['type'] ?? '') === 'satuan');
+
+            if ($hasBox && $hasSatuan) {
+                $orderData['package_type'] = 'campuran';
+            } elseif ($hasBox) {
+                $orderData['package_type'] = 'snack_box';
+            } else {
+                $orderData['package_type'] = 'satuan';
+            }
+
+            // Update order attributes
+            $order->update(collect($orderData)->only([
+                'customer_name',
+                'customer_phone',
+                'pickup_date',
+                'location',
+                'notes',
+                'total_amount',
+                'package_type',
+                'payment_type',
+                'dp_amount',
+                'status',
+            ])->toArray());
+
+            // Sync items: delete removed items, update existing, create new
+            $existingItemIds = $order->items()->pluck('id')->toArray();
+            $submittedItemIds = collect($items)->pluck('id')->filter()->map(fn($id) => (int)$id)->toArray();
+
+            // Delete items no longer in submitted list
+            $toDelete = array_diff($existingItemIds, $submittedItemIds);
+            if (!empty($toDelete)) {
+                $order->items()->whereIn('id', $toDelete)->delete();
+            }
+
+            // Update or insert items
+            foreach ($items as $itemData) {
+                $itemId = !empty($itemData['id']) ? (int)$itemData['id'] : null;
+                $payload = [
+                    'product_id' => $itemData['product_id'],
+                    'quantity' => $itemData['quantity'],
+                    'price_at_order' => $itemData['price_at_order'],
+                    'type' => $itemData['type'] ?? 'satuan',
+                    'box_group_id' => $itemData['box_group_id'] ?? null,
+                ];
+
+                if ($itemId && in_array($itemId, $existingItemIds)) {
+                    $order->items()->where('id', $itemId)->update($payload);
+                } else {
+                    $order->items()->create($payload);
+                }
+            }
+
+            return $order->fresh(['items.product.supplier', 'items.product.category']);
+        });
+    }
 }

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import { Leaf, PackageOpen, Truck, ArrowRight, Award } from 'lucide-vue-next';
+import { Leaf, PackageOpen, Truck, ArrowRight } from 'lucide-vue-next';
 import { Link, router } from '@inertiajs/vue3';
 import { getImageUrl } from '@/helpers.js';
 
@@ -134,6 +134,55 @@ onMounted(() => {
 onUnmounted(() => {
     stopAutoSlide();
 });
+
+// Helper for formatting value propositions naturally
+const formatProp = (rawVal, defaultTitle, defaultSub = '') => {
+    if (!rawVal) return { title: defaultTitle, sub: defaultSub };
+    const str = String(rawVal).trim();
+    if (str.includes('&')) {
+        const parts = str.split('&').map(s => s.trim());
+        return {
+            title: parts[0],
+            sub: parts[1] ? `Alami & ${parts[1]}` : defaultSub
+        };
+    }
+    if (str.toLowerCase().includes('custom box')) {
+        const extra = str.replace(/custom box/i, '').trim();
+        return {
+            title: 'Custom Box',
+            sub: extra ? `${extra} & Praktis` : 'Bebas Pilih Kue'
+        };
+    }
+    if (str.toLowerCase().includes('pengiriman tepat waktu') || str.toLowerCase().includes('tepat waktu')) {
+        return {
+            title: 'Tepat Waktu',
+            sub: 'Siap untuk Acara'
+        };
+    }
+    const words = str.split(' ');
+    if (words.length >= 3) {
+        return {
+            title: words.slice(0, 2).join(' '),
+            sub: words.slice(2).join(' ')
+        };
+    }
+    return { title: str, sub: defaultSub };
+};
+
+const trustItems = computed(() => [
+    {
+        icon: Leaf,
+        ...formatProp(props.cms?.propotition1, 'Bahan Segar', 'Alami & Higienis'),
+    },
+    {
+        icon: PackageOpen,
+        ...formatProp(props.cms?.propotition2, 'Custom Box', 'Bebas Pilih Kue'),
+    },
+    {
+        icon: Truck,
+        ...formatProp(props.cms?.propotition3, 'Tepat Waktu', 'Siap untuk Acara'),
+    },
+]);
 </script>
 
 <template>
@@ -147,11 +196,10 @@ onUnmounted(() => {
             <div class="w-full lg:w-[50%] flex items-center pt-8 pb-10 lg:py-16 xl:py-20 px-4 sm:px-6 lg:pl-10 lg:pr-6 xl:pl-16 xl:pr-10 2xl:pl-24 z-10 relative lg:min-h-[580px] xl:min-h-[660px]">
                 <div class="max-w-xl w-full mx-auto lg:mx-0">
                     
-                    <!-- Artisan Craft Seal Badge -->
-                    <div class="inline-flex items-center gap-2 self-start px-3.5 py-1.5 bg-amber-100/80 text-amber-950 font-bold tracking-wide text-xs rounded-full border border-amber-300/80 shadow-2xs mb-4">
-                        <Award class="w-3.5 h-3.5 text-brand-600 shrink-0" />
-                        <span>{{ cms.badge || 'Dapur Mitra Terkurasi • Resep Warisan Otentik' }}</span>
-                    </div>
+                    <!-- Eyebrow Tag (Consistent with OrderSteps, FaqSection & Product Showcase) -->
+                    <span class="text-[10px] sm:text-xs font-bold text-brand-600 uppercase tracking-wider sm:tracking-widest bg-brand-50 px-3.5 py-1 rounded-full border border-brand-200/60 inline-block mb-3.5 shadow-2xs">
+                        {{ cms.badge || 'Spesialis Custom Snack Box & Aneka Kue' }}
+                    </span>
 
                     <!-- Editorial Headline -->
                     <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] xl:text-[3.25rem] font-black text-brown-900 mb-4 leading-[1.15] tracking-tight">
@@ -222,36 +270,25 @@ onUnmounted(() => {
                         </Link>
                     </div>
 
-                    <!-- Integrated Bento Micro-Trust Bar -->
-                    <div class="pt-5 border-t border-cream-300/80">
-                        <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center sm:text-left">
-                            <div class="flex flex-col sm:flex-row items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/60 border border-cream-200">
-                                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-                                    <Leaf class="w-4 h-4" />
+                    <!-- Artisan Micro-Trust Bar (Harmonious with OrderSteps) -->
+                    <div class="pt-6 border-t border-cream-300/70">
+                        <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
+                            <div 
+                                v-for="(item, idx) in trustItems" 
+                                :key="idx"
+                                class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 sm:gap-3 p-2.5 sm:p-3.5 rounded-2xl bg-white border border-cream-200/90 shadow-2xs transition-all duration-300 hover:border-brand-200 hover:shadow-xs group"
+                            >
+                                <!-- Icon Squircle (Same DNA as Step Cards in OrderSteps) -->
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-cream-50/90 border border-cream-200/80 flex items-center justify-center text-brown-800 shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:bg-brand-50/50 group-hover:border-brand-300 shadow-2xs">
+                                    <component :is="item.icon" class="w-4 h-4 sm:w-5 sm:h-5 text-brown-800 transition-colors duration-300 group-hover:text-brand-600" stroke-width="1.6" />
                                 </div>
-                                <div class="min-w-0">
-                                    <p class="text-xs font-bold text-brown-900 leading-tight">{{ cms.propotition1 || 'Bahan Segar' }}</p>
-                                    <p class="hidden sm:block text-[10px] text-brown-500">Tanpa Pengawet</p>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/60 border border-cream-200">
-                                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-                                    <PackageOpen class="w-4 h-4" />
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-xs font-bold text-brown-900 leading-tight">{{ cms.propotition2 || 'Custom Box' }}</p>
-                                    <p class="hidden sm:block text-[10px] text-brown-500">Bebas Pilih Kue</p>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/60 border border-cream-200">
-                                <div class="w-7 h-7 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
-                                    <Truck class="w-4 h-4" />
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-xs font-bold text-brown-900 leading-tight">{{ cms.propotition3 || 'Tepat Waktu' }}</p>
-                                    <p class="hidden sm:block text-[10px] text-brown-500">Siap Acara Anda</p>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-[11px] sm:text-xs md:text-sm font-bold text-brown-900 leading-tight group-hover:text-brand-700 transition-colors">
+                                        {{ item.title }}
+                                    </p>
+                                    <p class="text-[9px] sm:text-[10px] md:text-xs text-brown-500 mt-0.5 leading-tight font-medium">
+                                        {{ item.sub }}
+                                    </p>
                                 </div>
                             </div>
                         </div>

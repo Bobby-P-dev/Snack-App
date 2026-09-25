@@ -116,9 +116,11 @@
                                             <input
                                                 v-model.number="qty"
                                                 type="number"
+                                                inputmode="numeric"
+                                                pattern="[0-9]*"
                                                 min="10"
                                                 @blur="qty = Math.max(10, qty || 10)"
-                                                class="w-12 sm:w-14 text-center font-bold text-brown-900 bg-transparent border-none focus:outline-none text-sm sm:text-base font-mono"
+                                                class="w-12 sm:w-14 text-center font-bold text-brown-900 bg-transparent border-none focus:outline-none text-sm sm:text-base font-mono px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             />
                                             <button
                                                 @click="qty++"

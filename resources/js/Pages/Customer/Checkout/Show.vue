@@ -80,17 +80,93 @@
                                         </p>
                                     </div>
                                     
-                                    <!-- Location -->
+                                    <!-- Metode Pengambilan / Pengiriman -->
                                     <div>
-                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">Lokasi / Alamat Pengiriman</label>
+                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">
+                                            Metode Pengambilan / Pengiriman
+                                        </label>
+                                        <div class="grid grid-cols-2 gap-2.5 mb-2.5">
+                                            <button
+                                                type="button"
+                                                @click="deliveryMethod = 'pickup'"
+                                                :class="[
+                                                    'p-3 rounded-xl border text-left transition flex items-center gap-3 cursor-pointer',
+                                                    deliveryMethod === 'pickup'
+                                                        ? 'border-brand-500 bg-brand-50/70 text-brand-900 ring-2 ring-brand-500/15'
+                                                        : 'border-cream-300 bg-white hover:bg-cream-50 text-brown-700'
+                                                ]"
+                                            >
+                                                <div :class="['w-8 h-8 rounded-lg flex items-center justify-center shrink-0', deliveryMethod === 'pickup' ? 'bg-brand-500 text-white' : 'bg-cream-100 text-brown-600']">
+                                                    <Store class="w-4 h-4" />
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="text-xs sm:text-sm font-bold leading-tight">Ambil di Toko</p>
+                                                    <p class="text-[11px] text-brown-500 leading-tight truncate">Ambil langsung ke lokasi kami</p>
+                                                </div>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                @click="deliveryMethod = 'delivery'"
+                                                :class="[
+                                                    'p-3 rounded-xl border text-left transition flex items-center gap-3 cursor-pointer',
+                                                    deliveryMethod === 'delivery'
+                                                        ? 'border-brand-500 bg-brand-50/70 text-brand-900 ring-2 ring-brand-500/15'
+                                                        : 'border-cream-300 bg-white hover:bg-cream-50 text-brown-700'
+                                                ]"
+                                            >
+                                                <div :class="['w-8 h-8 rounded-lg flex items-center justify-center shrink-0', deliveryMethod === 'delivery' ? 'bg-brand-500 text-white' : 'bg-cream-100 text-brown-600']">
+                                                    <Truck class="w-4 h-4" />
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="text-xs sm:text-sm font-bold leading-tight">Diantar ke Lokasi</p>
+                                                    <p class="text-[11px] text-brown-500 leading-tight truncate">Kirim ke alamat acara Anda</p>
+                                                </div>
+                                            </button>
+                                        </div>
+
+                                        <!-- If pickup: show store address info banner -->
+                                        <div
+                                            v-if="deliveryMethod === 'pickup'"
+                                            class="bg-amber-50/90 border border-amber-200 rounded-xl p-3.5 text-xs sm:text-sm space-y-1.5"
+                                        >
+                                            <div class="flex items-center gap-2 font-bold text-amber-900">
+                                                <MapPin class="w-4 h-4 text-amber-700 shrink-0" />
+                                                <span>Lokasi Tempat Usaha:</span>
+                                            </div>
+                                            <p class="text-brown-700 font-medium pl-6 leading-relaxed">
+                                                {{ storeAddress }}
+                                            </p>
+                                            <p class="text-[11px] text-amber-800/80 pl-6 pt-0.5">
+                                                💡 Pesanan disiapkan dan dapat diambil langsung sesuai jadwal yang Anda tentukan di atas.
+                                            </p>
+                                        </div>
+
+                                        <!-- If delivery: show custom location textarea -->
+                                        <div v-else>
+                                            <textarea
+                                                v-model="customLocation"
+                                                rows="3"
+                                                :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30 resize-none', fieldError('location') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
+                                                placeholder="Masukkan alamat lengkap pengiriman atau lokasi acara Anda..."
+                                            ></textarea>
+                                            <p v-if="fieldError('location')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('location') }}</p>
+                                            <p class="text-brown-500 text-xs mt-1">
+                                                🛵 Pesanan akan diantar langsung oleh kurir ke alamat yang Anda tuliskan.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notes (Optional) -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-brown-800 mb-1.5">Catatan Pesanan (Opsional)</label>
                                         <textarea
-                                            v-model="form.location"
-                                            required
-                                            rows="3"
-                                            :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30 resize-none', fieldError('location') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
-                                            placeholder="Masukkan alamat lengkap pengiriman atau lokasi acara Anda"
+                                            v-model="form.notes"
+                                            rows="2"
+                                            :class="['w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-base sm:text-sm bg-cream-50/30 resize-none', fieldError('notes') ? 'border-red-400 bg-red-50' : 'border-cream-300']"
+                                            placeholder="Misal: pita tulisan ucapan atau permintaan khusus lainnya"
                                         ></textarea>
-                                        <p v-if="fieldError('location')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('location') }}</p>
+                                        <p v-if="fieldError('notes')" class="text-red-500 text-xs md:text-sm mt-1">{{ fieldError('notes') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -119,20 +195,34 @@
                                             </span>
                                         </div>
 
-                                        <div class="divide-y divide-cream-100">
+                                        <div class="space-y-3">
                                             <div
-                                                v-for="item in snackBoxItems"
-                                                :key="item.box_group_id ? `${item.box_group_id}-${item.product_id}` : item.product_id"
-                                                class="py-2.5 flex justify-between items-center text-xs sm:text-sm"
+                                                v-for="box in groupedSnackBoxes"
+                                                :key="box.box_group_id || 'default'"
+                                                class="p-3 bg-amber-50/50 border border-amber-200/70 rounded-xl space-y-2"
                                             >
-                                                <div class="min-w-0 pr-2">
-                                                    <div class="flex items-center gap-1.5">
-                                                        <p class="font-bold text-brown-900 truncate">{{ item.product?.name || 'Produk' }}</p>
-                                                        <span class="inline-flex text-[9px] font-semibold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">Snack Box</span>
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs font-bold text-brown-900">Paket Snack Box ({{ box.boxQty }} Box)</span>
+                                                        <span
+                                                            :class="[
+                                                                'text-[10px] font-bold px-1.5 py-0.5 rounded',
+                                                                [3, 4, 5].includes(box.items.length)
+                                                                    ? 'bg-amber-100 text-amber-900'
+                                                                    : 'bg-rose-100 text-rose-700 font-extrabold'
+                                                            ]"
+                                                        >
+                                                            {{ [3, 4, 5].includes(box.items.length) ? `${box.items.length} Kue/Box` : `⚠️ Tidak Lengkap (${box.items.length} Kue)` }}
+                                                        </span>
                                                     </div>
-                                                    <p class="text-brown-500 text-xs mt-0.5">{{ item.quantity }} box @ Rp {{ formatNumber(item.product?.sell_price || 0) }}</p>
+                                                    <span class="text-xs font-bold text-brand-600 font-mono">Rp {{ formatNumber(box.subtotal) }}</span>
                                                 </div>
-                                                <p class="font-bold text-brand-600 font-mono flex-shrink-0">Rp {{ formatNumber(item.quantity * (item.product?.sell_price || 0)) }}</p>
+                                                <div class="pl-2 border-l-2 border-amber-200 space-y-1">
+                                                    <p v-for="it in box.items" :key="it.product_id" class="text-xs text-brown-600 flex justify-between">
+                                                        <span>• {{ it.product?.name || 'Kue' }}</span>
+                                                        <span class="text-brown-400 font-mono text-[11px]">@ Rp {{ formatNumber(it.product?.sell_price || 0) }}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -186,14 +276,28 @@
                                 </label>
                             </div>
 
+                            <!-- Incomplete Snack Box Warning Banner -->
+                            <div v-if="hasIncompleteBox" class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-start gap-2.5">
+                                <AlertCircle class="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+                                <div>
+                                    <p class="font-bold text-rose-900">Paket Snack Box Belum Sesuai</p>
+                                    <p class="mt-0.5 text-rose-600 leading-relaxed">Ada paket snack box yang belum sesuai kapasitas paket (wajib 3, 4, atau 5 macam kue). Silakan kembali ke keranjang untuk menyesuaikan isian box.</p>
+                                </div>
+                            </div>
+
                             <!-- Submit Button -->
                             <button
                                 type="submit"
-                                :disabled="loading"
-                                class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white py-4 px-6 rounded-2xl font-bold text-base md:text-lg shadow-lg shadow-emerald-600/20 disabled:bg-gray-400 transition flex items-center justify-center gap-2 cursor-pointer"
+                                :disabled="loading || hasIncompleteBox"
+                                :class="[
+                                    'w-full py-4 px-6 rounded-2xl font-bold text-base md:text-lg transition flex items-center justify-center gap-2',
+                                    hasIncompleteBox
+                                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                                        : 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-lg shadow-emerald-600/20 cursor-pointer disabled:bg-gray-400'
+                                ]"
                             >
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12c0 1.76.46 3.42 1.25 4.86L2 22l5.35-1.21A9.95 9.95 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm.05 18.06c-1.46 0-2.88-.38-4.14-1.12l-.3-.17-3.07.7.72-2.95-.19-.31A7.95 7.95 0 014.05 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.42-5.44c-.24-.12-1.44-.71-1.66-.79-.23-.08-.39-.12-.56.12-.16.24-.62.79-.77.95-.14.16-.3.18-.54.06-.24-.12-1.02-.38-1.95-1.21-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.56-1.35-.77-1.85-.2-.49-.4-.42-.56-.43h-.48c-.16 0-.42.06-.64.3s-.84.82-.84 2.01c0 1.19.86 2.34.98 2.5.12.16 1.7 2.6 4.12 3.65.57.25 1.02.39 1.37.5.58.18 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.23-.16-.47-.28z" />
                                 </svg>
                                 <span v-if="!loading">Lanjutkan ke WhatsApp</span>
                                 <span v-else>Memproses Pesanan...</span>
@@ -345,7 +449,7 @@
                                     <p class="text-xs font-bold text-emerald-900 mb-1.5">Metode Konfirmasi & Pembayaran</p>
                                     <div class="flex items-center space-x-2">
                                         <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.272-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12c0 1.76.46 3.42 1.25 4.86L2 22l5.35-1.21A9.95 9.95 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm.05 18.06c-1.46 0-2.88-.38-4.14-1.12l-.3-.17-3.07.7.72-2.95-.19-.31A7.95 7.95 0 014.05 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.42-5.44c-.24-.12-1.44-.71-1.66-.79-.23-.08-.39-.12-.56.12-.16.24-.62.79-.77.95-.14.16-.3.18-.54.06-.24-.12-1.02-.38-1.95-1.21-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.56-1.35-.77-1.85-.2-.49-.4-.42-.56-.43h-.48c-.16 0-.42.06-.64.3s-.84.82-.84 2.01c0 1.19.86 2.34.98 2.5.12.16 1.7 2.6 4.12 3.65.57.25 1.02.39 1.37.5.58.18 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.23-.16-.47-.28z" />
                                         </svg>
                                         <span class="text-xs sm:text-sm font-bold text-emerald-900">Direct WhatsApp Admin</span>
                                     </div>
@@ -385,7 +489,7 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Modal from '@/Components/UI/Modal.vue';
-import { ArrowLeft, AlertTriangle, Check, Package, CakeSlice } from 'lucide-vue-next';
+import { ArrowLeft, AlertTriangle, AlertCircle, Check, Package, CakeSlice, Store, MapPin, Truck } from 'lucide-vue-next';
 import { useCartStore } from '@/Stores/CartStore.js';
 
 const props = defineProps({
@@ -398,6 +502,24 @@ const props = defineProps({
 const page = usePage();
 const cms = computed(() => page.props.cms?.settings || {});
 const dpPercentage = computed(() => parseInt(cms.value.dp_percentage) || 70);
+
+const deliveryMethod = ref('pickup'); // 'pickup' | 'delivery'
+const customLocation = ref('');
+
+const storeAddress = computed(() => {
+    return cms.value.company_address || cms.value.contact_address || 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144';
+});
+
+const storeName = computed(() => {
+    return cms.value.company_name || 'Padu Kue';
+});
+
+const resolvedLocation = computed(() => {
+    if (deliveryMethod.value === 'pickup') {
+        return `Ambil di Tempat (${storeName.value}: ${storeAddress.value})`;
+    }
+    return customLocation.value.trim();
+});
 
 const { paymentType: storePaymentType, setPaymentType: setStorePaymentType } = useCartStore();
 
@@ -433,6 +555,7 @@ const form = ref({
     customer_phone: '',
     pickup_date: '',
     location: '',
+    notes: '',
     items: props.cart,
     payment_type: paymentType.value,
     terms_agreed: false,
@@ -442,6 +565,34 @@ const form = ref({
 const snackBoxItems = computed(() => (cart.value || []).filter(item => item.type === 'kustom_box'));
 const satuanItems = computed(() => (cart.value || []).filter(item => (item.type || 'satuan') !== 'kustom_box'));
 const hasBothCategories = computed(() => snackBoxItems.value.length > 0 && satuanItems.value.length > 0);
+
+// Group snack box items by box_group_id so each box is an atomic package
+const groupedSnackBoxes = computed(() => {
+    const groups = {};
+    snackBoxItems.value.forEach((item) => {
+        const gid = item.box_group_id || 'default';
+        if (!groups[gid]) {
+            groups[gid] = {
+                box_group_id: item.box_group_id,
+                boxQty: item.quantity || 1,
+                items: [],
+                subtotal: 0,
+            };
+        }
+        groups[gid].items.push(item);
+        const itemPrice = item?.product?.sell_price || 0;
+        const itemQty = item?.quantity || 1;
+        groups[gid].subtotal += itemPrice * itemQty;
+    });
+    return Object.values(groups).map((g) => ({
+        ...g,
+        pricePerBox: g.boxQty > 0 ? Math.round(g.subtotal / g.boxQty) : g.subtotal,
+    }));
+});
+
+const hasIncompleteBox = computed(() => {
+    return groupedSnackBoxes.value.some(g => ![3, 4, 5].includes(g.items.length));
+});
 
 const snackBoxSubtotal = computed(() => {
     return snackBoxItems.value.reduce((sum, item) => sum + (item.quantity * (item.product?.sell_price || 0)), 0);
@@ -483,10 +634,22 @@ const formatNumber = (num) => {
 const submitOrder = () => {
     // Client-side validation check
     validationErrors.value = [];
+    if (hasIncompleteBox.value) {
+        validationErrors.value.push("Ada paket snack box yang isian kuenya tidak lengkap (wajib 3, 4, atau 5 macam kue). Silakan sesuaikan di keranjang.");
+    }
     if (!form.value.customer_name.trim()) validationErrors.value.push("Nama Lengkap belum diisi.");
     if (!form.value.customer_phone.trim()) validationErrors.value.push("Nomor WhatsApp belum diisi.");
     if (!form.value.pickup_date) validationErrors.value.push("Tanggal & Jam pengambilan belum dipilih.");
-    if (!form.value.location.trim()) validationErrors.value.push("Lokasi / Alamat pengiriman belum diisi.");
+
+    if (deliveryMethod.value === 'delivery' && !customLocation.value.trim()) {
+        validationErrors.value.push("Alamat / Lokasi pengiriman belum diisi.");
+    }
+
+    form.value.location = resolvedLocation.value;
+    if (!form.value.location.trim()) {
+        validationErrors.value.push("Lokasi pengambilan / pengiriman belum ditentukan.");
+    }
+
     if (!form.value.terms_agreed) validationErrors.value.push("Anda harus menyetujui syarat & ketentuan.");
 
     if (validationErrors.value.length > 0) {

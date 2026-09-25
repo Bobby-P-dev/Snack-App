@@ -378,5 +378,118 @@ class SnackBoxTest extends TestCase
         $response->assertJsonValidationErrors(['items']);
         $this->assertStringContainsString('Minimal pemesanan untuk setiap paket snack box adalah 10 box', $response->json('errors.items.0'));
     }
+
+    public function test_checkout_rejects_incomplete_snack_box_item_count(): void
+    {
+        SnackBoxPackage::create([
+            'name' => 'Snack Box 3 Kue',
+            'slug' => 'snack-box-3-kue',
+            'capacity' => 3,
+            'box_price' => 2000,
+            'is_active' => true,
+        ]);
+
+        $supplier = Supplier::create([
+            'name' => 'Mitra Bakery',
+            'phone' => '08123456789',
+            'address' => 'Jakarta',
+            'daily_capacity' => 100,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Snack',
+            'slug' => 'snack-incomplete',
+        ]);
+
+        $product1 = Product::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'name' => 'Kue A',
+            'base_price' => 2000,
+            'sell_price' => 3500,
+            'is_active' => true,
+        ]);
+
+        $product2 = Product::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'name' => 'Kue B',
+            'base_price' => 2000,
+            'sell_price' => 3500,
+            'is_active' => true,
+        ]);
+
+        // Attempt checkout with only 2 items in box (package capacity is 3)
+        $response = $this->postJson('/checkout', [
+            'customer_name' => 'Budi Santoso',
+            'customer_phone' => '081234567890',
+            'pickup_date' => now()->addDays(2)->format('Y-m-d H:i:s'),
+            'location' => 'Jakarta Barat',
+            'payment_type' => 'full',
+            'items' => [
+                [
+                    'product_id' => $product1->id,
+                    'quantity' => 10,
+                    'type' => 'kustom_box',
+                    'box_group_id' => 88888,
+                ],
+                [
+                    'product_id' => $product2->id,
+                    'quantity' => 10,
+                    'type' => 'kustom_box',
+                    'box_group_id' => 88888,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['items']);
+        $this->assertStringContainsString('Paket snack box tidak lengkap', $response->json('errors.items.0'));
+    }
+
+    public function test_checkout_rejects_mismatched_quantity_in_snack_box(): void
+    {
+        SnackBoxPackage::create([
+            'name' => 'Snack Box 3 Kue',
+            'slug' => 'snack-box-3-kue-mm',
+            'capacity' => 3,
+            'box_price' => 2000,
+            'is_active' => true,
+        ]);
+
+        $supplier = Supplier::create([
+            'name' => 'Mitra Bakery',
+            'phone' => '08123456789',
+            'address' => 'Jakarta',
+            'daily_capacity' => 100,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Snack',
+            'slug' => 'snack-mismatched',
+        ]);
+
+        $p1 = Product::create(['supplier_id' => $supplier->id, 'category_id' => $category->id, 'name' => 'Kue 1', 'base_price' => 1000, 'sell_price' => 2000, 'is_active' => true]);
+        $p2 = Product::create(['supplier_id' => $supplier->id, 'category_id' => $category->id, 'name' => 'Kue 2', 'base_price' => 1000, 'sell_price' => 2000, 'is_active' => true]);
+        $p3 = Product::create(['supplier_id' => $supplier->id, 'category_id' => $category->id, 'name' => 'Kue 3', 'base_price' => 1000, 'sell_price' => 2000, 'is_active' => true]);
+
+        // Attempt checkout with 3 items, but mismatched quantities (10 vs 15)
+        $response = $this->postJson('/checkout', [
+            'customer_name' => 'Budi Santoso',
+            'customer_phone' => '081234567890',
+            'pickup_date' => now()->addDays(2)->format('Y-m-d H:i:s'),
+            'location' => 'Jakarta Barat',
+            'payment_type' => 'full',
+            'items' => [
+                ['product_id' => $p1->id, 'quantity' => 10, 'type' => 'kustom_box', 'box_group_id' => 77777],
+                ['product_id' => $p2->id, 'quantity' => 10, 'type' => 'kustom_box', 'box_group_id' => 77777],
+                ['product_id' => $p3->id, 'quantity' => 15, 'type' => 'kustom_box', 'box_group_id' => 77777],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['items']);
+        $this->assertStringContainsString('Jumlah kuantiti untuk semua kue dalam satu paket snack box harus sama', $response->json('errors.items.0'));
+    }
 }
 

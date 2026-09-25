@@ -74,6 +74,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
         Route::get('/{order}', [AdminOrderController::class, 'show'])->name('show');
+        Route::get('/{order}/edit', [AdminOrderController::class, 'edit'])->name('edit');
+        Route::put('/{order}', [AdminOrderController::class, 'update'])->name('update');
         Route::post('/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('updateStatus');
         Route::get('/status/{status}', [AdminOrderController::class, 'getByStatus'])->name('getByStatus');
     });

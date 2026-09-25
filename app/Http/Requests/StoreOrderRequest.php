@@ -97,20 +97,41 @@ class StoreOrderRequest extends FormRequest
             $customBoxes = $items->where('type', 'kustom_box');
 
             if ($customBoxes->isNotEmpty()) {
+                $validCapacities = \App\Models\SnackBoxPackage::where('is_active', true)->pluck('capacity')->toArray();
+                if (empty($validCapacities)) {
+                    $validCapacities = [3, 4, 5];
+                }
+
                 $grouped = $customBoxes->groupBy(fn($i) => $i['box_group_id'] ?? 'default');
                 foreach ($grouped as $boxGroupId => $boxItems) {
-                    $gcd = function ($a, $b) use (&$gcd) {
-                        return $b ? $gcd($b, $a % $b) : $a;
-                    };
-                    $boxQty = $boxItems->pluck('quantity')->reduce(fn($carry, $q) => $carry ? $gcd($carry, (int)$q) : (int)$q, 0);
-                    if ($boxQty <= 0) {
-                        $boxQty = (int) ($boxItems->first()['quantity'] ?? 0);
+                    // Check uniform quantity across items in the box group
+                    $quantities = $boxItems->pluck('quantity')->map(fn($q) => (int)$q)->unique();
+                    if ($quantities->count() > 1) {
+                        $validator->errors()->add(
+                            'items',
+                            'Jumlah kuantiti untuk semua kue dalam satu paket snack box harus sama.'
+                        );
+                        break;
                     }
 
+                    $boxQty = (int) ($quantities->first() ?? 0);
+
+                    // Validate minimum order quantity for snack boxes
                     if ($boxQty < $minBox) {
                         $validator->errors()->add(
                             'items',
                             "Minimal pemesanan untuk setiap paket snack box adalah {$minBox} box (saat ini: {$boxQty} box)."
+                        );
+                        break;
+                    }
+
+                    // Validate package capacity (number of unique kue in the box)
+                    $itemCount = $boxItems->count();
+                    if (!in_array($itemCount, $validCapacities)) {
+                        $capacityStr = implode(', ', $validCapacities);
+                        $validator->errors()->add(
+                            'items',
+                            "Paket snack box tidak lengkap. Setiap paket harus berisi {$capacityStr} pilihan kue sesuai kapasitas paket (saat ini: {$itemCount} jenis kue)."
                         );
                         break;
                     }

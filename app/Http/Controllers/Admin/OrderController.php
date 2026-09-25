@@ -3,19 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\CmsSetting;
 use App\Models\Order;
+use App\Models\Product;
 use App\Repositories\OrderRepository;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class OrderController extends Controller
 {
     protected $orderRepository;
+    protected $orderService;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository, OrderService $orderService)
     {
         $this->orderRepository = $orderRepository;
+        $this->orderService = $orderService;
     }
 
     /**
@@ -106,6 +112,54 @@ class OrderController extends Controller
             'order' => $resource,
             'title' => 'Pesanan: ' . $order->order_number,
         ]);
+    }
+
+    /**
+     * Show form for editing the specified order
+     */
+    public function edit(Order $order)
+    {
+        $order->load(['items.product.supplier', 'items.product.category']);
+
+        $availableProducts = Product::where('is_active', true)
+            ->with(['supplier:id,name', 'category:id,name'])
+            ->orderBy('name')
+            ->get(['id', 'supplier_id', 'category_id', 'name', 'sell_price', 'image_url', 'is_active']);
+
+        $cmsSettings = CmsSetting::whereIn('key', ['dp_percentage', 'company_address', 'company_name'])->pluck('value', 'key');
+
+        return Inertia::render('Admin/Order/Edit', [
+            'order' => (new OrderResource($order))->resolve(request()),
+            'availableProducts' => $availableProducts,
+            'cmsSettings' => [
+                'dp_percentage' => (int) ($cmsSettings['dp_percentage'] ?? 70),
+                'company_address' => $cmsSettings['company_address'] ?? 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144',
+                'company_name' => $cmsSettings['company_name'] ?? 'Padu Kue',
+            ],
+            'statuses' => [
+                ['value' => 'pending', 'label' => 'Pending'],
+                ['value' => 'diterima', 'label' => 'Diterima'],
+                ['value' => 'diproses', 'label' => 'Diproses'],
+                ['value' => 'dikemas', 'label' => 'Dikemas'],
+                ['value' => 'dikirim', 'label' => 'Dikirim'],
+                ['value' => 'selesai', 'label' => 'Selesai'],
+            ],
+            'title' => 'Edit Pesanan: ' . $order->order_number,
+        ]);
+    }
+
+    /**
+     * Update the specified order
+     */
+    public function update(UpdateOrderRequest $request, Order $order)
+    {
+        $validated = $request->validated();
+        $items = $validated['items'];
+        unset($validated['items']);
+
+        $this->orderService->updateOrder($order, $validated, $items);
+
+        return redirect()->route('admin.orders.index')->with('success', 'Pesanan ' . $order->order_number . ' berhasil diperbarui');
     }
 
     /**

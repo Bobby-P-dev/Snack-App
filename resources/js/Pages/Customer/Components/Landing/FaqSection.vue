@@ -29,7 +29,7 @@ const faqs = [
     }
 ];
 
-const openIndex = ref(0); // Open first by default for better engagement
+const openIndex = ref(null); // Tutup semua secara default saat awal dimuat
 
 const toggleFaq = (index) => {
     openIndex.value = openIndex.value === index ? null : index;

@@ -35,82 +35,130 @@
                                 </span>
                             </div>
 
-                            <!-- Items List -->
-                            <div class="divide-y divide-cream-100">
+                            <!-- Grouped Snack Boxes (Atomic Package Units) -->
+                            <div class="p-4 md:p-6 space-y-4">
                                 <div
-                                    v-for="item in snackBoxItems"
-                                    :key="item.box_group_id ? `${item.box_group_id}-${item.product_id}` : item.product_id"
-                                    class="px-4 md:px-6 py-4 hover:bg-amber-50/20 transition"
+                                    v-for="box in groupedSnackBoxes"
+                                    :key="box.box_group_id || 'default'"
+                                    class="bg-amber-50/40 border border-amber-200/80 rounded-2xl p-4 sm:p-5 space-y-3.5 transition hover:border-amber-300 shadow-2xs"
                                 >
-                                    <div class="flex gap-3 sm:gap-4 items-center">
-                                        <!-- Product Image -->
-                                        <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-cream-100 rounded-xl overflow-hidden border border-cream-200">
-                                            <img
-                                                v-if="item.product?.image_url"
-                                                :src="getImageUrl(item.product.image_url)"
-                                                :alt="item.product?.name || 'Product'"
-                                                class="w-full h-full object-cover"
-                                            />
-                                            <div v-else class="w-full h-full flex items-center justify-center bg-cream-100 text-brown-400">
-                                                <Image class="w-6 h-6 text-cream-400" />
+                                    <!-- Box Header -->
+                                    <div class="flex items-start justify-between gap-3 border-b border-amber-200/60 pb-3">
+                                        <div>
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <h3 class="text-sm sm:text-base font-bold text-brown-900">
+                                                    Paket Snack Box
+                                                </h3>
+                                                <span
+                                                    :class="[
+                                                        'text-[10px] font-bold px-2 py-0.5 rounded-full',
+                                                        [3, 4, 5].includes(box.items.length)
+                                                            ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                                                            : 'bg-red-100 text-red-700 font-extrabold border border-red-200'
+                                                    ]"
+                                                >
+                                                    {{ [3, 4, 5].includes(box.items.length) ? `Paket ${box.items.length} Kue` : `⚠️ Tidak Lengkap (${box.items.length} Kue)` }}
+                                                </span>
                                             </div>
+                                            <p class="text-xs text-brown-500 mt-0.5 font-medium">
+                                                {{ box.boxQty }} box &bull; Rp {{ formatNumber(box.pricePerBox) }} / box
+                                            </p>
                                         </div>
 
-                                        <!-- Product Details -->
-                                        <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex items-center gap-1.5">
-                                                    <h3 class="text-sm sm:text-base font-bold text-brown-900 truncate">
-                                                        {{ item.product?.name || 'Produk' }}
-                                                    </h3>
-                                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">
-                                                        <Package class="w-2.5 h-2.5" /> Snack Box
-                                                    </span>
-                                                </div>
-                                                <p class="text-xs text-brown-500 mt-0.5">
-                                                    Rp {{ formatNumber(item.product?.sell_price || 0) }} / box
+                                        <button
+                                            @click="removeBoxGroup(box.box_group_id)"
+                                            class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer"
+                                            title="Hapus seluruh paket snack box"
+                                            aria-label="Hapus paket snack box"
+                                        >
+                                            <Trash2 class="w-4 h-4 sm:w-5 sm:h-5" />
+                                        </button>
+                                    </div>
+
+                                    <!-- Warning if incomplete -->
+                                    <div
+                                        v-if="![3, 4, 5].includes(box.items.length)"
+                                        class="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2 text-red-700 text-xs"
+                                    >
+                                        <AlertCircle class="w-4 h-4 shrink-0 text-red-600" />
+                                        <span>Paket ini tidak lengkap (baru {{ box.items.length }} kue). Paket harus berisi 3, 4, atau 5 pilihan kue.</span>
+                                    </div>
+
+                                    <!-- Items inside box -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 bg-white/70 rounded-xl p-3 border border-amber-200/40">
+                                        <div
+                                            v-for="item in box.items"
+                                            :key="item.product_id"
+                                            class="flex items-center gap-2.5 py-1 px-1.5"
+                                        >
+                                            <div class="w-10 h-10 rounded-lg bg-cream-100 overflow-hidden shrink-0 border border-cream-200 flex items-center justify-center">
+                                                <img
+                                                    v-if="item.product?.image_url"
+                                                    :src="getImageUrl(item.product.image_url)"
+                                                    :alt="item.product?.name"
+                                                    class="w-full h-full object-cover"
+                                                />
+                                                <Image v-else class="w-5 h-5 text-cream-400" />
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <p class="font-semibold text-brown-900 text-xs truncate">
+                                                    {{ item.product?.name }}
+                                                </p>
+                                                <p class="text-[11px] text-brown-500 font-mono">
+                                                    Rp {{ formatNumber(item.product?.sell_price || 0) }}
                                                 </p>
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 flex-shrink-0">
-                                                <p class="text-sm sm:text-base font-extrabold text-brand-600 font-mono">
-                                                    Rp {{ formatNumber((item.product?.sell_price || 0) * (item.quantity || 0)) }}
-                                                </p>
-                                                <!-- Quantity Controls -->
-                                                <div class="flex items-center bg-cream-100/90 rounded-lg p-0.5 border border-cream-200 shadow-2xs">
-                                                    <button
-                                                        :disabled="item.quantity <= minOrderBox"
-                                                        @click="updateQuantity(item.product_id, item.quantity - 1, 'kustom_box', item.box_group_id)"
-                                                        :class="[
-                                                            'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition rounded-md',
-                                                            item.quantity <= minOrderBox
-                                                                ? 'opacity-30 cursor-not-allowed text-brown-400'
-                                                                : 'hover:bg-cream-200 text-brown-800 active:scale-95 cursor-pointer'
-                                                        ]"
-                                                        :title="`Minimal ${minOrderBox} box`"
-                                                        aria-label="Kurangi jumlah box"
-                                                    >
-                                                        <Minus class="w-3.5 h-3.5" />
-                                                    </button>
-                                                    <span class="px-2 font-bold text-xs sm:text-sm min-w-[28px] text-center text-brown-900 font-mono">{{ item.quantity || 0 }}</span>
-                                                    <button
-                                                        @click="updateQuantity(item.product_id, item.quantity + 1, 'kustom_box', item.box_group_id)"
-                                                        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-cream-200 text-brown-800 transition rounded-md active:scale-95 cursor-pointer"
-                                                        aria-label="Tambah jumlah box"
-                                                    >
-                                                        <Plus class="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-
-                                                <button
-                                                    @click="removeItem(item.product_id, 'kustom_box', item.box_group_id)"
-                                                    class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer"
-                                                    title="Hapus dari paket"
-                                                    aria-label="Hapus item"
-                                                >
-                                                    <Trash2 class="w-4 h-4 sm:w-5 sm:h-5" />
-                                                </button>
+                                    <!-- Box Quantity & Subtotal Controls -->
+                                    <div class="flex items-center justify-between pt-1">
+                                        <div class="flex items-center bg-cream-100/90 rounded-lg p-0.5 border border-cream-200 shadow-2xs">
+                                            <button
+                                                :disabled="box.boxQty <= minOrderBox"
+                                                @click="updateBoxGroupQty(box.box_group_id, box.boxQty - 1)"
+                                                :class="[
+                                                    'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition rounded-md',
+                                                    box.boxQty <= minOrderBox
+                                                        ? 'opacity-30 cursor-not-allowed text-brown-400'
+                                                        : 'hover:bg-cream-200 text-brown-800 active:scale-95 cursor-pointer'
+                                                ]"
+                                                :title="`Minimal ${minOrderBox} box`"
+                                                aria-label="Kurangi jumlah box"
+                                            >
+                                                <Minus class="w-3.5 h-3.5" />
+                                            </button>
+                                            <div class="flex items-center px-1 sm:px-1.5">
+                                                <input
+                                                    type="number"
+                                                    inputmode="numeric"
+                                                    pattern="[0-9]*"
+                                                    :min="minOrderBox"
+                                                    max="5000"
+                                                    :value="box.boxQty"
+                                                    @focus="$event.target.select()"
+                                                    @change="(e) => handleBoxQtyInput(box.box_group_id, e)"
+                                                    @blur="(e) => handleBoxQtyInput(box.box_group_id, e)"
+                                                    @keydown.enter="$event.target.blur()"
+                                                    class="w-12 sm:w-14 text-center font-bold text-xs sm:text-sm text-brown-900 font-mono bg-white border border-cream-300 rounded focus:outline-none focus:ring-1 focus:ring-brand-500 py-0.5 px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    aria-label="Ketik jumlah box"
+                                                />
+                                                <span class="text-xs text-brown-600 font-medium ml-1 select-none">box</span>
                                             </div>
+                                            <button
+                                                @click="updateBoxGroupQty(box.box_group_id, box.boxQty + 1)"
+                                                class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-cream-200 text-brown-800 transition rounded-md active:scale-95 cursor-pointer"
+                                                aria-label="Tambah jumlah box"
+                                            >
+                                                <Plus class="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+
+                                        <div class="text-right">
+                                            <span class="text-xs text-brown-400 block">Subtotal Paket:</span>
+                                            <span class="text-sm sm:text-base font-extrabold text-brand-600 font-mono">
+                                                Rp {{ formatNumber(box.subtotal) }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -195,7 +243,22 @@
                                                     >
                                                         <Minus class="w-3.5 h-3.5" />
                                                     </button>
-                                                    <span class="px-2 font-bold text-xs sm:text-sm min-w-[28px] text-center text-brown-900 font-mono">{{ item.quantity || 0 }}</span>
+                                                    <div class="flex items-center px-1">
+                                                        <input
+                                                            type="number"
+                                                            inputmode="numeric"
+                                                            pattern="[0-9]*"
+                                                            :min="minOrderSatuan"
+                                                            max="5000"
+                                                            :value="item.quantity || 0"
+                                                            @focus="$event.target.select()"
+                                                            @change="(e) => handleSatuanQtyInput(item.product_id, e)"
+                                                            @blur="(e) => handleSatuanQtyInput(item.product_id, e)"
+                                                            @keydown.enter="$event.target.blur()"
+                                                            class="w-12 sm:w-14 text-center font-bold text-xs sm:text-sm text-brown-900 font-mono bg-white border border-cream-300 rounded focus:outline-none focus:ring-1 focus:ring-brand-500 py-0.5 px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                            aria-label="Ketik jumlah satuan"
+                                                        />
+                                                    </div>
                                                     <button
                                                         @click="updateQuantity(item.product_id, item.quantity + 1, 'satuan')"
                                                         class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-cream-200 text-brown-800 transition rounded-md active:scale-95 cursor-pointer"
@@ -345,8 +408,26 @@
                                     </p>
                                 </div>
 
+                                <!-- Incomplete Snack Box Warning Banner -->
+                                <div v-if="hasIncompleteBox" class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-start gap-2.5 mt-3">
+                                    <AlertCircle class="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+                                    <div>
+                                        <p class="font-bold text-rose-900">Paket Snack Box Belum Sesuai</p>
+                                        <p class="mt-0.5 text-rose-600 leading-relaxed">Ada paket box yang isian kuenya tidak sesuai kapasitas paket (wajib 3, 4, atau 5 macam kue). Silakan sesuaikan atau hapus paket yang belum lengkap.</p>
+                                    </div>
+                                </div>
+
                                 <!-- Checkout Button -->
+                                <button
+                                    v-if="hasIncompleteBox"
+                                    type="button"
+                                    disabled
+                                    class="block w-full bg-slate-200 text-slate-400 py-3.5 px-4 rounded-xl cursor-not-allowed font-bold text-center text-sm md:text-base mt-4 shadow-none"
+                                >
+                                    Lanjut ke Checkout
+                                </button>
                                 <Link
+                                    v-else
                                     :href="`/checkout?payment_type=${paymentType}`"
                                     class="block w-full bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition font-bold text-center text-sm md:text-base mt-4"
                                 >
@@ -392,7 +473,7 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { ref, computed, watch, reactive } from 'vue';
-import { Image, Minus, Plus, Trash2, ShoppingCart, Check, Package, CakeSlice } from 'lucide-vue-next';
+import { Image, Minus, Plus, Trash2, ShoppingCart, Check, Package, CakeSlice, AlertCircle } from 'lucide-vue-next';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Footer from '@/Pages/Customer/Components/Landing/Footer.vue';
 import { useCartStore } from '@/Stores/CartStore.js';
@@ -433,6 +514,77 @@ watch(() => props.cart, (newCart) => {
 const snackBoxItems = computed(() => cartItems.filter(item => item.type === 'kustom_box'));
 const satuanItems = computed(() => cartItems.filter(item => (item.type || 'satuan') !== 'kustom_box'));
 const hasBothCategories = computed(() => snackBoxItems.value.length > 0 && satuanItems.value.length > 0);
+
+// Group snack box items by box_group_id so each box is an atomic package
+const groupedSnackBoxes = computed(() => {
+    const groups = {};
+    snackBoxItems.value.forEach((item) => {
+        const gid = item.box_group_id || 'default';
+        if (!groups[gid]) {
+            groups[gid] = {
+                box_group_id: item.box_group_id,
+                boxQty: item.quantity || 1,
+                items: [],
+                subtotal: 0,
+            };
+        }
+        groups[gid].items.push(item);
+        const itemPrice = item?.product?.sell_price || 0;
+        const itemQty = item?.quantity || 1;
+        groups[gid].subtotal += itemPrice * itemQty;
+    });
+    return Object.values(groups).map((g) => ({
+        ...g,
+        pricePerBox: g.boxQty > 0 ? Math.round(g.subtotal / g.boxQty) : g.subtotal,
+    }));
+});
+
+const hasIncompleteBox = computed(() => {
+    return groupedSnackBoxes.value.some(g => ![3, 4, 5].includes(g.items.length));
+});
+
+const removeBoxGroup = (boxGroupId) => {
+    cartStore.removeBoxGroup(boxGroupId);
+    reloadCart();
+};
+
+const updateBoxGroupQty = (boxGroupId, newQuantity) => {
+    if (newQuantity <= 0) {
+        removeBoxGroup(boxGroupId);
+        return;
+    }
+    // Update local reactive state immediately
+    cartItems.forEach(item => {
+        if (item.box_group_id == boxGroupId && item.type === 'kustom_box') {
+            item.quantity = newQuantity;
+        }
+    });
+    cartStore.updateBoxGroupQty(boxGroupId, newQuantity);
+};
+
+const handleBoxQtyInput = (boxGroupId, event) => {
+    let val = parseInt(event.target.value, 10);
+    const min = minOrderBox.value || 10;
+    if (isNaN(val) || val < min) {
+        val = min;
+    } else if (val > 5000) {
+        val = 5000;
+    }
+    event.target.value = val;
+    updateBoxGroupQty(boxGroupId, val);
+};
+
+const handleSatuanQtyInput = (productId, event) => {
+    let val = parseInt(event.target.value, 10);
+    const min = minOrderSatuan.value || 10;
+    if (isNaN(val) || val < min) {
+        val = min;
+    } else if (val > 5000) {
+        val = 5000;
+    }
+    event.target.value = val;
+    updateQuantity(productId, val, 'satuan');
+};
 
 const snackBoxSubtotal = computed(() => {
     return snackBoxItems.value.reduce((sum, item) => {
