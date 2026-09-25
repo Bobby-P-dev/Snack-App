@@ -24,6 +24,8 @@ class ProductService
      */
     public function createProduct(array $data, $imageFile = null): \App\Models\Product
     {
+        unset($data['image']);
+
         if ($imageFile) {
             $data['image_url'] = $this->uploadAndCompressImage($imageFile);
         }
@@ -36,6 +38,8 @@ class ProductService
      */
     public function updateProduct($productId, array $data, $imageFile = null): \App\Models\Product
     {
+        unset($data['image']);
+
         if ($imageFile) {
             $product = $this->productRepository->find($productId);
 
@@ -56,8 +60,11 @@ class ProductService
      */
     public function uploadAndCompressImage($imageFile): string
     {
+        // Support UploadedFile instance or string path
+        $path = is_string($imageFile) ? $imageFile : $imageFile->getRealPath();
+
         // Read image using v4 syntax
-        $image = $this->imageManager->decodePath($imageFile->getRealPath());
+        $image = $this->imageManager->decode($path);
 
         // Resize to max 800x800 while maintaining aspect ratio
         $image->scaleDown(width: 800, height: 800);
@@ -66,10 +73,14 @@ class ProductService
         $encoded = $image->encodeUsingFileExtension('webp', quality: 75);
 
         // Generate unique filename
-        $filename = 'products/' . uniqid() . '.webp';
+        $filename = 'products/' . bin2hex(random_bytes(16)) . '.webp';
 
         // Upload to S3
-        Storage::disk('s3')->put($filename, (string) $encoded);
+        $uploaded = Storage::disk('s3')->put($filename, (string) $encoded);
+
+        if (!$uploaded) {
+            throw new \RuntimeException('Gagal mengunggah gambar produk ke object storage S3/MinIO.');
+        }
 
         return $filename;
     }

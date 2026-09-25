@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { LayoutGrid, List, SlidersHorizontal, PackageSearch, ChevronLeft, ChevronRight, Sparkles, ArrowDownNarrowWide, ArrowUpWideNarrow } from 'lucide-vue-next';
+import { LayoutGrid, List, SlidersHorizontal, PackageSearch, ChevronLeft, ChevronRight, Sparkles, ArrowDownNarrowWide, ArrowUpWideNarrow, ArrowDownAZ } from 'lucide-vue-next';
 import ProductCard from '@/Pages/Customer/Components/ProductCard.vue';
 import CustomSelect from '@/Components/UI/CustomSelect.vue';
 
@@ -135,5 +135,6 @@ const sortOptions = [
     { value: 'latest', label: 'Terbaru', icon: Sparkles, description: 'Produk paling anyar' },
     { value: 'price_asc', label: 'Termurah', icon: ArrowDownNarrowWide, description: 'Mulai dari harga terendah' },
     { value: 'price_desc', label: 'Termahal', icon: ArrowUpWideNarrow, description: 'Porsi & kualitas istimewa' },
+    { value: 'name_asc', label: 'Nama A - Z', icon: ArrowDownAZ, description: 'Berdasarkan urutan alfabet' },
 ];
 </script>

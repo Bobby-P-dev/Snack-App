@@ -128,10 +128,21 @@ class CartController extends Controller
     public function remove()
     {
         $productId = request()->get('product_id');
+        $type = request()->get('type');
+        $boxGroupId = request()->get('box_group_id');
 
         $cart = session()->get('cart', []);
-        $cart = array_filter($cart, function ($item) use ($productId) {
-            return $item['product_id'] != $productId;
+        $cart = array_filter($cart, function ($item) use ($productId, $type, $boxGroupId) {
+            if ($item['product_id'] != $productId) {
+                return true;
+            }
+            if ($type && ($item['type'] ?? 'satuan') !== $type) {
+                return true;
+            }
+            if ($boxGroupId && ($item['box_group_id'] ?? null) != $boxGroupId) {
+                return true;
+            }
+            return false;
         });
 
         session()->put('cart', array_values($cart));
@@ -144,20 +155,50 @@ class CartController extends Controller
     }
 
     /**
+     * Remove entire box group from cart (API)
+     */
+    public function removeBoxGroup()
+    {
+        $boxGroupId = request()->get('box_group_id');
+
+        $cart = session()->get('cart', []);
+        $cart = array_filter($cart, function ($item) use ($boxGroupId) {
+            return ($item['box_group_id'] ?? null) != $boxGroupId;
+        });
+
+        session()->put('cart', array_values($cart));
+
+        return response()->json([
+            'success' => true,
+            'cartCount' => count($cart),
+            'message' => 'Paket snack box dihapus dari keranjang',
+        ]);
+    }
+
+    /**
      * Update cart item quantity (API)
      */
     public function updateQuantity()
     {
         $productId = request()->get('product_id');
         $quantity = request()->get('quantity', 1);
+        $type = request()->get('type');
+        $boxGroupId = request()->get('box_group_id');
 
         $cart = session()->get('cart', []);
 
         foreach ($cart as &$item) {
-            if ($item['product_id'] == $productId) {
+            $matchProduct = $item['product_id'] == $productId;
+            $matchType = !$type || ($item['type'] ?? 'satuan') === $type;
+            $matchGroup = !$boxGroupId || ($item['box_group_id'] ?? null) == $boxGroupId;
+
+            if ($matchProduct && $matchType && $matchGroup) {
                 if ($quantity <= 0) {
-                    // Remove if quantity is 0 or less
-                    $cart = array_filter($cart, fn($i) => $i['product_id'] != $productId);
+                    $cart = array_filter($cart, fn($i) => !(
+                        $i['product_id'] == $productId &&
+                        (!$type || ($i['type'] ?? 'satuan') === $type) &&
+                        (!$boxGroupId || ($i['box_group_id'] ?? null) == $boxGroupId)
+                    ));
                 } else {
                     $item['quantity'] = $quantity;
                 }

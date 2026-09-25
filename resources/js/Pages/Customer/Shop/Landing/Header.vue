@@ -8,18 +8,16 @@
                     Beranda
                 </Link>
                 <span class="text-gray-400">&rsaquo;</span>
-                <span class="text-brown-800 font-semibold">Produk</span>
+                <span class="text-brown-800 font-semibold">Kue Satuan</span>
             </nav>
 
             <!-- Title & Description -->
             <div class="mb-8">
                 <h1 class="text-3xl md:text-4xl font-bold text-brown-800 mb-3 tracking-tight">
-                    {{ activeType === 'box' ? 'Snack Box' : 'Kue Satuan' }}
+                    Kue Satuan & Jajanan Pasar
                 </h1>
                 <p class="text-brown-600 text-base md:text-lg max-w-3xl">
-                    {{ activeType === 'box' 
-                        ? 'Pilihan snack box premium untuk berbagai acara Anda.' 
-                        : 'Pilih aneka kue dan jajanan pasar favorit dengan cita rasa lezat berkualitas.' }}
+                    Pilih aneka kue basah, pastry, bolu, donat, dan jajanan pasar favorit dengan cita rasa lezat berkualitas untuk berbagai kebutuhan acara Anda.
                 </p>
             </div>
 
@@ -31,9 +29,9 @@
                     <span class="sm:hidden">Fresh</span>
                 </div>
                 <div class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-sm font-semibold text-brown-800 text-center sm:text-left">
-                    <PackageOpen class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
-                    <span class="hidden sm:inline">Bisa Custom Isi</span>
-                    <span class="sm:hidden">Custom</span>
+                    <Sparkles class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
+                    <span class="hidden sm:inline">Pilihan Lengkap</span>
+                    <span class="sm:hidden">Lengkap</span>
                 </div>
                 <div class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-sm font-semibold text-brown-800 text-center sm:text-left">
                    <Truck class="h-6 w-6 sm:h-5 sm:w-5 text-brand-500 sm:text-brand-500 flex-shrink-0 mb-1 sm:mb-0" stroke-width="1.5" />
@@ -52,12 +50,5 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Leaf, PackageOpen, ShieldCheck, Truck, ArrowLeft } from 'lucide-vue-next';
-
-defineProps({
-    activeType: {
-        type: String,
-        default: 'box'
-    }
-});
+import { Leaf, Sparkles, ShieldCheck, Truck, ArrowLeft } from 'lucide-vue-next';
 </script>

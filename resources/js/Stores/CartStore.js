@@ -62,21 +62,47 @@ export function useCartStore() {
         .catch(error => console.error('Error adding to cart:', error))
     }
 
-    function removeItem(productId) {
-        state.items = state.items.filter(item => item.id !== productId)
-        axios.post('/cart/remove', { product_id: productId }, {
+    function removeItem(productId, type = null, boxGroupId = null) {
+        state.items = state.items.filter(item => {
+            if (item.id !== productId) return true;
+            if (type && item.type !== type) return true;
+            if (boxGroupId && item.box_group_id !== boxGroupId) return true;
+            return false;
+        });
+        axios.post('/cart/remove', { 
+            product_id: productId,
+            type: type,
+            box_group_id: boxGroupId,
+        }, {
             headers: { 'Accept': 'application/json' }
-        }).catch(e => console.error(e))
+        }).catch(e => console.error(e));
     }
 
-    function updateQty(productId, newQty) {
-        if (newQty <= 0) { removeItem(productId); return }
-        const item = state.items.find(i => i.id === productId)
+    function removeBoxGroup(boxGroupId) {
+        state.items = state.items.filter(item => item.box_group_id !== boxGroupId);
+        axios.post('/cart/remove-box-group', { box_group_id: boxGroupId }, {
+            headers: { 'Accept': 'application/json' }
+        }).catch(e => console.error(e));
+    }
+
+    function updateQty(productId, newQty, type = null, boxGroupId = null) {
+        if (newQty <= 0) { removeItem(productId, type, boxGroupId); return; }
+        const item = state.items.find(i => {
+            if (i.id !== productId) return false;
+            if (type && i.type !== type) return false;
+            if (boxGroupId && i.box_group_id !== boxGroupId) return false;
+            return true;
+        });
         if (item) {
-            item.qty = newQty
-            axios.post('/cart/update-quantity', { product_id: productId, quantity: newQty }, {
+            item.qty = newQty;
+            axios.post('/cart/update-quantity', { 
+                product_id: productId, 
+                quantity: newQty,
+                type: type,
+                box_group_id: boxGroupId,
+            }, {
                 headers: { 'Accept': 'application/json' }
-            }).catch(e => console.error(e))
+            }).catch(e => console.error(e));
         }
     }
 
@@ -132,6 +158,7 @@ export function useCartStore() {
         setItems,
         addToCart,
         removeItem,
+        removeBoxGroup,
         updateQty,
         clearCart,
         openCart,

@@ -96,6 +96,7 @@ class ProductController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal, periksa kembali input Anda');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menambahkan produk: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return redirect()->back()->withInput()->with('error', 'Gagal menambahkan produk: ' . $e->getMessage());
         }
     }
@@ -123,6 +124,7 @@ class ProductController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput()->with('error', 'Validasi gagal, periksa kembali input Anda');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal memperbarui produk: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return redirect()->back()->withInput()->with('error', 'Gagal memperbarui produk: ' . $e->getMessage());
         }
     }

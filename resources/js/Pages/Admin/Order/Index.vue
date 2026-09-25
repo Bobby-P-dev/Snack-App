@@ -10,7 +10,7 @@
       </div>
 
       <!-- Filters -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
         <div class="relative">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input v-model="searchQuery" @input="search" type="text" placeholder="Cari no. pesanan, nama, telepon..." class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
@@ -22,6 +22,15 @@
           size="md"
           :full-width="true"
           placeholder="Semua Status"
+          @change="applyFilters"
+        />
+        <CustomSelect
+          v-model="filterPackageType"
+          :options="packageTypeOptions"
+          variant="admin"
+          size="md"
+          :full-width="true"
+          placeholder="Semua Tipe"
           @change="applyFilters"
         />
         <div>
@@ -48,6 +57,7 @@
               <tr class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order No</th>
+                <th class="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">Tipe</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Pickup Date</th>
@@ -68,6 +78,29 @@
                   >
                     {{ order.order_number }}
                   </button>
+                </td>
+                <td class="px-4 py-4 text-center">
+                  <span
+                    v-if="order.package_type === 'snack_box'"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs"
+                    title="Pesanan Snack Box"
+                  >
+                    <span>📦 Box</span>
+                  </span>
+                  <span
+                    v-else-if="order.package_type === 'campuran'"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs"
+                    title="Pesanan Campuran (Snack Box + Kue Satuan)"
+                  >
+                    <span>🍱 Campuran</span>
+                  </span>
+                  <span
+                    v-else
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs"
+                    title="Pesanan Kue Satuan"
+                  >
+                    <span>🧁 Satuan</span>
+                  </span>
                 </td>
                 <td class="px-6 py-4">
                   <div>
@@ -269,6 +302,35 @@
                     </div>
                   </div>
 
+                  <div class="bg-gray-50 p-3.5 rounded-xl flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                      <Package class="w-4 h-4" />
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-xs text-gray-400 font-medium">Kategori Pesanan</p>
+                      <div class="mt-1">
+                        <span
+                          v-if="selectedOrder.package_type === 'snack_box'"
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800"
+                        >
+                          📦 Paket Snack Box
+                        </span>
+                        <span
+                          v-else-if="selectedOrder.package_type === 'campuran'"
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800"
+                        >
+                          🍱 Campuran (Snack Box & Kue Satuan)
+                        </span>
+                        <span
+                          v-else
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800"
+                        >
+                          🧁 Kue Satuan
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="bg-amber-50/70 border border-amber-200/80 p-3.5 rounded-xl sm:col-span-2 flex items-start gap-3">
                     <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
                       <FileText class="w-4 h-4" />
@@ -461,7 +523,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { router, Link } from '@inertiajs/vue3'
 import {
   Search,
@@ -489,7 +551,7 @@ import CustomSelect from '@/Components/UI/CustomSelect.vue'
 const props = defineProps({
   orders: { type: Array, default: () => [] },
   pagination: { type: Object, default: () => ({ current_page: 1, last_page: 1, total: 0, per_page: 10 }) },
-  filters: { type: Object, default: () => ({ search: '', status: '', start_date: '', end_date: '' }) },
+  filters: { type: Object, default: () => ({ search: '', status: '', package_type: '', start_date: '', end_date: '' }) },
 })
 
 const statusOptions = [
@@ -501,6 +563,13 @@ const statusOptions = [
   { value: 'dikirim', label: 'Dikirim', dotClass: 'bg-teal-400' },
   { value: 'selesai', label: 'Selesai', dotClass: 'bg-emerald-400' },
   { value: 'batal', label: 'Batal', dotClass: 'bg-rose-400' },
+]
+
+const packageTypeOptions = [
+  { value: '', label: 'Semua Tipe' },
+  { value: 'snack_box', label: 'Snack Box' },
+  { value: 'satuan', label: 'Kue Satuan' },
+  { value: 'campuran', label: 'Campuran' },
 ]
 
 const rowStatusOptions = [
@@ -516,6 +585,7 @@ const rowStatusOptions = [
 // Filters
 const searchQuery = ref(props.filters?.search || '')
 const filterStatus = ref(props.filters?.status || '')
+const filterPackageType = ref(props.filters?.package_type || '')
 const filterStartDate = ref(props.filters?.start_date || '')
 const filterEndDate = ref(props.filters?.end_date || '')
 
@@ -531,6 +601,7 @@ const applyFilters = () => {
     {
       search: searchQuery.value,
       status: filterStatus.value,
+      package_type: filterPackageType.value,
       start_date: filterStartDate.value,
       end_date: filterEndDate.value,
     },
@@ -541,10 +612,23 @@ const applyFilters = () => {
 const resetFilters = () => {
   searchQuery.value = ''
   filterStatus.value = ''
+  filterPackageType.value = ''
   filterStartDate.value = ''
   filterEndDate.value = ''
   applyFilters()
 }
+
+watch(
+  () => props.filters,
+  (newFilters) => {
+    searchQuery.value = newFilters?.search || ''
+    filterStatus.value = newFilters?.status || ''
+    filterPackageType.value = newFilters?.package_type || ''
+    filterStartDate.value = newFilters?.start_date || ''
+    filterEndDate.value = newFilters?.end_date || ''
+  },
+  { deep: true }
+)
 
 const goToPage = (page) => {
   router.get(

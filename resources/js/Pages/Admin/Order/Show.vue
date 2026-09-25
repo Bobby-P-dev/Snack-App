@@ -12,10 +12,28 @@
             <ArrowLeft class="w-5 h-5" />
           </Link>
           <div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <h1 class="text-2xl font-bold text-gray-900 font-mono">{{ order.order_number }}</h1>
               <span :class="['px-2.5 py-1 rounded-full text-xs font-semibold', statusBadge(order.status)]">
                 {{ statusLabel(order.status) }}
+              </span>
+              <span
+                v-if="order.package_type === 'snack_box'"
+                class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs"
+              >
+                📦 Paket Snack Box
+              </span>
+              <span
+                v-else-if="order.package_type === 'campuran'"
+                class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs"
+              >
+                🍱 Campuran (Box + Satuan)
+              </span>
+              <span
+                v-else
+                class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs"
+              >
+                🧁 Kue Satuan
               </span>
             </div>
             <p class="text-xs text-gray-500 mt-0.5">Dipesan pada {{ formatDate(order.created_at) }}</p>

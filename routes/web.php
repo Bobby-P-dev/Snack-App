@@ -37,6 +37,7 @@ Route::prefix('cart')->group(function () {
     Route::get('/items', [CartController::class, 'getItems'])->name('cart.items');
     Route::post('/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/remove-box-group', [CartController::class, 'removeBoxGroup'])->name('cart.remove-box-group');
     Route::post('/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
     Route::post('/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::get('/count', [CartController::class, 'getCount'])->name('cart.count');

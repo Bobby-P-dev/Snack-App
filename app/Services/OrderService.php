@@ -239,6 +239,18 @@ class OrderService
                 $orderData['dp_amount'] = ($total * $dpPercentage) / 100;
             }
 
+            // Determine package_type based on items
+            $hasBox = collect($items)->contains(fn ($i) => ($i['type'] ?? '') === 'kustom_box');
+            $hasSatuan = collect($items)->contains(fn ($i) => ($i['type'] ?? '') === 'satuan');
+
+            if ($hasBox && $hasSatuan) {
+                $orderData['package_type'] = 'campuran';
+            } elseif ($hasBox) {
+                $orderData['package_type'] = 'snack_box';
+            } else {
+                $orderData['package_type'] = $orderData['package_type'] ?? 'satuan';
+            }
+
             // Create order
             $order = $this->orderRepository->create($orderData);
 

@@ -83,6 +83,7 @@ class TrackingController extends Controller
                     'pickup_date' => $pickupDateFormatted,
                     'notes' => $order->notes,
                     'status' => strtolower($order->status),
+                    'package_type' => $order->package_type ?? 'satuan',
                     'current_step' => $currentStep,
                     'items' => $items,
                     'subtotal' => $order->total_amount,

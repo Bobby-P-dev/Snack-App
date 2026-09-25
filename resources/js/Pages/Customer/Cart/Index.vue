@@ -12,18 +12,136 @@
             <!-- Main Content -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-12">
                 <div v-if="cartItems.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-                    <!-- Cart Items -->
-                    <div class="lg:col-span-2">
-                        <div class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden">
-                            <!-- Header -->
-                            <div class="bg-gradient-to-r from-cream-50 to-amber-50/60 px-4 md:px-6 py-3.5 border-b border-cream-200">
-                                <p class="text-sm font-bold text-brown-800">{{ cartItems.length }} Produk di Keranjang</p>
+                    <!-- Cart Items Groups -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Kategori 1: Paket Snack Box (Custom) -->
+                        <div v-if="snackBoxItems.length > 0" class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden">
+                            <!-- Category Header -->
+                            <div class="bg-gradient-to-r from-amber-500/10 via-brand-50 to-cream-100 px-4 md:px-6 py-4 border-b border-amber-200/70 flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-2xs">
+                                        <Package class="w-4 h-4 text-amber-800" />
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h2 class="text-sm sm:text-base font-bold text-brown-900 leading-tight">Paket Snack Box</h2>
+                                            <span class="text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-200 px-2 py-0.5 rounded-full">Custom Box</span>
+                                        </div>
+                                        <p class="text-xs text-brown-500 font-medium mt-0.5">Kustomisasi aneka kue per box (min. {{ minOrderBox }} box)</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs sm:text-sm font-bold text-brand-700 bg-brand-50 border border-brand-200/80 px-2.5 py-1 rounded-full font-mono">
+                                    Rp {{ formatNumber(snackBoxSubtotal) }}
+                                </span>
                             </div>
 
                             <!-- Items List -->
                             <div class="divide-y divide-cream-100">
                                 <div
-                                    v-for="item in cartItems"
+                                    v-for="item in snackBoxItems"
+                                    :key="item.box_group_id ? `${item.box_group_id}-${item.product_id}` : item.product_id"
+                                    class="px-4 md:px-6 py-4 hover:bg-amber-50/20 transition"
+                                >
+                                    <div class="flex gap-3 sm:gap-4 items-center">
+                                        <!-- Product Image -->
+                                        <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-cream-100 rounded-xl overflow-hidden border border-cream-200">
+                                            <img
+                                                v-if="item.product?.image_url"
+                                                :src="getImageUrl(item.product.image_url)"
+                                                :alt="item.product?.name || 'Product'"
+                                                class="w-full h-full object-cover"
+                                            />
+                                            <div v-else class="w-full h-full flex items-center justify-center bg-cream-100 text-brown-400">
+                                                <Image class="w-6 h-6 text-cream-400" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Product Details -->
+                                        <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center gap-1.5">
+                                                    <h3 class="text-sm sm:text-base font-bold text-brown-900 truncate">
+                                                        {{ item.product?.name || 'Produk' }}
+                                                    </h3>
+                                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">
+                                                        <Package class="w-2.5 h-2.5" /> Snack Box
+                                                    </span>
+                                                </div>
+                                                <p class="text-xs text-brown-500 mt-0.5">
+                                                    Rp {{ formatNumber(item.product?.sell_price || 0) }} / box
+                                                </p>
+                                            </div>
+
+                                            <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 flex-shrink-0">
+                                                <p class="text-sm sm:text-base font-extrabold text-brand-600 font-mono">
+                                                    Rp {{ formatNumber((item.product?.sell_price || 0) * (item.quantity || 0)) }}
+                                                </p>
+                                                <!-- Quantity Controls -->
+                                                <div class="flex items-center bg-cream-100/90 rounded-lg p-0.5 border border-cream-200 shadow-2xs">
+                                                    <button
+                                                        :disabled="item.quantity <= minOrderBox"
+                                                        @click="updateQuantity(item.product_id, item.quantity - 1, 'kustom_box', item.box_group_id)"
+                                                        :class="[
+                                                            'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition rounded-md',
+                                                            item.quantity <= minOrderBox
+                                                                ? 'opacity-30 cursor-not-allowed text-brown-400'
+                                                                : 'hover:bg-cream-200 text-brown-800 active:scale-95 cursor-pointer'
+                                                        ]"
+                                                        :title="`Minimal ${minOrderBox} box`"
+                                                        aria-label="Kurangi jumlah box"
+                                                    >
+                                                        <Minus class="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <span class="px-2 font-bold text-xs sm:text-sm min-w-[28px] text-center text-brown-900 font-mono">{{ item.quantity || 0 }}</span>
+                                                    <button
+                                                        @click="updateQuantity(item.product_id, item.quantity + 1, 'kustom_box', item.box_group_id)"
+                                                        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-cream-200 text-brown-800 transition rounded-md active:scale-95 cursor-pointer"
+                                                        aria-label="Tambah jumlah box"
+                                                    >
+                                                        <Plus class="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+
+                                                <button
+                                                    @click="removeItem(item.product_id, 'kustom_box', item.box_group_id)"
+                                                    class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer"
+                                                    title="Hapus dari paket"
+                                                    aria-label="Hapus item"
+                                                >
+                                                    <Trash2 class="w-4 h-4 sm:w-5 sm:h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kategori 2: Kue Satuan & Eceran -->
+                        <div v-if="satuanItems.length > 0" class="bg-white rounded-2xl shadow-sm border border-cream-200/80 overflow-hidden">
+                            <!-- Category Header -->
+                            <div class="bg-gradient-to-r from-rose-500/10 via-cream-50 to-amber-50/60 px-4 md:px-6 py-4 border-b border-rose-200/70 flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center shadow-2xs">
+                                        <CakeSlice class="w-4 h-4 text-rose-800" />
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h2 class="text-sm sm:text-base font-bold text-brown-900 leading-tight">Kue Satuan & Eceran</h2>
+                                            <span class="text-[10px] font-bold text-rose-800 bg-rose-100/90 border border-rose-200 px-2 py-0.5 rounded-full">Kue Tradisional & Pastry</span>
+                                        </div>
+                                        <p class="text-xs text-brown-500 font-medium mt-0.5">Pemesanan satuan eceran (min. {{ minOrderSatuan }} pcs per jenis)</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs sm:text-sm font-bold text-brand-700 bg-brand-50 border border-brand-200/80 px-2.5 py-1 rounded-full font-mono">
+                                    Rp {{ formatNumber(satuanSubtotal) }}
+                                </span>
+                            </div>
+
+                            <!-- Items List -->
+                            <div class="divide-y divide-cream-100">
+                                <div
+                                    v-for="item in satuanItems"
                                     :key="item.product_id"
                                     class="px-4 md:px-6 py-4 hover:bg-cream-50/40 transition"
                                 >
@@ -44,38 +162,43 @@
                                         <!-- Product Details -->
                                         <div class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                                             <div class="flex-1 min-w-0">
-                                                <h3 class="text-sm sm:text-base font-bold text-brown-900 truncate">
-                                                    {{ item.product?.name || 'Produk tidak ditemukan' }}
-                                                </h3>
+                                                <div class="flex items-center gap-1.5">
+                                                    <h3 class="text-sm sm:text-base font-bold text-brown-900 truncate">
+                                                        {{ item.product?.name || 'Produk tidak ditemukan' }}
+                                                    </h3>
+                                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded">
+                                                        <CakeSlice class="w-2.5 h-2.5" /> Kue Satuan
+                                                    </span>
+                                                </div>
                                                 <p v-if="item.product?.category" class="text-xs text-brown-500 mt-0.5">
                                                     {{ item.product.category.name }}
                                                 </p>
                                             </div>
 
                                             <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 flex-shrink-0">
-                                                <p class="text-sm sm:text-base font-extrabold text-brand-600">
-                                                    Rp {{ formatNumber(item.product?.sell_price || 0) }}
+                                                <p class="text-sm sm:text-base font-extrabold text-brand-600 font-mono">
+                                                    Rp {{ formatNumber((item.product?.sell_price || 0) * (item.quantity || 0)) }}
                                                 </p>
                                                 <!-- Quantity Controls -->
-                                                <div class="flex items-center bg-cream-100/90 rounded-lg p-0.5 border border-cream-200">
+                                                <div class="flex items-center bg-cream-100/90 rounded-lg p-0.5 border border-cream-200 shadow-2xs">
                                                     <button
-                                                        :disabled="item.type === 'satuan' && item.quantity <= 10"
-                                                        @click="updateQuantity(item.product_id, item.quantity - 1)"
+                                                        :disabled="item.quantity <= minOrderSatuan"
+                                                        @click="updateQuantity(item.product_id, item.quantity - 1, 'satuan')"
                                                         :class="[
                                                             'w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition rounded-md',
-                                                            item.type === 'satuan' && item.quantity <= 10
+                                                            item.quantity <= minOrderSatuan
                                                                 ? 'opacity-30 cursor-not-allowed text-brown-400'
                                                                 : 'hover:bg-cream-200 text-brown-800 active:scale-95 cursor-pointer'
                                                         ]"
-                                                        :title="item.type === 'satuan' && item.quantity <= 10 ? 'Minimal 10 pcs untuk kue satuan' : 'Kurangi jumlah'"
+                                                        :title="`Minimal ${minOrderSatuan} pcs untuk kue satuan`"
                                                         aria-label="Kurangi jumlah"
                                                     >
                                                         <Minus class="w-3.5 h-3.5" />
                                                     </button>
-                                                    <span class="px-2 font-bold text-xs sm:text-sm min-w-[28px] text-center text-brown-900">{{ item.quantity || 0 }}</span>
+                                                    <span class="px-2 font-bold text-xs sm:text-sm min-w-[28px] text-center text-brown-900 font-mono">{{ item.quantity || 0 }}</span>
                                                     <button
-                                                        @click="updateQuantity(item.product_id, item.quantity + 1)"
-                                                        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-cream-200 text-brown-800 transition rounded-md active:scale-95"
+                                                        @click="updateQuantity(item.product_id, item.quantity + 1, 'satuan')"
+                                                        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-cream-200 text-brown-800 transition rounded-md active:scale-95 cursor-pointer"
                                                         aria-label="Tambah jumlah"
                                                     >
                                                         <Plus class="w-3.5 h-3.5" />
@@ -83,8 +206,8 @@
                                                 </div>
 
                                                 <button
-                                                    @click="removeItem(item.product_id)"
-                                                    class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition"
+                                                    @click="removeItem(item.product_id, 'satuan')"
+                                                    class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer"
                                                     title="Hapus item"
                                                     aria-label="Hapus item"
                                                 >
@@ -108,10 +231,22 @@
 
                             <!-- Summary Content -->
                             <div class="px-4 md:px-6 py-6 space-y-4">
+                                <!-- Category Subtotals if both exist -->
+                                <div v-if="hasBothCategories" class="space-y-2 pb-3 border-b border-cream-200/70 text-xs">
+                                    <div class="flex justify-between text-brown-600">
+                                        <span class="flex items-center gap-1.5 font-medium"><Package class="w-3.5 h-3.5 text-amber-700" /> Subtotal Snack Box</span>
+                                        <span class="font-bold text-brown-800 font-mono">Rp {{ formatNumber(snackBoxSubtotal) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-brown-600">
+                                        <span class="flex items-center gap-1.5 font-medium"><CakeSlice class="w-3.5 h-3.5 text-rose-700" /> Subtotal Kue Satuan</span>
+                                        <span class="font-bold text-brown-800 font-mono">Rp {{ formatNumber(satuanSubtotal) }}</span>
+                                    </div>
+                                </div>
+
                                 <!-- Subtotal -->
                                 <div class="flex justify-between items-center text-sm md:text-base">
-                                    <span class="text-brown-600">Subtotal</span>
-                                    <span class="font-bold text-brown-900">Rp {{ formatNumber(subtotal) }}</span>
+                                    <span class="text-brown-600">Total Subtotal</span>
+                                    <span class="font-bold text-brown-900 font-mono">Rp {{ formatNumber(subtotal) }}</span>
                                 </div>
 
                                 <!-- Total -->
@@ -257,7 +392,7 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { ref, computed, watch, reactive } from 'vue';
-import { Image, Minus, Plus, Trash2, ShoppingCart, Check } from 'lucide-vue-next';
+import { Image, Minus, Plus, Trash2, ShoppingCart, Check, Package, CakeSlice } from 'lucide-vue-next';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Footer from '@/Pages/Customer/Components/Landing/Footer.vue';
 import { useCartStore } from '@/Stores/CartStore.js';
@@ -266,8 +401,11 @@ import { getImageUrl } from '@/helpers.js';
 const page = usePage();
 const cms = computed(() => page.props.cms?.settings || {});
 const dpPercentage = computed(() => parseInt(cms.value.dp_percentage) || 70);
+const minOrderBox = computed(() => parseInt(cms.value.min_order_box) || 10);
+const minOrderSatuan = computed(() => parseInt(cms.value.min_order_satuan) || 10);
 
-const { paymentType, setPaymentType } = useCartStore();
+const cartStore = useCartStore();
+const { paymentType, setPaymentType } = cartStore;
 
 const props = defineProps({
     cart: {
@@ -290,6 +428,27 @@ watch(() => props.cart, (newCart) => {
     cartItems.length = 0;
     cartItems.push(...getCartArray(newCart));
 }, { deep: true });
+
+// Category separation
+const snackBoxItems = computed(() => cartItems.filter(item => item.type === 'kustom_box'));
+const satuanItems = computed(() => cartItems.filter(item => (item.type || 'satuan') !== 'kustom_box'));
+const hasBothCategories = computed(() => snackBoxItems.value.length > 0 && satuanItems.value.length > 0);
+
+const snackBoxSubtotal = computed(() => {
+    return snackBoxItems.value.reduce((sum, item) => {
+        const itemPrice = item?.product?.sell_price || 0;
+        const itemQty = item?.quantity || 0;
+        return sum + (itemPrice * itemQty);
+    }, 0);
+});
+
+const satuanSubtotal = computed(() => {
+    return satuanItems.value.reduce((sum, item) => {
+        const itemPrice = item?.product?.sell_price || 0;
+        const itemQty = item?.quantity || 0;
+        return sum + (itemPrice * itemQty);
+    }, 0);
+});
 
 // Calculate totals
 const subtotal = computed(() => {
@@ -322,29 +481,25 @@ const reloadCart = () => {
 };
 
 // Update quantity
-const updateQuantity = (productId, newQuantity) => {
-    console.log('Updating quantity for product:', productId, 'New qty:', newQuantity);
-
+const updateQuantity = (productId, newQuantity, type = null, boxGroupId = null) => {
     if (newQuantity <= 0) {
-        removeItem(productId);
+        removeItem(productId, type, boxGroupId);
         return;
     }
 
     // Find item
-    const item = cartItems.find(i => parseInt(i.product_id) === parseInt(productId));
+    const item = cartItems.find(i => 
+        parseInt(i.product_id) === parseInt(productId) &&
+        (!type || (i.type || 'satuan') === type) &&
+        (!boxGroupId || i.box_group_id == boxGroupId)
+    );
     if (!item) {
-        console.warn('Item not found:', productId);
         return;
     }
 
-    // Store old quantity for rollback
     const oldQuantity = item.quantity;
-
-    // Immediately update UI
     item.quantity = newQuantity;
-    console.log('Updated quantity locally:', productId, 'to', newQuantity);
 
-    // Then sync with server
     fetch('/cart/update-quantity', {
         method: 'POST',
         headers: {
@@ -355,60 +510,37 @@ const updateQuantity = (productId, newQuantity) => {
         body: JSON.stringify({
             product_id: productId,
             quantity: newQuantity,
+            type: type,
+            box_group_id: boxGroupId,
         }),
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Update quantity response:', data);
         if (!data.success) {
-            // If server update failed, rollback
             item.quantity = oldQuantity;
-            console.warn('Server rejected update, rolled back to:', oldQuantity);
+        } else {
+            cartStore.updateQty(productId, newQuantity, type, boxGroupId);
         }
     })
-    .catch(error => {
-        console.error('Error updating quantity:', error);
-        // On error, rollback
+    .catch(() => {
         item.quantity = oldQuantity;
-        console.warn('Network error, rolled back to:', oldQuantity);
     });
 };
 
 // Remove item from cart
-const removeItem = (productId) => {
-    console.clear();
-    console.log('%c=== REMOVE ITEM CALLED ===', 'color: red; font-size: 14px; font-weight: bold;');
-    console.log('Button clicked with productId:', productId);
-    console.log('productId type:', typeof productId);
-    console.log('Current cart array:', JSON.stringify(cart));
-    console.log('Cart length:', cart.length);
+const removeItem = (productId, type = null, boxGroupId = null) => {
+    if (!productId) return;
 
-    if (!productId) {
-        console.error('❌ productId is empty/undefined!');
-        return;
-    }
+    const index = cartItems.findIndex(i => 
+        parseInt(i.product_id) === parseInt(productId) &&
+        (!type || (i.type || 'satuan') === type) &&
+        (!boxGroupId || i.box_group_id == boxGroupId)
+    );
 
-    console.log('Starting removal process...');
+    if (index === -1) return;
 
-    // Find the index - be very explicit about type coercion
-    const productIdNum = Number(productId);
-    console.log('Converting productId to number:', productIdNum);
+    cartItems.splice(index, 1);
 
-    const index = cartItems.findIndex((item, idx) => {
-        const itemIdNum = Number(item.product_id);
-        const match = itemIdNum === productIdNum;
-        return match;
-    });
-
-    if (index === -1) {
-        console.error('❌ Item NOT found in cart! This is the problem!');
-        return;
-    }
-
-    // Remove using splice
-    const removed = cartItems.splice(index, 1);
-
-    // Sync with server
     fetch('/cart/remove', {
         method: 'POST',
         headers: {
@@ -418,40 +550,29 @@ const removeItem = (productId) => {
         },
         body: JSON.stringify({
             product_id: productId,
+            type: type,
+            box_group_id: boxGroupId,
         }),
     })
-    .then(response => {
-        console.log('Server response status:', response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Server response data:', data);
         if (!data.success) {
-            console.warn('❌ Server rejected removal');
             reloadCart();
         } else {
-            console.log('✓ Server confirmed removal');
+            cartStore.removeItem(productId, type, boxGroupId);
         }
     })
-    .catch(error => {
-        console.error('❌ Fetch error:', error);
+    .catch(() => {
         reloadCart();
-    })
-    .finally(() => {
-        console.log('%c=== REMOVE ITEM END ===', 'color: red; font-size: 14px; font-weight: bold;');
     });
 };
 
 // Clear cart
 const clearCart = () => {
     if (confirm('Apakah Anda yakin ingin mengosongkan keranjang?')) {
-        // Store old cart for rollback
         const oldCart = JSON.parse(JSON.stringify(cartItems));
-
-        // Immediately clear UI (optimistic update)
         cartItems.length = 0;
 
-        // Then sync with server
         fetch('/cart/clear', {
             method: 'POST',
             headers: {
@@ -462,18 +583,13 @@ const clearCart = () => {
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
-                // If server clear failed, rollback
-                cartItems.length = 0;
                 cartItems.push(...oldCart);
-                console.warn('Server rejected clear, rolled back');
+            } else {
+                cartStore.clearCart();
             }
         })
-        .catch(error => {
-            console.error('Error clearing cart:', error);
-            // On error, rollback
-            cartItems.length = 0;
+        .catch(() => {
             cartItems.push(...oldCart);
-            console.warn('Network error, rolled back');
         });
     }
 };

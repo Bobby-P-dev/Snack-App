@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   redis:
     image: redis:7-alpine
     container_name: snackbox_redis
     ports:
-      - "6379:6379"
+      - "${FORWARD_REDIS_PORT:-6380}:6379"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
@@ -36,6 +34,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  minio-create-bucket:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set local http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb --ignore-existing local/snack-app;
+      /usr/bin/mc anonymous set download local/snack-app;
+      exit 0;
+      "
+    networks:
+      - snackbox_network
 
 volumes:
   redis_data:

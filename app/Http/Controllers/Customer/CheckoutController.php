@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\ProductResource;
 use App\Repositories\ProductRepository;
 use App\Services\OrderService;
 use App\Services\CartService;
@@ -47,8 +48,19 @@ class CheckoutController extends Controller
         // Calculate totals
         $totals = $this->cartService->calculateTotal($cart);
 
+        $cartWithProducts = array_map(function ($item) {
+            $product = $this->productRepository->find($item['product_id']);
+            return [
+                'product_id' => $item['product_id'],
+                'product' => $product ? (new ProductResource($product))->resolve() : null,
+                'quantity' => $item['quantity'],
+                'type' => $item['type'] ?? 'satuan',
+                'box_group_id' => $item['box_group_id'] ?? null,
+            ];
+        }, $cart);
+
         return Inertia::render('Customer/Checkout/Show', [
-            'cart' => $cart,
+            'cart' => $cartWithProducts,
             'totals' => $totals,
             'title' => 'Checkout',
         ]);

@@ -441,5 +441,126 @@ class OrderProcessingTest extends TestCase
             ],
         ]);
     }
+
+    public function test_order_creation_sets_package_type_correctly(): void
+    {
+        $supplier = Supplier::create([
+            'name' => 'Mitra Bakery',
+            'phone' => '08123456789',
+            'address' => 'Jakarta',
+            'daily_capacity' => 100,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Kue Basah',
+            'slug' => 'kue-basah',
+        ]);
+
+        $product = Product::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'name' => 'Pastel Ayam',
+            'base_price' => 2000,
+            'sell_price' => 4000,
+            'is_active' => true,
+        ]);
+
+        $orderService = app(OrderService::class);
+
+        // 1. Only Satuan
+        $orderSatuan = $orderService->createOrder([
+            'customer_name' => 'Satuan User',
+            'customer_phone' => '081234567891',
+            'pickup_date' => now()->addDays(1),
+        ], [
+            [
+                'product_id' => $product->id,
+                'quantity' => 10,
+                'price_at_order' => 4000,
+                'type' => 'satuan',
+                'box_group_id' => null,
+            ],
+        ]);
+        $this->assertEquals('satuan', $orderSatuan->fresh()->package_type);
+
+        // 2. Only Snack Box
+        $orderBox = $orderService->createOrder([
+            'customer_name' => 'Box User',
+            'customer_phone' => '081234567892',
+            'pickup_date' => now()->addDays(1),
+        ], [
+            [
+                'product_id' => $product->id,
+                'quantity' => 20,
+                'price_at_order' => 4000,
+                'type' => 'kustom_box',
+                'box_group_id' => 1,
+            ],
+        ]);
+        $this->assertEquals('snack_box', $orderBox->fresh()->package_type);
+
+        // 3. Campuran (Box + Satuan)
+        $orderMix = $orderService->createOrder([
+            'customer_name' => 'Mix User',
+            'customer_phone' => '081234567893',
+            'pickup_date' => now()->addDays(1),
+        ], [
+            [
+                'product_id' => $product->id,
+                'quantity' => 20,
+                'price_at_order' => 4000,
+                'type' => 'kustom_box',
+                'box_group_id' => 1,
+            ],
+            [
+                'product_id' => $product->id,
+                'quantity' => 10,
+                'price_at_order' => 4000,
+                'type' => 'satuan',
+                'box_group_id' => null,
+            ],
+        ]);
+        $this->assertEquals('campuran', $orderMix->fresh()->package_type);
+    }
+
+    public function test_admin_can_filter_orders_by_package_type(): void
+    {
+        $user = \App\Models\User::factory()->create();
+        $orderService = app(OrderService::class);
+
+        $orderBox = $orderService->createOrder([
+            'customer_name' => 'User Box Only',
+            'customer_phone' => '081234567894',
+            'pickup_date' => now()->addDays(1),
+            'package_type' => 'snack_box',
+        ], []);
+
+        $orderSatuan = $orderService->createOrder([
+            'customer_name' => 'User Satuan Only',
+            'customer_phone' => '081234567895',
+            'pickup_date' => now()->addDays(1),
+            'package_type' => 'satuan',
+        ], []);
+
+        // Filter for snack_box
+        $response = $this->actingAs($user)->get('/admin/orders?package_type=snack_box');
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) =>
+            $page->component('Admin/Order/Index')
+                ->where('filters.package_type', 'snack_box')
+                ->has('orders', 1)
+                ->where('orders.0.order_number', $orderBox->order_number)
+        );
+
+        // Filter for satuan
+        $response = $this->actingAs($user)->get('/admin/orders?package_type=satuan');
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) =>
+            $page->component('Admin/Order/Index')
+                ->where('filters.package_type', 'satuan')
+                ->has('orders', 1)
+                ->where('orders.0.order_number', $orderSatuan->order_number)
+        );
+    }
 }
 

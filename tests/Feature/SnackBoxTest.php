@@ -244,4 +244,139 @@ class SnackBoxTest extends TestCase
         $this->assertStringContainsString('- Subtotal: Rp 1.000.000', $waMessage);
         $this->assertStringContainsString('TOTAL TAGIHAN: Rp 1.000.000', $waMessage);
     }
+
+    public function test_validation_rejects_box_quantity_less_than_minimum_10(): void
+    {
+        $package = SnackBoxPackage::create([
+            'name' => 'Snack Box 3 Kue',
+            'slug' => 'snack-box-3-kue',
+            'capacity' => 3,
+            'box_price' => 2500,
+            'is_active' => true,
+        ]);
+
+        $supplier = Supplier::create([
+            'name' => 'Mitra Bakery',
+            'phone' => '08123456789',
+            'address' => 'Jakarta',
+            'daily_capacity' => 100,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Snack',
+            'slug' => 'snack-min-box',
+        ]);
+
+        $product = Product::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'name' => 'Kue Lumpur',
+            'base_price' => 2000,
+            'sell_price' => 3500,
+            'is_active' => true,
+        ]);
+
+        // Attempting to order 5 boxes (below minimum 10)
+        $response = $this->postJson('/snack-box/add-to-cart', [
+            'package_id' => $package->id,
+            'box_quantity' => 5,
+            'selected_items' => [
+                ['product_id' => $product->id, 'quantity' => 3],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['box_quantity']);
+        $this->assertStringContainsString('Minimal pemesanan snack box adalah 10 box', $response->json('errors.box_quantity.0'));
+    }
+
+    public function test_validation_accepts_box_quantity_10_or_more(): void
+    {
+        $package = SnackBoxPackage::create([
+            'name' => 'Snack Box 3 Kue',
+            'slug' => 'snack-box-3-kue',
+            'capacity' => 3,
+            'box_price' => 2500,
+            'is_active' => true,
+        ]);
+
+        $supplier = Supplier::create([
+            'name' => 'Mitra Bakery',
+            'phone' => '08123456789',
+            'address' => 'Jakarta',
+            'daily_capacity' => 100,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Snack',
+            'slug' => 'snack-accept-10',
+        ]);
+
+        $product = Product::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'name' => 'Kue Lumpur',
+            'base_price' => 2000,
+            'sell_price' => 3500,
+            'is_active' => true,
+        ]);
+
+        // Exact 10 boxes
+        $response = $this->postJson('/snack-box/add-to-cart', [
+            'package_id' => $package->id,
+            'box_quantity' => 10,
+            'selected_items' => [
+                ['product_id' => $product->id, 'quantity' => 3],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+    }
+
+    public function test_checkout_rejects_snack_box_order_less_than_minimum_10_boxes(): void
+    {
+        $supplier = Supplier::create([
+            'name' => 'Mitra Bakery',
+            'phone' => '08123456789',
+            'address' => 'Jakarta',
+            'daily_capacity' => 100,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Snack',
+            'slug' => 'snack-checkout-min',
+        ]);
+
+        $product = Product::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'name' => 'Kue Lumpur',
+            'base_price' => 2000,
+            'sell_price' => 3500,
+            'is_active' => true,
+        ]);
+
+        // Try checkout with 5 boxes
+        $response = $this->postJson('/checkout', [
+            'customer_name' => 'Budi Santoso',
+            'customer_phone' => '081234567890',
+            'pickup_date' => now()->addDays(2)->format('Y-m-d H:i:s'),
+            'location' => 'Jakarta Barat',
+            'payment_type' => 'full',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 5,
+                    'type' => 'kustom_box',
+                    'box_group_id' => 99999,
+                ]
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['items']);
+        $this->assertStringContainsString('Minimal pemesanan untuk setiap paket snack box adalah 10 box', $response->json('errors.items.0'));
+    }
 }
+

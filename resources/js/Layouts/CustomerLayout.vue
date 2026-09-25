@@ -241,97 +241,218 @@
                             </p>
                         </div>
 
-                        <div
-                            v-for="item in items"
-                            :key="item.id"
-                            class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex gap-3"
-                        >
-                            <!-- Image -->
-                            <div
-                                class="w-12 h-12 rounded-md bg-gray-200 flex-shrink-0 overflow-hidden flex items-center justify-center"
-                            >
-                                <img
-                                    v-if="item.image"
-                                    :src="getImageUrl(item.image)"
-                                    :alt="item.name"
-                                    class="w-full h-full object-cover"
-                                />
-                                <Image
-                                    v-else
-                                    class="w-6 h-6 text-gray-400"
-                                />
-                            </div>
-                            <!-- Info -->
-                            <div
-                                class="flex-1 min-w-0 flex flex-col justify-between"
-                            >
-                                <div class="flex justify-between items-start">
+                        <!-- Kategori 1: Paket Snack Box (Custom) -->
+                        <div v-if="snackBoxItems.length > 0" class="space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-cream-200">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+                                        <Package class="w-3.5 h-3.5 text-amber-800" />
+                                    </div>
                                     <div>
-                                        <p
-                                            class="font-semibold text-gray-900 text-sm line-clamp-1 leading-tight"
+                                        <h3 class="text-xs sm:text-sm font-bold text-brown-900 leading-tight">Paket Snack Box</h3>
+                                        <p class="text-[10px] text-brown-500 font-medium">Custom box (min. {{ minOrderBox }} box)</p>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] sm:text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200/80 px-2 py-0.5 rounded-full font-mono">
+                                    Rp {{ formatNumber(snackBoxSubtotal) }}
+                                </span>
+                            </div>
+
+                            <div
+                                v-for="item in snackBoxItems"
+                                :key="item.box_group_id ? `${item.box_group_id}-${item.id}` : item.id"
+                                class="bg-amber-50/40 border border-amber-200/70 rounded-xl p-3 flex gap-3 transition hover:border-amber-300"
+                            >
+                                <!-- Image -->
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-cream-100 flex-shrink-0 overflow-hidden flex items-center justify-center border border-cream-200"
+                                >
+                                    <img
+                                        v-if="item.image"
+                                        :src="getImageUrl(item.image)"
+                                        :alt="item.name"
+                                        class="w-full h-full object-cover"
+                                    />
+                                    <Image
+                                        v-else
+                                        class="w-6 h-6 text-cream-400"
+                                    />
+                                </div>
+                                <!-- Info -->
+                                <div
+                                    class="flex-1 min-w-0 flex flex-col justify-between"
+                                >
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <p
+                                                class="font-semibold text-brown-900 text-xs sm:text-sm line-clamp-1 leading-tight"
+                                            >
+                                                {{ item.name }}
+                                            </p>
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded mt-0.5">
+                                                <Package class="w-2.5 h-2.5" /> Snack Box
+                                            </span>
+                                        </div>
+                                        <button
+                                            @click="removeItem(item.id, 'kustom_box', item.box_group_id)"
+                                            class="text-red-400 hover:text-red-600 transition p-1 flex-shrink-0 ml-2 cursor-pointer"
+                                            aria-label="Hapus item"
+                                            title="Hapus dari box"
                                         >
-                                            {{ item.name }}
-                                        </p>
-                                        <p
-                                            class="text-[10px] text-gray-500 mt-0.5"
+                                            <Trash2 class="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center justify-between mt-1.5"
+                                    >
+                                        <div
+                                            class="flex items-center bg-white rounded-md border border-cream-200 shadow-2xs"
                                         >
+                                            <button
+                                                :disabled="item.qty <= minOrderBox"
+                                                @click="
+                                                    updateQty(item.id, item.qty - 1, 'kustom_box', item.box_group_id)
+                                                "
+                                                :class="[
+                                                    'px-2 py-0.5 transition rounded-l-md text-brown-600',
+                                                    item.qty <= minOrderBox
+                                                        ? 'opacity-30 cursor-not-allowed'
+                                                        : 'hover:bg-cream-100 cursor-pointer'
+                                                ]"
+                                                :title="`Minimal ${minOrderBox} box`"
+                                            >
+                                                <Minus class="w-3 h-3" />
+                                            </button>
+                                            <span
+                                                class="px-2 py-0.5 font-bold text-xs min-w-[24px] text-center text-brown-900 font-mono"
+                                                >{{ item.qty }}</span
+                                            >
+                                            <button
+                                                @click="
+                                                    updateQty(item.id, item.qty + 1, 'kustom_box', item.box_group_id)
+                                                "
+                                                class="px-2 py-0.5 hover:bg-cream-100 transition rounded-r-md text-brown-600 cursor-pointer"
+                                                aria-label="Tambah jumlah"
+                                            >
+                                                <Plus class="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                        <p class="font-bold text-brand-600 text-xs font-mono">
+                                            Rp
                                             {{
-                                                item.type === "kustom_box"
-                                                    ? "Snack Box"
-                                                    : "Kue Satuan"
+                                                formatNumber(item.price * item.qty)
                                             }}
                                         </p>
                                     </div>
-                                    <button
-                                        @click="removeItem(item.id)"
-                                        class="text-red-400 hover:text-red-600 transition p-1 flex-shrink-0 ml-2"
-                                        aria-label="Hapus item"
-                                    >
-                                        <Trash2 class="w-4 h-4" />
-                                    </button>
                                 </div>
+                            </div>
+                        </div>
 
+                        <!-- Kategori 2: Kue Satuan & Jajanan Pasar -->
+                        <div v-if="satuanItems.length > 0" :class="['space-y-3', snackBoxItems.length > 0 ? 'pt-2' : '']">
+                            <div class="flex items-center justify-between pb-2 border-b border-cream-200">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-lg bg-rose-100 text-rose-800 flex items-center justify-center">
+                                        <CakeSlice class="w-3.5 h-3.5 text-rose-800" />
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xs sm:text-sm font-bold text-brown-900 leading-tight">Kue Satuan & Eceran</h3>
+                                        <p class="text-[10px] text-brown-500 font-medium">Kue basah & pastry (min. {{ minOrderSatuan }} pcs)</p>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] sm:text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200/80 px-2 py-0.5 rounded-full font-mono">
+                                    Rp {{ formatNumber(satuanSubtotal) }}
+                                </span>
+                            </div>
+
+                            <div
+                                v-for="item in satuanItems"
+                                :key="item.id"
+                                class="bg-cream-50/50 border border-cream-200 rounded-xl p-3 flex gap-3 transition hover:border-brand-200"
+                            >
+                                <!-- Image -->
                                 <div
-                                    class="flex items-center justify-between mt-1.5"
+                                    class="w-12 h-12 rounded-lg bg-cream-100 flex-shrink-0 overflow-hidden flex items-center justify-center border border-cream-200"
                                 >
-                                    <div
-                                        class="flex items-center bg-gray-50 rounded-md border border-gray-200"
-                                    >
+                                    <img
+                                        v-if="item.image"
+                                        :src="getImageUrl(item.image)"
+                                        :alt="item.name"
+                                        class="w-full h-full object-cover"
+                                    />
+                                    <Image
+                                        v-else
+                                        class="w-6 h-6 text-cream-400"
+                                    />
+                                </div>
+                                <!-- Info -->
+                                <div
+                                    class="flex-1 min-w-0 flex flex-col justify-between"
+                                >
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <p
+                                                class="font-semibold text-brown-900 text-xs sm:text-sm line-clamp-1 leading-tight"
+                                            >
+                                                {{ item.name }}
+                                            </p>
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-bold text-rose-800 bg-rose-100/90 px-1.5 py-0.5 rounded mt-0.5">
+                                                <CakeSlice class="w-2.5 h-2.5" /> Kue Satuan
+                                            </span>
+                                        </div>
                                         <button
-                                            :disabled="item.type === 'satuan' && item.qty <= 10"
-                                            @click="
-                                                updateQty(item.id, item.qty - 1)
-                                            "
-                                            :class="[
-                                                'px-2 py-0.5 transition rounded-l-md text-gray-600',
-                                                item.type === 'satuan' && item.qty <= 10
-                                                    ? 'opacity-30 cursor-not-allowed'
-                                                    : 'hover:bg-gray-200 cursor-pointer'
-                                            ]"
-                                            :title="item.type === 'satuan' && item.qty <= 10 ? 'Minimal 10 pcs untuk kue satuan' : 'Kurangi'"
+                                            @click="removeItem(item.id, 'satuan')"
+                                            class="text-red-400 hover:text-red-600 transition p-1 flex-shrink-0 ml-2 cursor-pointer"
+                                            aria-label="Hapus item"
+                                            title="Hapus item"
                                         >
-                                            <Minus class="w-3 h-3" />
-                                        </button>
-                                        <span
-                                            class="px-2 py-0.5 font-semibold text-xs min-w-[24px] text-center text-gray-700"
-                                            >{{ item.qty }}</span
-                                        >
-                                        <button
-                                            @click="
-                                                updateQty(item.id, item.qty + 1)
-                                            "
-                                            class="px-2 py-0.5 hover:bg-gray-200 transition rounded-r-md text-gray-600"
-                                            aria-label="Tambah jumlah"
-                                        >
-                                            <Plus class="w-3 h-3" />
+                                            <Trash2 class="w-4 h-4" />
                                         </button>
                                     </div>
-                                    <p class="font-bold text-brand-600 text-xs">
-                                        Rp
-                                        {{
-                                            formatNumber(item.price * item.qty)
-                                        }}
-                                    </p>
+
+                                    <div
+                                        class="flex items-center justify-between mt-1.5"
+                                    >
+                                        <div
+                                            class="flex items-center bg-white rounded-md border border-cream-200 shadow-2xs"
+                                        >
+                                            <button
+                                                :disabled="item.qty <= minOrderSatuan"
+                                                @click="
+                                                    updateQty(item.id, item.qty - 1, 'satuan')
+                                                "
+                                                :class="[
+                                                    'px-2 py-0.5 transition rounded-l-md text-brown-600',
+                                                    item.qty <= minOrderSatuan
+                                                        ? 'opacity-30 cursor-not-allowed'
+                                                        : 'hover:bg-cream-100 cursor-pointer'
+                                                ]"
+                                                :title="`Minimal ${minOrderSatuan} pcs`"
+                                            >
+                                                <Minus class="w-3 h-3" />
+                                            </button>
+                                            <span
+                                                class="px-2 py-0.5 font-bold text-xs min-w-[24px] text-center text-brown-900 font-mono"
+                                                >{{ item.qty }}</span
+                                            >
+                                            <button
+                                                @click="
+                                                    updateQty(item.id, item.qty + 1, 'satuan')
+                                                "
+                                                class="px-2 py-0.5 hover:bg-cream-100 transition rounded-r-md text-brown-600 cursor-pointer"
+                                                aria-label="Tambah jumlah"
+                                            >
+                                                <Plus class="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                        <p class="font-bold text-brand-600 text-xs font-mono">
+                                            Rp
+                                            {{
+                                                formatNumber(item.price * item.qty)
+                                            }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -470,6 +591,18 @@
                         class="border-t border-cream-200 px-5 sm:px-6 py-4 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-10 relative space-y-3"
                     >
                         <div class="space-y-1.5">
+                            <!-- Category subtotals if both exist -->
+                            <div v-if="hasBothCategories" class="space-y-1 pb-2 border-b border-cream-200/70 text-xs">
+                                <div class="flex justify-between text-brown-600">
+                                    <span class="flex items-center gap-1.5 font-medium"><Package class="w-3.5 h-3.5 text-amber-700" /> Subtotal Snack Box</span>
+                                    <span class="font-bold text-brown-800 font-mono">Rp {{ formatNumber(snackBoxSubtotal) }}</span>
+                                </div>
+                                <div class="flex justify-between text-brown-600">
+                                    <span class="flex items-center gap-1.5 font-medium"><CakeSlice class="w-3.5 h-3.5 text-rose-700" /> Subtotal Kue Satuan</span>
+                                    <span class="font-bold text-brown-800 font-mono">Rp {{ formatNumber(satuanSubtotal) }}</span>
+                                </div>
+                            </div>
+
                             <div class="flex justify-between text-sm">
                                 <span class="text-brown-600 font-medium">Total Pesanan</span>
                                 <span class="font-bold text-brown-900 font-mono"
@@ -615,6 +748,16 @@ const dpPercentage = computed(() => parseInt(cms.value.dp_percentage) || 70);
 const dpPrice = computed(() =>
     Math.round(totalPrice.value * (dpPercentage.value / 100)),
 );
+const minOrderBox = computed(() => parseInt(cms.value.min_order_box) || 10);
+const minOrderSatuan = computed(() => parseInt(cms.value.min_order_satuan) || 10);
+
+// Categorized Items in Cart Drawer
+const snackBoxItems = computed(() => items.value.filter(i => i.type === 'kustom_box'));
+const satuanItems = computed(() => items.value.filter(i => i.type !== 'kustom_box'));
+const hasBothCategories = computed(() => snackBoxItems.value.length > 0 && satuanItems.value.length > 0);
+
+const snackBoxSubtotal = computed(() => snackBoxItems.value.reduce((sum, item) => sum + (item.price * item.qty), 0));
+const satuanSubtotal = computed(() => satuanItems.value.reduce((sum, item) => sum + (item.price * item.qty), 0));
 
 const customerName = ref("");
 const customerPhone = ref("");
@@ -638,6 +781,19 @@ const sendToWhatsApp = () => {
         showToast("error", "Pilih produk dulu!");
         return;
     }
+
+    const invalidBox = items.value.find(i => i.type === 'kustom_box' && i.qty < minOrderBox.value);
+    if (invalidBox) {
+        showToast("error", `Minimal pemesanan untuk Snack Box adalah ${minOrderBox.value} box`);
+        return;
+    }
+
+    const invalidSatuan = items.value.find(i => i.type === 'satuan' && i.qty < minOrderSatuan.value);
+    if (invalidSatuan) {
+        showToast("error", `Minimal pemesanan untuk kue satuan adalah ${minOrderSatuan.value} pcs`);
+        return;
+    }
+
     if (!customerName.value.trim()) {
         showToast("error", "Silakan masukkan nama lengkap");
         return;

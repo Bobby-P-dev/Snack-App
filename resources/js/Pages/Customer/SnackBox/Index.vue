@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="flex items-center gap-2.5">
                                     <span class="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">✓</span>
-                                    <span>Harga transparan per item</span>
+                                    <span>Minimal pemesanan <strong>10 box</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                         <div>
                             <div class="w-12 h-12 rounded-2xl bg-orange-100 text-brand-700 font-extrabold flex items-center justify-center mx-auto mb-3 text-lg">3</div>
                             <h4 class="font-bold text-gray-800 text-sm">Tentukan Jumlah Box</h4>
-                            <p class="text-xs text-gray-500 mt-1">Tentukan kuantitas untuk acara Anda.</p>
+                            <p class="text-xs text-gray-500 mt-1">Mulai minimal 10 box untuk acara Anda.</p>
                         </div>
                         <div>
                             <div class="w-12 h-12 rounded-2xl bg-orange-100 text-brand-700 font-extrabold flex items-center justify-center mx-auto mb-3 text-lg">4</div>

@@ -25,6 +25,7 @@ class OrderController extends Controller
     {
         $search = $request->get('search', '');
         $status = $request->get('status', '');
+        $packageType = $request->get('package_type', '');
         $startDate = $request->get('start_date', '');
         $endDate = $request->get('end_date', '');
         $perPage = 10;
@@ -41,6 +42,10 @@ class OrderController extends Controller
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+        if ($packageType) {
+            $query->where('package_type', $packageType);
         }
 
         if ($startDate) {
@@ -64,6 +69,7 @@ class OrderController extends Controller
             'filters' => [
                 'search' => $search,
                 'status' => $status,
+                'package_type' => $packageType,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ],

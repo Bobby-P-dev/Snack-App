@@ -467,6 +467,12 @@
                                     <p class="text-xs text-gray-400 mt-1">
                                         Format: JPG, PNG, WEBP. Maks 5MB.
                                     </p>
+                                    <p
+                                        v-if="form.errors.image"
+                                        class="text-xs text-red-500 font-medium mt-1"
+                                    >
+                                        {{ form.errors.image }}
+                                    </p>
                                 </div>
                             </div>
                         </div>

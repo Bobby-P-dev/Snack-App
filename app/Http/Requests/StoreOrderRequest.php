@@ -81,4 +81,41 @@ class StoreOrderRequest extends FormRequest
             }
         }
     }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $minBox = (int) (\App\Models\CmsSetting::where('key', 'min_order_box')->value('value') ?? 10);
+            if ($minBox < 1) {
+                $minBox = 10;
+            }
+
+            $items = collect($this->input('items', []));
+            $customBoxes = $items->where('type', 'kustom_box');
+
+            if ($customBoxes->isNotEmpty()) {
+                $grouped = $customBoxes->groupBy(fn($i) => $i['box_group_id'] ?? 'default');
+                foreach ($grouped as $boxGroupId => $boxItems) {
+                    $gcd = function ($a, $b) use (&$gcd) {
+                        return $b ? $gcd($b, $a % $b) : $a;
+                    };
+                    $boxQty = $boxItems->pluck('quantity')->reduce(fn($carry, $q) => $carry ? $gcd($carry, (int)$q) : (int)$q, 0);
+                    if ($boxQty <= 0) {
+                        $boxQty = (int) ($boxItems->first()['quantity'] ?? 0);
+                    }
+
+                    if ($boxQty < $minBox) {
+                        $validator->errors()->add(
+                            'items',
+                            "Minimal pemesanan untuk setiap paket snack box adalah {$minBox} box (saat ini: {$boxQty} box)."
+                        );
+                        break;
+                    }
+                }
+            }
+        });
+    }
 }

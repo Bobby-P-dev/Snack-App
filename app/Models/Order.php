@@ -20,6 +20,7 @@ class Order extends Model
         'location',
         'notes',
         'total_amount',
+        'package_type',
         'payment_type',
         'dp_amount',
         'status',
@@ -37,7 +38,7 @@ class Order extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['status', 'total_amount', 'dp_amount', 'payment_type'])
+            ->logOnly(['status', 'package_type', 'total_amount', 'dp_amount', 'payment_type'])
             ->useLogName('order')
             ->logOnlyDirty();
     }

@@ -61,6 +61,9 @@ class ShopController extends Controller
     {
         $search = $request->get('search', '');
         $categoryId = $request->get('category_id', '');
+        $priceRange = $request->get('price_range', 'all');
+        $minPrice = $request->get('min_price');
+        $maxPrice = $request->get('max_price');
         $sort = $request->get('sort', 'latest');
         $page = $request->get('page', 1);
         $perPage = 8;
@@ -68,10 +71,12 @@ class ShopController extends Controller
         $query = \App\Models\Product::with(['category', 'supplier'])
             ->where('is_active', true);
 
+        // Filter Category
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
 
+        // Filter Search (Product name or supplier)
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -79,6 +84,23 @@ class ShopController extends Controller
             });
         }
 
+        // Filter Price Range
+        if ($priceRange === 'under_10k') {
+            $query->where('sell_price', '<', 10000);
+        } elseif ($priceRange === '10k_25k') {
+            $query->whereBetween('sell_price', [10000, 25000]);
+        } elseif ($priceRange === 'above_25k') {
+            $query->where('sell_price', '>', 25000);
+        } elseif ($priceRange === 'custom' || $request->filled('min_price') || $request->filled('max_price')) {
+            if ($request->filled('min_price') && is_numeric($minPrice)) {
+                $query->where('sell_price', '>=', (float) $minPrice);
+            }
+            if ($request->filled('max_price') && is_numeric($maxPrice)) {
+                $query->where('sell_price', '<=', (float) $maxPrice);
+            }
+        }
+
+        // Sorting
         switch ($sort) {
             case 'price_asc':
                 $query->orderBy('sell_price', 'asc');
@@ -86,14 +108,17 @@ class ShopController extends Controller
             case 'price_desc':
                 $query->orderBy('sell_price', 'desc');
                 break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
             case 'latest':
             default:
                 $query->orderBy('created_at', 'desc');
                 break;
         }
 
-        $products = $query->paginate($perPage);
-        $categories = $this->categoryRepository->all();
+        $products = $query->paginate($perPage)->withQueryString();
+        $categories = Category::withCount(['products' => fn ($q) => $q->where('is_active', true)])->get();
 
         return Inertia::render('Customer/Shop/Index', [
             'products' => ProductResource::collection($products->items())->resolve(request()),
@@ -103,13 +128,18 @@ class ShopController extends Controller
                 'last_page' => $products->lastPage(),
                 'total' => $products->total(),
                 'per_page' => $products->perPage(),
+                'from' => $products->firstItem(),
+                'to' => $products->lastItem(),
             ],
             'filters' => [
                 'search' => $search,
                 'category_id' => $categoryId,
+                'price_range' => $priceRange,
+                'min_price' => $minPrice,
+                'max_price' => $maxPrice,
                 'sort' => $sort,
             ],
-            'title' => 'Shop',
+            'title' => 'Kue Satuan',
         ]);
     }
 

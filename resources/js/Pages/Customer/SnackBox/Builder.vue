@@ -190,29 +190,59 @@
                             </div>
 
                             <!-- Box Multiplier -->
-                            <div class="bg-cream-50 p-4 rounded-2xl border border-orange-100 space-y-2">
+                            <div class="bg-cream-50 p-4 rounded-2xl border border-orange-100 space-y-2.5">
                                 <label class="block text-xs font-semibold text-gray-700">Jumlah Box yang Ingin Dipesan</label>
                                 <div class="flex items-center gap-3">
                                     <button
-                                        @click="boxQuantity = Math.max(1, boxQuantity - 5)"
-                                        class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50"
+                                        type="button"
+                                        @click="boxQuantity = Math.max(minBoxQty, boxQuantity - 5)"
+                                        :disabled="boxQuantity <= minBoxQty"
+                                        class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                                        aria-label="Kurangi 5 box"
                                     >
                                         -5
                                     </button>
                                     <input
                                         v-model.number="boxQuantity"
                                         type="number"
-                                        min="1"
-                                        class="w-full text-center py-2 border border-gray-200 rounded-xl font-bold text-base text-gray-900 focus:ring-2 focus:ring-brand-500"
+                                        :min="minBoxQty"
+                                        @blur="normalizeBoxQuantity"
+                                        class="w-full text-center py-2 border border-gray-200 rounded-xl font-bold text-base text-gray-900 focus:ring-2 focus:ring-brand-500 bg-white"
                                     />
                                     <button
+                                        type="button"
                                         @click="boxQuantity += 5"
-                                        class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50"
+                                        class="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+                                        aria-label="Tambah 5 box"
                                     >
                                         +5
                                     </button>
                                 </div>
-                                <p class="text-[11px] text-gray-500 text-center">Contoh umum pemesanan rapat/acara: 25 - 100 Box</p>
+                                <div class="flex items-center justify-between text-[11px] pt-0.5">
+                                    <span class="text-brand-600 font-bold flex items-center gap-1">
+                                        <Info class="w-3.5 h-3.5 flex-shrink-0" />
+                                        Minimal pemesanan {{ minBoxQty }} box
+                                    </span>
+                                    <span class="text-gray-500">Contoh: 25 - 100 box</span>
+                                </div>
+                                <!-- Quick Presets -->
+                                <div class="flex items-center gap-1.5 pt-1 border-t border-orange-100/60">
+                                    <span class="text-[10px] text-gray-500 font-medium mr-0.5">Pilihan cepat:</span>
+                                    <button
+                                        v-for="preset in [10, 25, 50, 100]"
+                                        :key="preset"
+                                        type="button"
+                                        @click="boxQuantity = preset"
+                                        :class="[
+                                            'px-2.5 py-1 text-xs font-bold rounded-lg border transition cursor-pointer',
+                                            boxQuantity === preset
+                                                ? 'bg-brand-500 text-white border-brand-500 shadow-2xs'
+                                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                        ]"
+                                    >
+                                        {{ preset }}
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Total & Pricing Details -->
@@ -238,16 +268,19 @@
                             <!-- Add to Cart CTA -->
                             <button
                                 @click="handleAddBoxToCart"
-                                :disabled="!isBoxFull || isSubmitting"
+                                :disabled="!isBoxFull || isSubmitting || boxQuantity < minBoxQty"
                                 class="w-full py-4 px-6 rounded-2xl font-extrabold text-sm sm:text-base text-white shadow-sm transition flex items-center justify-center gap-2"
                                 :class="[
-                                    isBoxFull
+                                    isBoxFull && boxQuantity >= minBoxQty
                                         ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 cursor-pointer shadow-md'
                                         : 'bg-gray-300 cursor-not-allowed text-gray-500'
                                 ]"
                             >
                                 <span v-if="!isBoxFull">
                                     Pilih {{ package.capacity - selectedCount }} Kue Lagi
+                                </span>
+                                <span v-else-if="boxQuantity < minBoxQty">
+                                    Minimal Pemesanan {{ minBoxQty }} Box
                                 </span>
                                 <span v-else-if="isSubmitting">Menambahkan...</span>
                                 <span v-else class="flex items-center gap-2">
@@ -279,8 +312,10 @@
                     <!-- Quick box quantity adjuster right on mobile -->
                     <div class="flex items-center gap-1 bg-cream-100 rounded-xl p-0.5 border border-cream-200">
                         <button
-                            @click="boxQuantity = Math.max(1, boxQuantity - 5)"
-                            class="w-7 h-7 bg-white rounded-lg text-xs font-bold text-brown-700 shadow-2xs hover:bg-cream-50 flex items-center justify-center cursor-pointer active:scale-95 transition"
+                            type="button"
+                            @click="boxQuantity = Math.max(minBoxQty, boxQuantity - 5)"
+                            :disabled="boxQuantity <= minBoxQty"
+                            class="w-7 h-7 bg-white rounded-lg text-xs font-bold text-brown-700 shadow-2xs hover:bg-cream-50 flex items-center justify-center cursor-pointer active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed"
                             aria-label="Kurang 5 box"
                         >
                             -5
@@ -289,6 +324,7 @@
                             {{ boxQuantity }}x
                         </span>
                         <button
+                            type="button"
                             @click="boxQuantity += 5"
                             class="w-7 h-7 bg-white rounded-lg text-xs font-bold text-brown-700 shadow-2xs hover:bg-cream-50 flex items-center justify-center cursor-pointer active:scale-95 transition"
                             aria-label="Tambah 5 box"
@@ -301,15 +337,16 @@
                 <!-- CTA Button with Total -->
                 <button
                     @click="handleAddBoxToCart"
-                    :disabled="!isBoxFull || isSubmitting"
+                    :disabled="!isBoxFull || isSubmitting || boxQuantity < minBoxQty"
                     class="w-full py-3.5 px-4 rounded-xl font-extrabold text-sm text-white transition flex items-center justify-between shadow-md"
                     :class="[
-                        isBoxFull
+                        isBoxFull && boxQuantity >= minBoxQty
                             ? 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 shadow-brand-500/25 cursor-pointer'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     ]"
                 >
                     <span v-if="!isBoxFull">Pilih {{ package.capacity - selectedCount }} Kue Lagi</span>
+                    <span v-else-if="boxQuantity < minBoxQty">Minimal Pemesanan {{ minBoxQty }} Box</span>
                     <span v-else-if="isSubmitting">Menambahkan...</span>
                     <template v-else>
                         <span class="flex items-center gap-2">
@@ -326,11 +363,11 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import { useCartStore } from '@/Stores/CartStore.js';
 import { getImageUrl } from '@/helpers.js';
-import { Image, ShoppingCart } from 'lucide-vue-next';
+import { Image, ShoppingCart, Info } from 'lucide-vue-next';
 import axios from 'axios';
 
 const props = defineProps({
@@ -352,10 +389,22 @@ const props = defineProps({
     },
 });
 
+const page = usePage();
+const minBoxQty = computed(() => {
+    const val = parseInt(page.props.cms?.settings?.min_order_box);
+    return !isNaN(val) && val > 0 ? val : 10;
+});
+
 const activeCategory = ref(null);
-const boxQuantity = ref(20);
+const boxQuantity = ref(10); // Default minimal 10 box
 const selectedItems = ref({}); // { productId: { product, quantity } }
 const isSubmitting = ref(false);
+
+const normalizeBoxQuantity = () => {
+    if (!boxQuantity.value || boxQuantity.value < minBoxQty.value) {
+        boxQuantity.value = minBoxQty.value;
+    }
+};
 
 const { openCart, fetchCart, setItems } = useCartStore();
 
@@ -408,19 +457,26 @@ const pricePerBox = computed(() => {
 });
 
 const totalOrderAmount = computed(() => {
-    return pricePerBox.value * Math.max(1, boxQuantity.value);
+    return pricePerBox.value * Math.max(minBoxQty.value, boxQuantity.value || minBoxQty.value);
 });
 
 const formatNumber = (val) => new Intl.NumberFormat('id-ID').format(val || 0);
 
 const handleAddBoxToCart = () => {
+    normalizeBoxQuantity();
+
     if (!isBoxFull.value) return;
+
+    if (boxQuantity.value < minBoxQty.value) {
+        alert(`Minimal pemesanan snack box adalah ${minBoxQty.value} box.`);
+        return;
+    }
 
     isSubmitting.value = true;
 
     const payload = {
         package_id: props.package.id,
-        box_quantity: Math.max(1, boxQuantity.value),
+        box_quantity: Math.max(minBoxQty.value, boxQuantity.value),
         selected_items: selectedItemsArray.value.map(item => ({
             product_id: item.product_id,
             quantity: item.quantity,

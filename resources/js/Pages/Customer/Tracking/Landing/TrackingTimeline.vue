@@ -16,14 +16,17 @@
         <!-- Normal Active Lifecycle Timeline -->
         <div v-else class="relative w-full py-2">
             <!-- Desktop / Tablet Timeline (>= 640px) -->
-            <div class="hidden sm:block relative">
-                <!-- Background progress line -->
-                <div class="absolute top-7 left-6 right-6 h-1.5 bg-cream-200 rounded-full z-0"></div>
-                <!-- Active filled progress line -->
-                <div 
-                    class="absolute top-7 left-6 h-1.5 bg-gradient-to-r from-brand-500 to-brand-600 rounded-full z-0 transition-all duration-700 ease-out shadow-xs"
-                    :style="{ width: progressWidth }"
-                ></div>
+            <div class="hidden sm:block relative py-1">
+                <!-- Timeline Track Container running exactly between centers of first and last step -->
+                <div class="absolute top-8 left-10 right-10 md:left-12 md:right-12 h-1.5 z-0">
+                    <!-- Background progress line -->
+                    <div class="w-full h-full bg-cream-200 rounded-full"></div>
+                    <!-- Active filled progress line -->
+                    <div 
+                        class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full transition-all duration-700 ease-out shadow-xs"
+                        :style="{ width: progressWidth }"
+                    ></div>
+                </div>
 
                 <!-- Steps Container -->
                 <div class="relative z-10 flex justify-between">
@@ -34,7 +37,7 @@
                     >
                         <!-- Node Circle -->
                         <div 
-                            class="w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center mb-2.5 transition-all duration-300 border-3 border-white"
+                            class="w-13 h-13 md:w-14 md:h-14 rounded-2xl flex items-center justify-center mb-2.5 transition-all duration-300 border-3 border-white shrink-0"
                             :class="[
                                 currentStep > step.id 
                                     ? 'bg-brand-500 text-white shadow-sm' 
@@ -56,19 +59,28 @@
                             {{ step.label }}
                         </p>
 
-                        <!-- Status text pill -->
-                        <span 
-                            v-if="currentStep === step.id" 
-                            class="mt-1 px-2 py-0.5 rounded-md bg-brand-50 text-brand-600 text-[10px] font-extrabold tracking-wide border border-brand-200/60 uppercase"
-                        >
-                            Sedang Berjalan
-                        </span>
-                        <span 
-                            v-else-if="currentStep > step.id" 
-                            class="mt-1 text-[10px] font-medium text-emerald-600"
-                        >
-                            Selesai
-                        </span>
+                        <!-- Uniform Status Pill Area -->
+                        <div class="mt-1 h-5 flex items-center justify-center">
+                            <span 
+                                v-if="currentStep === step.id" 
+                                class="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-[10px] font-extrabold tracking-wide border border-brand-200/80 whitespace-nowrap shadow-2xs"
+                            >
+                                Sedang Berjalan
+                            </span>
+                            <span 
+                                v-else-if="currentStep > step.id" 
+                                class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200/60 whitespace-nowrap flex items-center gap-1"
+                            >
+                                <Check class="w-2.5 h-2.5 stroke-[2.5]" />
+                                <span>Selesai</span>
+                            </span>
+                            <span 
+                                v-else 
+                                class="text-[10px] font-medium text-brown-400/80"
+                            >
+                                Menunggu
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

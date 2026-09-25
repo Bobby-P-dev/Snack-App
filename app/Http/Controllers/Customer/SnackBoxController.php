@@ -63,12 +63,21 @@ class SnackBoxController extends Controller
      */
     public function addBoxToCart(Request $request)
     {
+        $minBox = (int) (\App\Models\CmsSetting::where('key', 'min_order_box')->value('value') ?? 10);
+        if ($minBox < 1) {
+            $minBox = 10;
+        }
+
         $validated = $request->validate([
             'package_id' => 'required|exists:snack_box_packages,id',
-            'box_quantity' => 'required|integer|min:1',
+            'box_quantity' => "required|integer|min:{$minBox}",
             'selected_items' => 'required|array|min:1',
             'selected_items.*.product_id' => 'required|exists:products,id',
             'selected_items.*.quantity' => 'required|integer|min:1',
+        ], [
+            'box_quantity.min' => "Minimal pemesanan snack box adalah {$minBox} box.",
+            'box_quantity.required' => 'Jumlah box wajib diisi.',
+            'box_quantity.integer' => 'Jumlah box harus berupa angka bulat.',
         ]);
 
         $package = SnackBoxPackage::findOrFail($validated['package_id']);

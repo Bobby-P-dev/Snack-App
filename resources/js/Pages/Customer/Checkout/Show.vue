@@ -100,21 +100,73 @@
                                 <div class="bg-gradient-to-r from-brand-50 to-cream-100 px-4 md:px-6 py-4 border-b border-cream-200/80">
                                     <h2 class="font-bold text-brown-900 text-base md:text-lg flex items-center">
                                         <span class="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 shadow-2xs">3</span>
-                                        Rincian Pesanan ({{ cart.length }} Produk)
+                                        Rincian Pesanan ({{ cart.length }} Item)
                                     </h2>
                                 </div>
 
-                                <div class="px-4 md:px-6 py-4 divide-y divide-cream-100 max-h-64 overflow-y-auto">
-                                    <div
-                                        v-for="item in cart"
-                                        :key="item.product_id"
-                                        class="py-3 flex justify-between items-center text-xs sm:text-sm"
-                                    >
-                                        <div>
-                                            <p class="font-bold text-brown-900">{{ item.product.name }}</p>
-                                            <p class="text-brown-500 text-xs">{{ item.quantity }}x @ Rp {{ formatNumber(item.product.sell_price) }}</p>
+                                <div class="px-4 md:px-6 py-4 space-y-4 max-h-80 overflow-y-auto">
+                                    <!-- Kategori 1: Paket Snack Box -->
+                                    <div v-if="snackBoxItems.length > 0" class="space-y-2">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-cream-200">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center">
+                                                    <Package class="w-3.5 h-3.5 text-amber-800" />
+                                                </div>
+                                                <span class="text-xs sm:text-sm font-bold text-brown-900">Paket Snack Box (Custom)</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-full font-mono">
+                                                Rp {{ formatNumber(snackBoxSubtotal) }}
+                                            </span>
                                         </div>
-                                        <p class="font-bold text-brand-600 font-mono">Rp {{ formatNumber(item.quantity * item.product.sell_price) }}</p>
+
+                                        <div class="divide-y divide-cream-100">
+                                            <div
+                                                v-for="item in snackBoxItems"
+                                                :key="item.box_group_id ? `${item.box_group_id}-${item.product_id}` : item.product_id"
+                                                class="py-2.5 flex justify-between items-center text-xs sm:text-sm"
+                                            >
+                                                <div class="min-w-0 pr-2">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <p class="font-bold text-brown-900 truncate">{{ item.product?.name || 'Produk' }}</p>
+                                                        <span class="inline-flex text-[9px] font-semibold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">Snack Box</span>
+                                                    </div>
+                                                    <p class="text-brown-500 text-xs mt-0.5">{{ item.quantity }} box @ Rp {{ formatNumber(item.product?.sell_price || 0) }}</p>
+                                                </div>
+                                                <p class="font-bold text-brand-600 font-mono flex-shrink-0">Rp {{ formatNumber(item.quantity * (item.product?.sell_price || 0)) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Kategori 2: Kue Satuan -->
+                                    <div v-if="satuanItems.length > 0" :class="['space-y-2', snackBoxItems.length > 0 ? 'pt-3 border-t border-cream-200' : '']">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-cream-200">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded-md bg-rose-100 text-rose-800 flex items-center justify-center">
+                                                    <CakeSlice class="w-3.5 h-3.5 text-rose-800" />
+                                                </div>
+                                                <span class="text-xs sm:text-sm font-bold text-brown-900">Kue Satuan & Eceran</span>
+                                            </div>
+                                            <span class="text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-full font-mono">
+                                                Rp {{ formatNumber(satuanSubtotal) }}
+                                            </span>
+                                        </div>
+
+                                        <div class="divide-y divide-cream-100">
+                                            <div
+                                                v-for="item in satuanItems"
+                                                :key="item.product_id"
+                                                class="py-2.5 flex justify-between items-center text-xs sm:text-sm"
+                                            >
+                                                <div class="min-w-0 pr-2">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <p class="font-bold text-brown-900 truncate">{{ item.product?.name || 'Produk' }}</p>
+                                                        <span class="inline-flex text-[9px] font-semibold text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded">Satuan</span>
+                                                    </div>
+                                                    <p class="text-brown-500 text-xs mt-0.5">{{ item.quantity }} pcs @ Rp {{ formatNumber(item.product?.sell_price || 0) }}</p>
+                                                </div>
+                                                <p class="font-bold text-brand-600 font-mono flex-shrink-0">Rp {{ formatNumber(item.quantity * (item.product?.sell_price || 0)) }}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -169,9 +221,21 @@
                             <!-- Summary Content -->
                             <div class="px-4 md:px-6 py-6 space-y-4">
                                 <!-- Breakdown -->
-                                <div class="space-y-3 pb-4 border-b border-cream-100">
+                                <div class="space-y-2.5 pb-4 border-b border-cream-100">
+                                    <!-- Category Subtotals if both exist -->
+                                    <div v-if="hasBothCategories" class="space-y-1.5 pb-2.5 border-b border-cream-200/70 text-xs">
+                                        <div class="flex justify-between text-brown-600">
+                                            <span class="flex items-center gap-1.5 font-medium"><Package class="w-3.5 h-3.5 text-amber-700" /> Subtotal Snack Box</span>
+                                            <span class="font-bold text-brown-800 font-mono">Rp {{ formatNumber(snackBoxSubtotal) }}</span>
+                                        </div>
+                                        <div class="flex justify-between text-brown-600">
+                                            <span class="flex items-center gap-1.5 font-medium"><CakeSlice class="w-3.5 h-3.5 text-rose-700" /> Subtotal Kue Satuan</span>
+                                            <span class="font-bold text-brown-800 font-mono">Rp {{ formatNumber(satuanSubtotal) }}</span>
+                                        </div>
+                                    </div>
+
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-brown-600">Subtotal</span>
+                                        <span class="text-brown-600">Total Subtotal</span>
                                         <span class="font-bold text-brown-900 font-mono">Rp {{ formatNumber(subtotal) }}</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
@@ -321,7 +385,7 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Modal from '@/Components/UI/Modal.vue';
-import { ArrowLeft, AlertTriangle, Check } from 'lucide-vue-next';
+import { ArrowLeft, AlertTriangle, Check, Package, CakeSlice } from 'lucide-vue-next';
 import { useCartStore } from '@/Stores/CartStore.js';
 
 const props = defineProps({
@@ -374,9 +438,22 @@ const form = ref({
     terms_agreed: false,
 });
 
+// Category separation
+const snackBoxItems = computed(() => (cart.value || []).filter(item => item.type === 'kustom_box'));
+const satuanItems = computed(() => (cart.value || []).filter(item => (item.type || 'satuan') !== 'kustom_box'));
+const hasBothCategories = computed(() => snackBoxItems.value.length > 0 && satuanItems.value.length > 0);
+
+const snackBoxSubtotal = computed(() => {
+    return snackBoxItems.value.reduce((sum, item) => sum + (item.quantity * (item.product?.sell_price || 0)), 0);
+});
+
+const satuanSubtotal = computed(() => {
+    return satuanItems.value.reduce((sum, item) => sum + (item.quantity * (item.product?.sell_price || 0)), 0);
+});
+
 // Calculate totals
 const subtotal = computed(() => {
-    return cart.value.reduce((sum, item) => sum + (item.quantity * item.product.sell_price), 0);
+    return cart.value.reduce((sum, item) => sum + (item.quantity * (item.product?.sell_price || 0)), 0);
 });
 
 const total = computed(() => {
