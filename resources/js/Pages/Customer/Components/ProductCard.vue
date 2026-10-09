@@ -5,9 +5,16 @@
             @click="openDetail"
             class="w-full aspect-[4/3] bg-cream-100 relative overflow-hidden shrink-0 cursor-pointer"
         >
-            <img v-if="product.image_url" :src="getImageUrl(product.image_url)" :alt="product.name" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            <div v-else class="w-full h-full flex items-center justify-center text-brown-300">
-                <Image class="w-8 h-8 sm:w-12 sm:h-12 text-cream-400 stroke-1" />
+            <img 
+                v-if="product.image_url && !imageError" 
+                :src="getImageUrl(product.image_url)" 
+                :alt="product.name" 
+                @error="imageError = true"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+            />
+            <div v-else class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-cream-100 to-cream-200/50 text-brown-400 group-hover:bg-cream-100 transition-colors">
+                <Image class="w-8 h-8 sm:w-10 sm:h-10 text-brown-300 stroke-1 mb-1" />
+                <span class="text-[10px] font-semibold text-brown-400/80 tracking-wide uppercase">Padu Kue</span>
             </div>
             
             <div v-if="product.badge" class="absolute top-2 left-2 sm:top-3 sm:left-3">
@@ -56,7 +63,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { ShoppingCart, Image } from 'lucide-vue-next';
 import { getImageUrl } from '@/helpers.js';
@@ -68,6 +75,8 @@ const props = defineProps({
         required: true
     }
 });
+
+const imageError = ref(false);
 
 const page = usePage();
 const minOrder = computed(() => {
