@@ -308,7 +308,7 @@
             @keydown.esc="closeModal"
         >
             <div
-                class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                class="fixed inset-0 bg-black/60"
                 @click="closeModal"
             ></div>
             <div
@@ -370,14 +370,13 @@
                                 <label
                                     class="block text-sm font-medium text-gray-700 mb-1.5"
                                     >Supplier
-                                    <span class="text-red-500">*</span></label
+                                    <span class="text-xs text-gray-400 font-normal">(Opsional)</span></label
                                 >
                                 <select
                                     v-model="form.supplier_id"
                                     class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white transition"
-                                    required
                                 >
-                                    <option value="">Pilih Supplier</option>
+                                    <option value="">-- Tanpa Supplier (Opsional) --</option>
                                     <option
                                         v-for="sup in suppliers"
                                         :key="sup.id"
@@ -559,7 +558,7 @@
             class="fixed inset-0 z-50 flex items-center justify-center p-4"
         >
             <div
-                class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                class="fixed inset-0 bg-black/60"
                 @click="showDeleteModal = false"
             ></div>
             <div
@@ -749,13 +748,17 @@ const submitForm = () => {
     if (editingProduct.value && editingProduct.value.id) {
         form.transform((data) => ({
             ...data,
+            supplier_id: data.supplier_id || null,
             _method: "PUT",
         })).post(`/admin/products/${editingProduct.value.id}`, {
             forceFormData: true,
             onSuccess: () => closeModal(),
         });
     } else {
-        form.post("/admin/products", {
+        form.transform((data) => ({
+            ...data,
+            supplier_id: data.supplier_id || null,
+        })).post("/admin/products", {
             forceFormData: true,
             onSuccess: () => closeModal(),
         });

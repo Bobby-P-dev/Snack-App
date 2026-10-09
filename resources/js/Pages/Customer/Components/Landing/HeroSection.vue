@@ -198,17 +198,17 @@ const trustItems = computed(() => [
                     
                     <!-- Eyebrow Tag (Consistent with OrderSteps, FaqSection & Product Showcase) -->
                     <span class="text-[10px] sm:text-xs font-bold text-brand-600 uppercase tracking-wider sm:tracking-widest bg-brand-50 px-3.5 py-1 rounded-full border border-brand-200/60 inline-block mb-3.5 shadow-2xs">
-                        {{ cms.badge || 'Spesialis Custom Snack Box & Aneka Kue' }}
+                        {{ cms.badge || 'ANEKA KUE & CUSTOM SNACK BOX' }}
                     </span>
 
                     <!-- Editorial Headline -->
                     <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] xl:text-[3.25rem] font-black text-brown-900 mb-4 leading-[1.15] tracking-tight">
-                        {{ cms.hero_title_1 || 'Kelezatan Autentik untuk Setiap Momen Spesial' }}
+                        {{ cms.hero_title_1 || 'Pesan Kue dan Snack Box Jadi Lebih Mudah' }}
                     </h1>
 
                     <!-- Story Subtitle -->
                     <p class="text-sm sm:text-base md:text-lg text-brown-700/90 mb-6 sm:mb-8 max-w-xl leading-relaxed font-normal">
-                        {{ cms.hero_subtitle || 'Rakit paket snack box impian Anda dengan puluhan varian kue lezat berkualitas. Praktis, higienis, dan pas untuk meeting kantor, seminar, arisan, hingga syukuran.' }}
+                        {{ cms.hero_subtitle || 'Mau beli kue untuk di rumah atau menyiapkan snack box untuk acara? Pilih aneka kue favorit dan susun isi snack box sesuai kebutuhan Anda. Semua bisa dipesan langsung secara online.' }}
                     </p>
 
                     <!-- Mobile Pure Carousel (Direct image showcase, no white card wrapper behind image) -->

@@ -198,7 +198,7 @@
                                     </span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs text-gray-500 pt-1 px-2">
-                                    <span>Kemasan Box & Tisu</span>
+                                    <span>Kemasan Box Eksklusif</span>
                                     <span>Rp {{ formatNumber(package.box_price || 2500) }}</span>
                                 </div>
                             </div>

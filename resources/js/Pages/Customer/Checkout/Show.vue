@@ -507,7 +507,7 @@ const deliveryMethod = ref('pickup'); // 'pickup' | 'delivery'
 const customLocation = ref('');
 
 const storeAddress = computed(() => {
-    return cms.value.company_address || cms.value.contact_address || 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144';
+    return cms.value.company_address || cms.value.contact_address || 'Jl. Raya Bekasi Timur Regensi No.19, RT.001/RW.010, Burangkeng, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17155';
 });
 
 const storeName = computed(() => {

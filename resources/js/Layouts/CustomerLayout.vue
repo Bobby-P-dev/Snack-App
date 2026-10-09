@@ -206,7 +206,7 @@
         <Teleport to="body">
             <div v-if="state.isOpen" class="fixed inset-0 z-50 flex justify-end">
                 <div
-                    class="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+                    class="fixed inset-0 bg-black/60 transition-opacity"
                     @click="toggleCart"
                 ></div>
                 <div
@@ -920,7 +920,7 @@ const customLocation = ref("");
 const notes = ref("");
 
 const storeAddress = computed(() => {
-    return cms.value.company_address || cms.value.contact_address || 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144';
+    return cms.value.company_address || cms.value.contact_address || 'Jl. Raya Bekasi Timur Regensi No.19, RT.001/RW.010, Burangkeng, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17155';
 });
 
 const storeName = computed(() => {

@@ -3,7 +3,7 @@
     <Transition name="modal">
       <div v-if="modelValue" class="fixed inset-0 z-[200] flex items-center justify-center" @keydown.esc="$emit('update:modelValue', false)">
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="$emit('update:modelValue', false)"></div>
+        <div class="absolute inset-0 bg-black/60" @click="$emit('update:modelValue', false)"></div>
 
         <!-- Modal Content -->
         <div

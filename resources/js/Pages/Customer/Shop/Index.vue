@@ -97,7 +97,7 @@
             <div v-if="isMobileFilterOpen" class="fixed inset-0 z-50 flex flex-col justify-end">
                 <!-- Backdrop -->
                 <div 
-                    class="fixed inset-0 bg-brown-950/40 backdrop-blur-xs transition-opacity"
+                    class="fixed inset-0 bg-black/60 transition-opacity"
                     @click="isMobileFilterOpen = false"
                 ></div>
 

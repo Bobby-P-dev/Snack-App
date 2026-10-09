@@ -56,7 +56,7 @@ class CmsSeederTest extends TestCase
         }
 
         $this->assertEquals('Padu Kue', CmsSetting::where('key', 'company_name')->value('value'));
-        $this->assertEquals('halo@padukue.store', CmsSetting::where('key', 'contact_email')->value('value'));
+        $this->assertEquals('admin@padukue.store', CmsSetting::where('key', 'contact_email')->value('value'));
 
         // 2. Verify Carousels
         $carousels = CmsCarousel::where('is_active', true)->orderBy('order')->get();

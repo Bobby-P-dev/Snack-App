@@ -117,7 +117,7 @@ class CheckoutController extends Controller
 
             // Generate WhatsApp URL from CMS settings
             $adminPhoneSetting = \App\Models\CmsSetting::where('key', 'contact_phone')->first();
-            $adminPhone = $adminPhoneSetting ? $adminPhoneSetting->value : '6281234567890';
+            $adminPhone = $adminPhoneSetting ? $adminPhoneSetting->value : '6285155337991';
 
             // Sanitize phone number (replace leading 0 with 62)
             $adminPhone = preg_replace('/[^0-9]/', '', $adminPhone);

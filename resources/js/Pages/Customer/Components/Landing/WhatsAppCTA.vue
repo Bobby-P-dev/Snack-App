@@ -6,7 +6,7 @@ const props = defineProps({
 });
 
 const waConsultationUrl = computed(() => {
-    const phone = (props.cms.contact_phone || '6281234567890').replace(/[^0-9]/g, '');
+    const phone = (props.cms.contact_phone || '6285155337991').replace(/[^0-9]/g, '');
     const company = props.cms.company_name || 'Padu Kue';
     let message = props.cms.wa_consultation_message || 'Halo {company_name}, saya ingin konsultasi mengenai pemesanan snack box dan aneka kue.';
     message = message.replace(/\{company_name\}/g, company);

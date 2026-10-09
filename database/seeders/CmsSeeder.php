@@ -40,42 +40,44 @@ class CmsSeeder extends Seeder
             // Kontak & Alamat
             [
                 'key' => 'contact_email',
-                'value' => 'halo@padukue.store',
+                'value' => 'admin@padukue.store',
                 'type' => 'email',
                 'description' => 'Email resmi Padu Kue'
             ],
             [
                 'key' => 'contact_phone',
-                'value' => '6281234567890',
+                'value' => '6285155337991',
                 'type' => 'phone',
                 'description' => 'Nomor WhatsApp admin untuk checkout & konsultasi (format 62...)'
             ],
             [
                 'key' => 'contact_phone_display',
-                'value' => '0812-3456-7890',
+                'value' => '085155337991',
                 'type' => 'text',
                 'description' => 'Nomor telepon format tampilan ramah baca'
             ],
             [
                 'key' => 'contact_address',
-                'value' => 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144',
+                'value' => 'Jl. Grand Residence Boulevard No.122, Cijengkol, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17320',
+                'type' => 'text',
+                'description' => 'Alamat operasional toko'
+            ],
+            [
+                'key' => 'address',
+                'value' => 'Jl. Grand Residence Boulevard No.122, Cijengkol, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17320',
                 'type' => 'text',
                 'description' => 'Alamat operasional toko'
             ],
             [
                 'key' => 'company_address',
-                'value' => 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144',
+                'value' => 'Jl. Raya Bekasi Timur Regensi No.19, RT.001/RW.010, Burangkeng, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17155',
                 'type' => 'text',
                 'description' => 'Alamat yang ditampilkan di footer website'
             ],
             [
                 'key' => 'operating_hours',
-                'value' => json_encode([
-                    'Senin - Jumat' => '07:30 - 17:30 WIB',
-                    'Sabtu' => '08:00 - 15:00 WIB',
-                    'Minggu' => 'Khusus Pengiriman Pesanan H-1'
-                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
-                'type' => 'json',
+                'value' => '24 Jam',
+                'type' => 'text',
                 'description' => 'Jadwal jam operasional toko'
             ],
             [
@@ -88,13 +90,13 @@ class CmsSeeder extends Seeder
             // Homepage Hero Section
             [
                 'key' => 'badge',
-                'value' => 'Spesialis Custom Snack Box & Aneka Kue',
+                'value' => 'ANEKA KUE & CUSTOM SNACK BOX',
                 'type' => 'text',
                 'description' => 'Teks badge kecil di atas judul hero landing page'
             ],
             [
                 'key' => 'hero_title_1',
-                'value' => 'Kelezatan Autentik untuk Setiap Momen Spesial',
+                'value' => 'Pesan Kue dan Snack Box Jadi Lebih Mudah',
                 'type' => 'text',
                 'description' => 'Judul utama di hero landing page'
             ],
@@ -106,7 +108,7 @@ class CmsSeeder extends Seeder
             ],
             [
                 'key' => 'hero_subtitle',
-                'value' => 'Rakit paket snack box impian Anda dengan puluhan varian kue lezat berkualitas. Praktis, higienis, dan pas untuk meeting kantor, arisan, syukuran, hingga seminar.',
+                'value' => 'Mau beli kue untuk di rumah atau menyiapkan snack box untuk acara? Pilih aneka kue favorit dan susun isi snack box sesuai kebutuhan Anda. Semua bisa dipesan langsung secara online.',
                 'type' => 'textarea',
                 'description' => 'Sub-judul deskripsi di hero landing page'
             ],
@@ -287,7 +289,7 @@ class CmsSeeder extends Seeder
             ],
             [
                 'platform' => 'WhatsApp',
-                'url' => 'https://wa.me/6281234567890',
+                'url' => 'https://wa.me/6285155337991',
                 'icon_name' => 'whatsapp',
                 'order' => 4,
                 'is_active' => true,

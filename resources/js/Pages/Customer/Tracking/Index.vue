@@ -130,7 +130,7 @@ const props = defineProps({
 const page = usePage();
 const cmsSettings = computed(() => page.props.cms?.settings || props.cms || {});
 const adminPhone = computed(() => {
-    const raw = cmsSettings.value.contact_phone || '6281234567890';
+    const raw = cmsSettings.value.contact_phone || '6285155337991';
     return raw.replace(/[^0-9]/g, '');
 });
 

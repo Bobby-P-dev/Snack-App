@@ -156,4 +156,51 @@ class ProductManagementTest extends TestCase
         $response->assertSessionHasErrors(['image']);
         $this->assertNull(Product::where('name', 'Produk File Ilegal')->first());
     }
+
+    public function test_admin_can_create_product_without_supplier(): void
+    {
+        $response = $this->actingAs($this->admin)->post('/admin/products', [
+            'name' => 'Kue Mandiri Tanpa Supplier',
+            'category_id' => $this->category->id,
+            'supplier_id' => null,
+            'base_price' => 2500,
+            'sell_price' => 4500,
+            'is_active' => true,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Produk berhasil ditambahkan');
+
+        $product = Product::where('name', 'Kue Mandiri Tanpa Supplier')->first();
+        $this->assertNotNull($product);
+        $this->assertNull($product->supplier_id);
+    }
+
+    public function test_admin_can_update_product_to_remove_supplier(): void
+    {
+        $product = Product::create([
+            'name' => 'Kue Punya Supplier',
+            'category_id' => $this->category->id,
+            'supplier_id' => $this->supplier->id,
+            'base_price' => 2000,
+            'sell_price' => 4000,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->put("/admin/products/{$product->id}", [
+            'name' => 'Kue Punya Supplier Diupdate',
+            'category_id' => $this->category->id,
+            'supplier_id' => null,
+            'base_price' => 2200,
+            'sell_price' => 4200,
+            'is_active' => true,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Produk berhasil diperbarui');
+
+        $product->refresh();
+        $this->assertNull($product->supplier_id);
+        $this->assertEquals('Kue Punya Supplier Diupdate', $product->name);
+    }
 }

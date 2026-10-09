@@ -103,7 +103,7 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
                             Rakit Custom Snack Box Sesuai Acara Anda
                         </h2>
                         <p class="text-brown-600 text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
-                            Bebas pilih kombinasi aneka kue basah & gurih favorit. Dikemas rapi & higienis di hari H pengiriman, lengkap dengan air mineral cup dan tisu gratis.
+                            Bebas pilih kombinasi aneka kue basah & gurih favorit. Dikemas rapi & higienis di hari H pengiriman untuk menjaga kesegaran dan cita rasa terbaik.
                         </p>
                     </div>
 
@@ -195,7 +195,7 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
                                 </div>
                                 <div class="flex items-start gap-2">
                                     <CheckCircle2 class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                    <span><strong>Gratis</strong> 1 gelas air mineral cup & tisu di tiap box</span>
+                                    <span>Kemasan higienis siap santap untuk para tamu</span>
                                 </div>
                                 <div class="flex items-start gap-2">
                                     <CheckCircle2 class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -243,11 +243,11 @@ const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
 
                     <div class="flex items-center gap-3 p-2">
                         <div class="w-9 h-9 rounded-xl bg-white border border-cream-200 flex items-center justify-center text-brand-600 shrink-0 shadow-2xs">
-                            <Droplets class="w-4 h-4" />
+                            <ShieldCheck class="w-4 h-4" />
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-brown-900">Gratis Air Cup & Tisu</p>
-                            <p class="text-[11px] text-brown-600">Sudah lengkap siap santap</p>
+                            <p class="text-xs font-bold text-brown-900">100% Halal & Alami</p>
+                            <p class="text-[11px] text-brown-600">Bahan pilihan tanpa pengawet</p>
                         </div>
                     </div>
 

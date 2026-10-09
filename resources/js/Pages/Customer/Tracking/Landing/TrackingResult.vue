@@ -289,7 +289,7 @@ const page = usePage();
 const cms = computed(() => page.props.cms?.settings || {});
 
 const adminPhone = computed(() => {
-    const raw = cms.value.contact_phone || '6281234567890';
+    const raw = cms.value.contact_phone || '6285155337991';
     return raw.replace(/[^0-9]/g, '');
 });
 

@@ -533,7 +533,7 @@
       >
         <div
           v-if="isAddProductModalOpen"
-          class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6"
+          class="fixed inset-0 z-50 overflow-y-auto bg-black/60 flex items-center justify-center p-3 sm:p-6"
           @click="closeAddProductModal"
         >
           <div
@@ -716,7 +716,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       dp_percentage: 70,
-      company_address: 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144',
+      company_address: 'Jl. Raya Bekasi Timur Regensi No.19, RT.001/RW.010, Burangkeng, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17155',
       company_name: 'Padu Kue',
     }),
   },
@@ -738,7 +738,7 @@ const props = defineProps({
 });
 
 const dpPercentage = computed(() => props.cmsSettings?.dp_percentage || 70);
-const storeAddress = computed(() => props.cmsSettings?.company_address || 'Jl. Boulevard Raya No. 88, Bekasi, Jawa Barat 17144');
+const storeAddress = computed(() => props.cmsSettings?.company_address || 'Jl. Raya Bekasi Timur Regensi No.19, RT.001/RW.010, Burangkeng, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17155');
 const storeName = computed(() => props.cmsSettings?.company_name || 'Padu Kue');
 
 // Initial location detection: is it pickup or delivery?

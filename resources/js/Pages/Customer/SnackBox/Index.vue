@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="flex items-center gap-2.5">
                                     <span class="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">✓</span>
-                                    <span>Termasuk box kemasan & tisu</span>
+                                    <span>Termasuk box kemasan eksklusif</span>
                                 </div>
                                 <div class="flex items-center gap-2.5">
                                     <span class="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">✓</span>

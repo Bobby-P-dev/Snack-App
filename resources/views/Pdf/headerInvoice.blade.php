@@ -6,8 +6,8 @@
     $logoBase64 = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : null;
     $mimeType = (file_exists($logoPath) && str_ends_with($logoPath, '.png')) ? 'image/png' : 'image/webp';
     $companyName = \App\Models\CmsSetting::where('key', 'company_name')->value('value') ?? 'Padu Kue';
-    $companyPhone = \App\Models\CmsSetting::where('key', 'contact_phone')->value('value') ?? '0812-3456-7890';
-    $companyAddress = \App\Models\CmsSetting::where('key', 'company_address')->value('value') ?? 'Bandung, Jawa Barat';
+    $companyPhone = \App\Models\CmsSetting::where('key', 'contact_phone_display')->value('value') ?? \App\Models\CmsSetting::where('key', 'contact_phone')->value('value') ?? '085155337991';
+    $companyAddress = \App\Models\CmsSetting::where('key', 'company_address')->value('value') ?? 'Jl. Raya Bekasi Timur Regensi No.19, RT.001/RW.010, Burangkeng, Kec. Setu, Kabupaten Bekasi, Jawa Barat 17155';
 @endphp
 <div style="font-size: 12px; font-family: sans-serif; display: flex; justify-content: space-between; align-items: center; padding: 0 15mm; width: 100%; box-sizing: border-box; padding-top: 10mm;">
     <div style="display: flex; align-items: center; gap: 15px;">

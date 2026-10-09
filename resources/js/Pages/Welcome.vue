@@ -29,7 +29,7 @@ const { addToCart } = useCartStore();
 const { items: selectedItems, count: selectedCount, addItem: addSelected, removeItem: removeSelected, clearItems: clearSelected } = useSelectedItemsStore();
 
 const floatingWaUrl = computed(() => {
-    const phone = (cms.value.contact_phone || '6281234567890').replace(/[^0-9]/g, '');
+    const phone = (cms.value.contact_phone || '6285155337991').replace(/[^0-9]/g, '');
     const company = cms.value.company_name || 'Padu Kue';
     let message = cms.value.wa_consultation_message || 'Halo {company_name}, saya ingin konsultasi mengenai pemesanan snack box dan aneka kue.';
     message = message.replace(/\{company_name\}/g, company);

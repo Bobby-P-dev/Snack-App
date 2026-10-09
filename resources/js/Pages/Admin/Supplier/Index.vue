@@ -94,7 +94,7 @@
 
     <!-- Modal (Create/Edit) -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.esc="closeModal">
-      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
+      <div class="fixed inset-0 bg-black/60" @click="closeModal"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 z-10 max-h-[90vh] overflow-y-auto animate-modal-in">
         <div class="flex items-center justify-between mb-5">
           <h3 class="text-lg font-bold text-gray-900">{{ editingSupplier ? 'Edit Supplier' : 'Tambah Supplier' }}</h3>
@@ -149,7 +149,7 @@
 
     <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+      <div class="fixed inset-0 bg-black/60" @click="showDeleteModal = false"></div>
       <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10 text-center animate-modal-in">
         <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-red-50">
           <AlertTriangle class="w-7 h-7 text-red-600" />

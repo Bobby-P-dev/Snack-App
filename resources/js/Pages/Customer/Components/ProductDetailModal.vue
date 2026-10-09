@@ -17,7 +17,7 @@
             >
                 <!-- Backdrop -->
                 <div
-                    class="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+                    class="fixed inset-0 bg-black/60 transition-opacity"
                     @click="close"
                 ></div>
 
@@ -31,12 +31,12 @@
                     leave-to-class="opacity-0 scale-95 translate-y-4"
                 >
                     <div
-                        class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden border border-cream-200/80 z-10 my-auto max-h-[92vh] flex flex-col"
+                        class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-cream-200/80 z-10 my-auto max-h-[92vh] flex flex-col"
                     >
                         <!-- Close Button -->
                         <button
                             @click="close"
-                            class="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-white/85 backdrop-blur-md text-brown-800 hover:bg-white hover:text-brand-600 transition flex items-center justify-center shadow-md cursor-pointer active:scale-95"
+                            class="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-white text-brown-800 hover:bg-cream-100 hover:text-brand-600 transition flex items-center justify-center shadow-md cursor-pointer active:scale-95"
                             aria-label="Tutup"
                         >
                             <X class="w-5 h-5" />
@@ -59,7 +59,7 @@
 
                                 <!-- Category Badge -->
                                 <div class="absolute bottom-3 left-3 flex gap-2">
-                                    <span v-if="product.category" class="bg-white/95 backdrop-blur-md text-brand-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                    <span v-if="product.category" class="bg-white text-brand-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                                         {{ product.category.name }}
                                     </span>
                                     <span v-if="product.badge" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
