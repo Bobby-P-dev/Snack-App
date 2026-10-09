@@ -20,7 +20,7 @@ services:
       - padukue_storage:/var/www/html/storage/app
       - padukue_logs:/var/www/html/storage/logs
     networks:
-      - ai_network
+      - ai-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/up"]
       interval: 15s
@@ -35,5 +35,5 @@ volumes:
     name: padukue_logs
 
 networks:
-  ai_network:
+  ai-network:
     external: true
