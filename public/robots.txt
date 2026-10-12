@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /pdf/
+Disallow: /cart
+Disallow: /checkout
+
+Sitemap: https://padukue.store/sitemap.xml
