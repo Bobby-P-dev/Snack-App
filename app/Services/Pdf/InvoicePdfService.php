@@ -44,23 +44,39 @@ class InvoicePdfService
             ->footerView('Pdf.footerInvoice')
             ->margins(45, 15, 30, 15)
             ->withBrowsershot(function ($browsershot) {
-                $browsershot->noSandbox();
+                $browsershot->noSandbox()
+                    ->addChromiumArguments([
+                        '--disable-dev-shm-usage',
+                        '--disable-gpu',
+                        '--single-process',
+                        '--no-zygote',
+                    ]);
 
                 $chromePath = env('CHROME_PATH');
-                if (! $chromePath) {
-                    $defaultLocal = base_path('.cache/puppeteer/chrome-headless-shell/linux-150.0.7871.24/chrome-headless-shell-linux64/chrome-headless-shell');
-                    if (file_exists($defaultLocal)) {
-                        $chromePath = $defaultLocal;
+                if (! $chromePath || ! file_exists($chromePath)) {
+                    if (file_exists('/usr/bin/chromium-browser')) {
+                        $chromePath = '/usr/bin/chromium-browser';
+                    } elseif (file_exists('/usr/bin/chromium')) {
+                        $chromePath = '/usr/bin/chromium';
                     } else {
-                        $matches = glob(base_path('.cache/puppeteer/chrome-headless-shell/*/*/chrome-headless-shell'));
-                        if (! empty($matches)) {
-                            $chromePath = end($matches);
+                        $defaultLocal = base_path('.cache/puppeteer/chrome-headless-shell/linux-150.0.7871.24/chrome-headless-shell-linux64/chrome-headless-shell');
+                        if (file_exists($defaultLocal)) {
+                            $chromePath = $defaultLocal;
+                        } else {
+                            $matches = glob(base_path('.cache/puppeteer/chrome-headless-shell/*/*/chrome-headless-shell'));
+                            if (! empty($matches)) {
+                                $chromePath = end($matches);
+                            }
                         }
                     }
                 }
 
                 if ($chromePath && file_exists($chromePath)) {
                     $browsershot->setChromePath($chromePath);
+                }
+
+                if (file_exists('/usr/bin/node')) {
+                    $browsershot->setNodeBinary('/usr/bin/node');
                 }
             })
             ->format('A4')->name("invoice-{$order->order_number}.pdf")->download();

@@ -62,6 +62,20 @@ class SitemapService
             'priority' => '0.5',
         ];
 
+        $urls[] = [
+            'loc' => $baseUrl . '/about',
+            'lastmod' => Carbon::now()->format('Y-m-d'),
+            'changefreq' => 'monthly',
+            'priority' => '0.8',
+        ];
+
+        $urls[] = [
+            'loc' => $baseUrl . '/contact',
+            'lastmod' => Carbon::now()->format('Y-m-d'),
+            'changefreq' => 'monthly',
+            'priority' => '0.8',
+        ];
+
         // 2. Kategori Produk Aktif
         $categories = Category::all();
         foreach ($categories as $category) {

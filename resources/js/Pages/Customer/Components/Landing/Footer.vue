@@ -43,9 +43,9 @@ const cms = computed(() => page.props.cms?.settings || {});
                     <h4 class="font-bold text-brown-900 text-sm mb-4 tracking-tight">Layanan</h4>
                     <ul class="space-y-2.5">
                         <li><Link href="/" class="text-brown-600 hover:text-brand-600 transition text-sm">Beranda</Link></li>
+                        <li><Link href="/about" class="text-brown-600 hover:text-brand-600 transition text-sm">Tentang Kami</Link></li>
                         <li><Link href="/snack-box" class="text-brown-600 hover:text-brand-600 transition text-sm">Rakit Snack Box</Link></li>
-                        <li><Link href="/cart" class="text-brown-600 hover:text-brand-600 transition text-sm">Keranjang Pesanan</Link></li>
-                        <li><Link href="/checkout" class="text-brown-600 hover:text-brand-600 transition text-sm">Checkout Cepat</Link></li>
+                        <li><Link href="/shop" class="text-brown-600 hover:text-brand-600 transition text-sm">Kue Satuan & Donat</Link></li>
                     </ul>
                 </div>
 
@@ -53,8 +53,9 @@ const cms = computed(() => page.props.cms?.settings || {});
                 <div>
                     <h4 class="font-bold text-brown-900 text-sm mb-4 tracking-tight">Bantuan</h4>
                     <ul class="space-y-2.5">
-                        <li><a :href="`https://wa.me/${cms.contact_phone}`" target="_blank" class="text-brown-600 hover:text-brand-600 transition text-sm">Konsultasi Acara</a></li>
-                        <li><Link href="/tracking" class="text-brown-600 hover:text-brand-600 transition text-sm">Konfirmasi DP</Link></li>
+                        <li><Link href="/contact" class="text-brown-600 hover:text-brand-600 transition text-sm">Hubungi Kontak</Link></li>
+                        <li><a :href="`https://wa.me/${cms.contact_phone || '6285155337991'}`" target="_blank" class="text-brown-600 hover:text-brand-600 transition text-sm">Konsultasi WhatsApp</a></li>
+                        <li><Link href="/tracking" class="text-brown-600 hover:text-brand-600 transition text-sm">Lacak Status Pesanan</Link></li>
                         <li><span class="text-brown-500 text-xs italic">{{ cms.operating_hours ? 'Jam Operasional: ' + cms.operating_hours : 'Buka 24 Jam' }}</span></li>
                     </ul>
                 </div>

@@ -27,26 +27,66 @@
                             </div>
                         </div>
                     </Link>
-                    <div class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <div class="hidden md:flex items-center space-x-1 lg:space-x-1.5">
                         <Link
                             href="/"
-                            class="px-3.5 py-2 rounded-lg text-brown-800 hover:text-brand-600 hover:bg-brand-50/60 transition font-semibold text-sm"
+                            :class="[
+                                'px-3 py-2 rounded-lg transition font-semibold text-sm',
+                                isCurrentRoute('/')
+                                    ? 'text-brand-600 bg-brand-50/80 font-bold'
+                                    : 'text-brown-800 hover:text-brand-600 hover:bg-brand-50/60'
+                            ]"
                             >Beranda</Link
                         >
                         <Link
                             href="/snack-box"
-                            class="px-3.5 py-2 rounded-lg text-brown-800 hover:text-brand-600 hover:bg-brand-50/60 transition font-semibold text-sm"
+                            :class="[
+                                'px-3 py-2 rounded-lg transition font-semibold text-sm',
+                                isCurrentRoute('/snack-box')
+                                    ? 'text-brand-600 bg-brand-50/80 font-bold'
+                                    : 'text-brown-800 hover:text-brand-600 hover:bg-brand-50/60'
+                            ]"
                             >Custom Snack Box</Link
                         >
                         <Link
                             href="/shop"
-                            class="px-3.5 py-2 rounded-lg text-brown-800 hover:text-brand-600 hover:bg-brand-50/60 transition font-semibold text-sm"
+                            :class="[
+                                'px-3 py-2 rounded-lg transition font-semibold text-sm',
+                                isCurrentRoute('/shop')
+                                    ? 'text-brand-600 bg-brand-50/80 font-bold'
+                                    : 'text-brown-800 hover:text-brand-600 hover:bg-brand-50/60'
+                            ]"
                             >Kue Satuan</Link
                         >
                         <Link
                             href="/tracking"
-                            class="px-3.5 py-2 rounded-lg text-brown-800 hover:text-brand-600 hover:bg-brand-50/60 transition font-semibold text-sm"
+                            :class="[
+                                'px-3 py-2 rounded-lg transition font-semibold text-sm',
+                                isCurrentRoute('/tracking')
+                                    ? 'text-brand-600 bg-brand-50/80 font-bold'
+                                    : 'text-brown-800 hover:text-brand-600 hover:bg-brand-50/60'
+                            ]"
                             >Lacak Pesanan</Link
+                        >
+                        <Link
+                            href="/about"
+                            :class="[
+                                'px-3 py-2 rounded-lg transition font-semibold text-sm',
+                                isCurrentRoute('/about')
+                                    ? 'text-brand-600 bg-brand-50/80 font-bold'
+                                    : 'text-brown-800 hover:text-brand-600 hover:bg-brand-50/60'
+                            ]"
+                            >Tentang Kami</Link
+                        >
+                        <Link
+                            href="/contact"
+                            :class="[
+                                'px-3 py-2 rounded-lg transition font-semibold text-sm',
+                                isCurrentRoute('/contact')
+                                    ? 'text-brand-600 bg-brand-50/80 font-bold'
+                                    : 'text-brown-800 hover:text-brand-600 hover:bg-brand-50/60'
+                            ]"
+                            >Kontak</Link
                         >
                     </div>
                     <div class="flex items-center space-x-3">

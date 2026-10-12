@@ -43,6 +43,8 @@ class SitemapAndRobotsTest extends TestCase
         $this->assertStringContainsString('<loc>https://padukue.store/shop</loc>', $content);
         $this->assertStringContainsString('<loc>https://padukue.store/snack-box</loc>', $content);
         $this->assertStringContainsString('<loc>https://padukue.store/tracking</loc>', $content);
+        $this->assertStringContainsString('<loc>https://padukue.store/about</loc>', $content);
+        $this->assertStringContainsString('<loc>https://padukue.store/contact</loc>', $content);
         $this->assertStringContainsString('<loc>https://padukue.store/shop/category/kue-basah</loc>', $content);
         $this->assertStringContainsString("<loc>https://padukue.store/shop/{$product->id}</loc>", $content);
         $this->assertStringContainsString('<loc>https://padukue.store/snack-box/paket-hemat-3-kue</loc>', $content);

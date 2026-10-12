@@ -10,11 +10,18 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Customer\ShopController;
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\TrackingController;
+use App\Http\Controllers\Customer\PageController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 // SEO Routes - Sitemap
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+// Halaman Informasi Publik & SEO
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/tentang-kami', fn () => redirect()->route('about'));
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/kontak', fn () => redirect()->route('contact'));
 
 // Public routes - Home & Shop
 Route::get('/', [ShopController::class, 'home'])->name('home');
