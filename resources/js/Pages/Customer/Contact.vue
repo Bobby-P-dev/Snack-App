@@ -4,17 +4,12 @@ import { ref, computed } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Footer from '@/Pages/Customer/Components/Landing/Footer.vue';
 import {
-    Phone,
     Mail,
     MapPin,
     Clock,
     Send,
     MessageCircle,
     Truck,
-    HelpCircle,
-    CheckCircle2,
-    Calendar,
-    Users,
     Package,
     Store,
     ExternalLink
@@ -48,10 +43,17 @@ const purposeLabels = {
     other: 'Pertanyaan / Kerja Sama Lainnya',
 };
 
+const purposeOptions = [
+    { key: 'snackbox', label: 'Custom Snack Box', icon: Package },
+    { key: 'satuan', label: 'Kue Satuan / Donat', icon: Store },
+    { key: 'ongkir', label: 'Cek Ongkir & Jadwal', icon: Truck },
+    { key: 'other', label: 'Pertanyaan Lain', icon: MessageCircle },
+];
+
 const sendWhatsAppMessage = () => {
     const cleanPhone = companyPhone.value.replace(/[^0-9]/g, '');
     const greeting = `Halo ${cms.value.company_name || 'Padu Kue'}, saya ingin konsultasi pemesanan.`;
-    
+
     let text = `${greeting}\n\n`;
     text += `*Keperluan:* ${purposeLabels[purpose.value] || purpose.value}\n`;
     if (senderName.value.trim()) {
@@ -144,347 +146,294 @@ const schemaJson = computed(() => JSON.stringify({
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://padukue.store/contact" />
         <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link
+            href="https://fonts.bunny.net/css?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap"
+            rel="stylesheet"
+        />
         <component is="script" type="application/ld+json" v-text="schemaJson" />
     </Head>
 
     <CustomerLayout>
-        <div class="py-8 sm:py-12 md:py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- ─── BREADCRUMB ─── -->
-                <nav class="flex items-center gap-2 text-xs text-brown-500 mb-6 font-medium">
-                    <Link href="/" class="hover:text-brand-600 transition-colors">Beranda</Link>
-                    <span>/</span>
-                    <span class="text-brown-800 font-semibold">Kontak Kami</span>
-                </nav>
+        <div class="bg-cream-100">
+            <div class="max-w-5xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
 
-                <!-- ─── HERO INTRO SECTION ─── -->
-                <section class="mb-12 sm:mb-16">
-                    <div class="max-w-3xl">
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/80 text-brand-700 text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
-                            <MessageCircle class="w-3.5 h-3.5 text-brand-600" />
-                            <span>Layanan Pelanggan & Konsultasi Acara</span>
-                        </div>
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-brown-900 tracking-tight leading-[1.18] mb-4">
-                            Hubungi Padu Kue Bekasi
-                        </h1>
-                        <p class="text-base sm:text-lg text-brown-700 leading-relaxed font-normal">
-                            Punya rencana acara syukuran, rapat kantor, atau kumpul keluarga? Tim kami siap membantu menyusun pilihan snack box terbaik sesuai selera tamu dan anggaran Anda.
+                <!-- ─── HERO ─── -->
+                <header class="max-w-2xl mb-14 sm:mb-20">
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-6">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Hubungi kami
+                    </p>
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-[3.4rem] text-brown-900 leading-[1.1] tracking-tight mb-6">
+                        Ceritakan acaramu, kami siapkan kuenya.
+                    </h1>
+                    <p class="text-base sm:text-lg text-brown-600 leading-relaxed">
+                        Rencana syukuran, rapat kantor, atau kumpul keluarga? Tim kami siap membantu menyusun
+                        pilihan snack box terbaik — sesuai selera tamu dan anggaranmu.
+                    </p>
+                </header>
+
+                <!-- ─── KONTAK + FORM ─── -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 mb-16 sm:mb-24">
+
+                    <!-- Kolom kiri: kontak langsung -->
+                    <div class="lg:col-span-5">
+                        <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-8">
+                            <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                            Kontak langsung
                         </p>
-                    </div>
-                </section>
 
-                <!-- ─── MAIN 2-COLUMN SECTION: INFO KONTAK & FORM WA ─── -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16 sm:mb-24">
-                    <!-- Left Column: Informasi Kontak & Alamat (5 cols) -->
-                    <div class="lg:col-span-5 space-y-6">
-                        <!-- Direct WhatsApp Box -->
-                        <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-3xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
-                                    Fast Response
-                                </span>
-                                <Phone class="w-6 h-6 text-emerald-200" />
+                        <!-- WhatsApp -->
+                        <div class="pb-8 mb-8 border-b border-brown-900/10">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                                <span class="text-[13px] font-medium text-brown-600">Fast response via WhatsApp</span>
                             </div>
-                            <h2 class="text-xl sm:text-2xl font-bold mb-1">WhatsApp Resmi</h2>
-                            <p class="text-emerald-100 text-xs sm:text-sm mb-4">
-                                Saluran tercepat untuk konsultasi menu, jadwal kirim, dan konfirmasi pesanan.
-                            </p>
-                            <div class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-5">
+                            <p class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-5">
                                 {{ companyPhoneDisplay }}
-                            </div>
+                            </p>
                             <a
                                 :href="`https://wa.me/${companyPhone}`"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-white text-emerald-800 rounded-xl font-bold text-sm hover:bg-emerald-50 transition-colors shadow-xs"
+                                class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full font-semibold text-sm transition-colors"
                             >
-                                <MessageCircle class="w-4 h-4 text-emerald-600" />
-                                <span>Buka Chat WhatsApp Sekarang</span>
+                                <MessageCircle class="w-4 h-4" />
+                                <span>Buka Chat WhatsApp</span>
                             </a>
                         </div>
 
-                        <!-- Info Cards (Email & Hours) -->
-                        <div class="bg-white rounded-3xl p-6 border border-cream-200/90 shadow-sm space-y-5">
-                            <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shrink-0 mt-0.5">
-                                    <Clock class="w-5 h-5" />
-                                </div>
+                        <!-- Daftar kontak -->
+                        <dl>
+                            <div class="flex gap-4 py-5 border-b border-brown-900/10">
+                                <Clock class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <h3 class="text-xs font-bold text-brown-500 uppercase tracking-wider mb-1">Jam Operasional</h3>
-                                    <p class="text-sm sm:text-base font-bold text-brown-900">{{ operatingHours }}</p>
-                                    <p class="text-xs text-brown-600 mt-0.5">Pemesanan online & konsultasi chat selalu terbuka.</p>
+                                    <dt class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-1">Jam operasional</dt>
+                                    <dd class="text-[15px] font-semibold text-brown-900">{{ operatingHours }}</dd>
+                                    <dd class="text-[13px] text-brown-600 mt-0.5">Pemesanan online & konsultasi chat selalu terbuka.</dd>
                                 </div>
                             </div>
-
-                            <div class="pt-4 border-t border-cream-100 flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shrink-0 mt-0.5">
-                                    <Mail class="w-5 h-5" />
-                                </div>
+                            <div class="flex gap-4 py-5 border-b border-brown-900/10">
+                                <Mail class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <h3 class="text-xs font-bold text-brown-500 uppercase tracking-wider mb-1">Email Resmi</h3>
-                                    <a :href="`mailto:${companyEmail}`" class="text-sm sm:text-base font-bold text-brown-900 hover:text-brand-600 transition-colors break-all">
-                                        {{ companyEmail }}
-                                    </a>
-                                    <p class="text-xs text-brown-600 mt-0.5">Untuk penawaran kerja sama instansi & invoice resmi.</p>
+                                    <dt class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-1">Email</dt>
+                                    <dd>
+                                        <a :href="`mailto:${companyEmail}`" class="text-[15px] font-semibold text-brown-900 hover:text-brand-700 transition-colors break-all">
+                                            {{ companyEmail }}
+                                        </a>
+                                    </dd>
+                                    <dd class="text-[13px] text-brown-600 mt-0.5">Untuk kerja sama instansi & invoice resmi.</dd>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Address Bento Card -->
-                        <div class="bg-white rounded-3xl p-6 border border-cream-200/90 shadow-sm space-y-5">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <MapPin class="w-4 h-4 text-brand-600" />
-                                        <h3 class="text-xs font-bold text-brown-500 uppercase tracking-wider">Alamat Workshop / Pengambilan</h3>
-                                    </div>
-                                    <a :href="gmapsWorkshopUrl" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-brand-600 hover:underline inline-flex items-center gap-1">
-                                        <span>Maps</span>
-                                        <ExternalLink class="w-3 h-3" />
-                                    </a>
+                            <div class="flex gap-4 py-5 border-b border-brown-900/10">
+                                <MapPin class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+                                <div>
+                                    <dt class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-1">
+                                        Workshop & pengambilan
+                                    </dt>
+                                    <dd class="text-sm text-brown-800 leading-relaxed">{{ operationalAddress }}</dd>
+                                    <dd class="mt-1.5">
+                                        <a :href="gmapsWorkshopUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[13px] font-semibold text-brand-700 hover:underline">
+                                            <span>Lihat di Google Maps</span>
+                                            <ExternalLink class="w-3 h-3" />
+                                        </a>
+                                    </dd>
                                 </div>
-                                <p class="text-sm font-semibold text-brown-800 leading-relaxed">
-                                    {{ operationalAddress }}
-                                </p>
                             </div>
-
-                            <div class="pt-4 border-t border-cream-100">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <Store class="w-4 h-4 text-brand-600" />
-                                        <h3 class="text-xs font-bold text-brown-500 uppercase tracking-wider">Alamat Toko</h3>
-                                    </div>
-                                    <a :href="gmapsStoreUrl" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-brand-600 hover:underline inline-flex items-center gap-1">
-                                        <span>Maps</span>
-                                        <ExternalLink class="w-3 h-3" />
-                                    </a>
+                            <div class="flex gap-4 py-5">
+                                <Store class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+                                <div>
+                                    <dt class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-1">Toko</dt>
+                                    <dd class="text-sm text-brown-800 leading-relaxed">{{ storeAddress }}</dd>
+                                    <dd class="mt-1.5">
+                                        <a :href="gmapsStoreUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[13px] font-semibold text-brand-700 hover:underline">
+                                            <span>Lihat di Google Maps</span>
+                                            <ExternalLink class="w-3 h-3" />
+                                        </a>
+                                    </dd>
                                 </div>
-                                <p class="text-sm font-semibold text-brown-800 leading-relaxed">
-                                    {{ storeAddress }}
-                                </p>
                             </div>
-                        </div>
+                        </dl>
                     </div>
 
-                    <!-- Right Column: Interactive WhatsApp Consultation Launcher (7 cols) -->
-                    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 border border-cream-200/90 shadow-sm">
-                        <div class="flex items-center gap-2.5 text-brand-600 text-xs font-bold uppercase tracking-wider mb-2">
-                            <Send class="w-4 h-4" />
-                            <span>Formulir Cepat via WhatsApp</span>
-                        </div>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight mb-2">
-                            Kirim Rincian Acara Anda
-                        </h2>
-                        <p class="text-sm text-brown-600 mb-6 leading-relaxed">
-                            Pilih jenis kebutuhan di bawah ini. Sistem kami akan memformat pesan rapi sehingga admin WhatsApp kami dapat langsung memberikan perkiraan harga dan rekomendasi kue terbaik.
-                        </p>
-
-                        <form @submit.prevent="sendWhatsAppMessage" class="space-y-5">
-                            <!-- Purpose Selector -->
-                            <div>
-                                <label class="block text-xs font-bold text-brown-800 uppercase tracking-wider mb-2">
-                                    Kebutuhan Anda
-                                </label>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                    <button
-                                        type="button"
-                                        @click="purpose = 'snackbox'"
-                                        :class="[
-                                            'p-3.5 rounded-xl border text-left transition-all text-xs sm:text-sm font-semibold flex items-center gap-2.5 cursor-pointer',
-                                            purpose === 'snackbox'
-                                                ? 'bg-brand-50 border-brand-500 text-brand-700 shadow-2xs'
-                                                : 'bg-white border-cream-200 text-brown-700 hover:bg-cream-50'
-                                        ]"
-                                    >
-                                        <Package class="w-4 h-4 text-brand-600 shrink-0" />
-                                        <span>Custom Snack Box</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="purpose = 'satuan'"
-                                        :class="[
-                                            'p-3.5 rounded-xl border text-left transition-all text-xs sm:text-sm font-semibold flex items-center gap-2.5 cursor-pointer',
-                                            purpose === 'satuan'
-                                                ? 'bg-brand-50 border-brand-500 text-brand-700 shadow-2xs'
-                                                : 'bg-white border-cream-200 text-brown-700 hover:bg-cream-50'
-                                        ]"
-                                    >
-                                        <Store class="w-4 h-4 text-brand-600 shrink-0" />
-                                        <span>Kue Satuan / Donat</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="purpose = 'ongkir'"
-                                        :class="[
-                                            'p-3.5 rounded-xl border text-left transition-all text-xs sm:text-sm font-semibold flex items-center gap-2.5 cursor-pointer',
-                                            purpose === 'ongkir'
-                                                ? 'bg-brand-50 border-brand-500 text-brand-700 shadow-2xs'
-                                                : 'bg-white border-cream-200 text-brown-700 hover:bg-cream-50'
-                                        ]"
-                                    >
-                                        <Truck class="w-4 h-4 text-brand-600 shrink-0" />
-                                        <span>Cek Ongkir & Jadwal</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="purpose = 'other'"
-                                        :class="[
-                                            'p-3.5 rounded-xl border text-left transition-all text-xs sm:text-sm font-semibold flex items-center gap-2.5 cursor-pointer',
-                                            purpose === 'other'
-                                                ? 'bg-brand-50 border-brand-500 text-brand-700 shadow-2xs'
-                                                : 'bg-white border-cream-200 text-brown-700 hover:bg-cream-50'
-                                        ]"
-                                    >
-                                        <MessageCircle class="w-4 h-4 text-brand-600 shrink-0" />
-                                        <span>Pertanyaan Lain</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Sender Name -->
-                            <div>
-                                <label for="senderName" class="block text-xs font-bold text-brown-800 uppercase tracking-wider mb-1.5">
-                                    Nama Anda <span class="text-brown-400 font-normal">(opsional)</span>
-                                </label>
-                                <input
-                                    id="senderName"
-                                    type="text"
-                                    v-model="senderName"
-                                    placeholder="Contoh: Ibu Rina / Bpk. Fajar"
-                                    class="w-full px-4 py-3 rounded-xl border border-cream-300 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-sm sm:text-base text-brown-900 placeholder:text-brown-400 bg-white"
-                                />
-                            </div>
-
-                            <!-- Event Date & Box Estimate (2 cols) -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="eventDate" class="block text-xs font-bold text-brown-800 uppercase tracking-wider mb-1.5">
-                                        Tanggal Acara <span class="text-brown-400 font-normal">(opsional)</span>
-                                    </label>
-                                    <input
-                                        id="eventDate"
-                                        type="date"
-                                        v-model="eventDate"
-                                        class="w-full px-4 py-3 rounded-xl border border-cream-300 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-sm sm:text-base text-brown-900 bg-white"
-                                    />
-                                </div>
-                                <div>
-                                    <label for="boxEstimate" class="block text-xs font-bold text-brown-800 uppercase tracking-wider mb-1.5">
-                                        Perkiraan Jumlah <span class="text-brown-400 font-normal">(opsional)</span>
-                                    </label>
-                                    <input
-                                        id="boxEstimate"
-                                        type="text"
-                                        v-model="boxEstimate"
-                                        placeholder="Contoh: 50 box / 100 pcs"
-                                        class="w-full px-4 py-3 rounded-xl border border-cream-300 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-sm sm:text-base text-brown-900 placeholder:text-brown-400 bg-white"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <label for="messageNotes" class="block text-xs font-bold text-brown-800 uppercase tracking-wider mb-1.5">
-                                    Catatan Tambahan / Lokasi Acara
-                                </label>
-                                <textarea
-                                    id="messageNotes"
-                                    rows="3"
-                                    v-model="messageNotes"
-                                    placeholder="Tuliskan jenis kue favorit, lokasi kirim di Bekasi, atau waktu pengantaran yang diinginkan..."
-                                    class="w-full px-4 py-3 rounded-xl border border-cream-300 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-sm sm:text-base text-brown-900 placeholder:text-brown-400 bg-white resize-y"
-                                ></textarea>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button
-                                type="submit"
-                                class="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl font-bold text-sm sm:text-base shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2.5 transition-all cursor-pointer"
-                            >
-                                <MessageCircle class="w-5 h-5" />
-                                <span>Kirim Konsultasi ke WhatsApp Kami</span>
-                            </button>
-                            <p class="text-center text-xs text-brown-500">
-                                Pesan akan diformat otomatis dan membuka aplikasi WhatsApp Anda.
+                    <!-- Kolom kanan: formulir -->
+                    <div class="lg:col-span-7">
+                        <div class="bg-white border border-brown-900/10 rounded-2xl p-6 sm:p-9">
+                            <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-3">
+                                <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                                Formulir konsultasi
                             </p>
-                        </form>
+                            <h2 class="font-display text-2xl sm:text-3xl text-brown-900 tracking-tight mb-2">
+                                Kirim rincian acaramu.
+                            </h2>
+                            <p class="text-sm text-brown-600 leading-relaxed mb-7">
+                                Pilih kebutuhanmu — pesan akan terformat rapi dan langsung membuka WhatsApp,
+                                jadi admin bisa cepat kasih perkiraan harga.
+                            </p>
+
+                            <form @submit.prevent="sendWhatsAppMessage" class="space-y-5">
+                                <div>
+                                    <span class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-2.5">
+                                        Kebutuhanmu
+                                    </span>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        <button
+                                            v-for="opt in purposeOptions"
+                                            :key="opt.key"
+                                            type="button"
+                                            @click="purpose = opt.key"
+                                            :class="[
+                                                'flex items-center gap-2.5 px-4 py-3 rounded-xl border text-left text-sm font-medium transition-all cursor-pointer',
+                                                purpose === opt.key
+                                                    ? 'border-brand-600 bg-brand-50 text-brand-700'
+                                                    : 'border-brown-900/15 text-brown-800 hover:border-brown-900/30'
+                                            ]"
+                                        >
+                                            <component :is="opt.icon" class="w-4 h-4 shrink-0" :class="purpose === opt.key ? 'text-brand-600' : 'text-brown-600'" />
+                                            <span>{{ opt.label }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="senderName" class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-2">
+                                        Nama <span class="normal-case font-normal tracking-normal">(opsional)</span>
+                                    </label>
+                                    <input
+                                        id="senderName"
+                                        type="text"
+                                        v-model="senderName"
+                                        placeholder="Contoh: Ibu Rina / Bpk. Fajar"
+                                        class="w-full px-4 py-3 rounded-xl border border-brown-900/15 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 text-[15px] text-brown-900 placeholder:text-brown-500/70 bg-white outline-none transition"
+                                    />
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="eventDate" class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-2">
+                                            Tanggal acara <span class="normal-case font-normal tracking-normal">(opsional)</span>
+                                        </label>
+                                        <input
+                                            id="eventDate"
+                                            type="date"
+                                            v-model="eventDate"
+                                            class="w-full px-4 py-3 rounded-xl border border-brown-900/15 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 text-[15px] text-brown-900 bg-white outline-none transition"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label for="boxEstimate" class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-2">
+                                            Perkiraan jumlah <span class="normal-case font-normal tracking-normal">(opsional)</span>
+                                        </label>
+                                        <input
+                                            id="boxEstimate"
+                                            type="text"
+                                            v-model="boxEstimate"
+                                            placeholder="Contoh: 50 box / 100 pcs"
+                                            class="w-full px-4 py-3 rounded-xl border border-brown-900/15 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 text-[15px] text-brown-900 placeholder:text-brown-500/70 bg-white outline-none transition"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="messageNotes" class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-brown-600 mb-2">
+                                        Catatan / lokasi acara
+                                    </label>
+                                    <textarea
+                                        id="messageNotes"
+                                        rows="3"
+                                        v-model="messageNotes"
+                                        placeholder="Jenis kue favorit, lokasi kirim di Bekasi, atau waktu pengantaran yang diinginkan..."
+                                        class="w-full px-4 py-3 rounded-xl border border-brown-900/15 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 text-[15px] text-brown-900 placeholder:text-brown-500/70 bg-white outline-none transition resize-y"
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="w-full inline-flex items-center justify-center gap-2.5 py-4 px-6 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold text-[15px] transition-colors cursor-pointer"
+                                >
+                                    <Send class="w-4 h-4" />
+                                    <span>Kirim Konsultasi via WhatsApp</span>
+                                </button>
+                                <p class="text-center text-[13px] text-brown-600">
+                                    Pesan terformat otomatis dan membuka aplikasi WhatsApp-mu.
+                                </p>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ─── JANGKAUAN WILAYAH PENGIRIMAN (BEKASI DELIVERY COVERAGE) ─── -->
-                <section class="bg-white rounded-3xl p-6 sm:p-10 border border-cream-200/90 shadow-sm mb-16 sm:mb-24">
-                    <div class="max-w-2xl mb-8">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">
-                            <Truck class="w-3.5 h-3.5 text-brand-600" />
-                            <span>Jangkauan Wilayah Pengantaran</span>
-                        </div>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight mb-2">
-                            Siap Antar ke Seluruh Pelosok Bekasi
-                        </h2>
-                        <p class="text-sm sm:text-base text-brown-600 leading-relaxed">
-                            Armada kurir kami berpengalaman mengantar pesanan tepat waktu di pagi hari untuk berbagai kecamatan dan perumahan di Kabupaten maupun Kota Bekasi.
-                        </p>
-                    </div>
+                <!-- ─── JANGKAUAN ─── -->
+                <section class="mb-16 sm:mb-24">
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-2">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Jangkauan pengiriman
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-4">
+                        Kami antar ke seluruh Bekasi.
+                    </h2>
+                    <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-2xl mb-8">
+                        Kurir kami terbiasa mengantar pagi hari, tepat sebelum acaramu dimulai.
+                    </p>
 
-                    <div class="flex flex-wrap gap-2.5 sm:gap-3 mb-6">
+                    <div class="flex flex-wrap gap-2 mb-8">
                         <span
                             v-for="(area, index) in deliveryAreas"
                             :key="index"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cream-50 border border-cream-200 text-brown-800 text-xs sm:text-sm font-semibold hover:border-brand-300 hover:bg-brand-50/50 transition-colors"
+                            class="px-4 py-2 rounded-full border border-brown-900/15 text-brown-800 text-[13px] font-medium"
                         >
-                            <CheckCircle2 class="w-4 h-4 text-brand-600 shrink-0" />
-                            <span>{{ area }}</span>
+                            {{ area }}
                         </span>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs sm:text-sm flex items-start gap-3">
-                        <HelpCircle class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                        <p class="leading-relaxed">
-                            <strong>Lokasi Anda di luar daftar di atas?</strong> Jangan ragu menanyakan ke admin kami. Kami tetap dapat mengatur pengantaran melalui kurir instan/car delivery untuk wilayah Jabodetabek yang dapat dijangkau.
-                        </p>
+                    <p class="text-sm text-brown-600 leading-relaxed max-w-2xl border-l-2 border-brand-600 pl-4">
+                        Lokasimu di luar daftar? Tanyakan langsung ke admin — kami bisa mengatur pengantaran
+                        via kurir instan untuk wilayah Jabodetabek yang terjangkau.
+                    </p>
+                </section>
+
+                <!-- ─── FAQ ─── -->
+                <section class="mb-8">
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-2">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Sering ditanyakan
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-8">
+                        Sebelum kamu bertanya.
+                    </h2>
+
+                    <div class="border-t border-brown-900/10">
+                        <div class="py-6 border-b border-brown-900/10">
+                            <h3 class="font-display text-lg sm:text-xl text-brown-900 mb-2">Berapa minimal order snack box?</h3>
+                            <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed">
+                                Minimal 10 box untuk paket Custom Snack Box, dan 5 pcs per jenis untuk kue satuan di katalog.
+                            </p>
+                        </div>
+                        <div class="py-6 border-b border-brown-900/10">
+                            <h3 class="font-display text-lg sm:text-xl text-brown-900 mb-2">Kapan paling lambat bisa memesan?</h3>
+                            <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed">
+                                Idealnya H-2 atau H-1 agar semua varian kue terjamin fresh. Untuk pesanan mendesak,
+                                langsung hubungi WhatsApp kami.
+                            </p>
+                        </div>
+                        <div class="py-6 border-b border-brown-900/10">
+                            <h3 class="font-display text-lg sm:text-xl text-brown-900 mb-2">Apakah bisa diantar pagi hari?</h3>
+                            <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed">
+                                Bisa. Dapur kami beroperasi sejak subuh, jadi pesanan bisa tiba sebelum pukul 07.00–08.00
+                                sesuai jadwal acaramu.
+                            </p>
+                        </div>
                     </div>
                 </section>
 
-                <!-- ─── FAQ SINGKAT KONTAK & PEMESANAN ─── -->
-                <section class="mb-12">
-                    <div class="text-center max-w-xl mx-auto mb-10">
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight mb-2">
-                            Pertanyaan Umum Seputar Pemesanan
-                        </h2>
-                        <p class="text-brown-600 text-sm">
-                            Informasi cepat mengenai minimal pemesanan dan jadwal pengantaran.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200">
-                            <h3 class="font-bold text-brown-900 text-sm sm:text-base mb-2">Berapa minimal order snack box?</h3>
-                            <p class="text-brown-600 text-xs sm:text-sm leading-relaxed">
-                                Minimal order untuk paket Custom Snack Box adalah 10 box. Untuk kue satuan di katalog, minimal 5 pcs per jenis kue.
-                            </p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200">
-                            <h3 class="font-bold text-brown-900 text-sm sm:text-base mb-2">Kapan waktu paling lambat memesan?</h3>
-                            <p class="text-brown-600 text-xs sm:text-sm leading-relaxed">
-                                Kami menyarankan H-2 atau H-1 sebelum acara agar ketersediaan seluruh varian kue terjamin fresh. Untuk pesanan mendesak, silakan langsung hubungi WhatsApp kami.
-                            </p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200">
-                            <h3 class="font-bold text-brown-900 text-sm sm:text-base mb-2">Apakah bisa diantar pagi hari?</h3>
-                            <p class="text-brown-600 text-xs sm:text-sm leading-relaxed">
-                                Bisa! Dapur kami beroperasi sejak subuh sehingga pesanan dapat tiba sebelum pukul 07.00 atau 08.00 pagi sesuai jadwal acara Anda.
-                            </p>
-                        </div>
-                    </div>
-                </section>
             </div>
         </div>
 
         <Footer />
     </CustomerLayout>
 </template>
+
+<style scoped>
+.font-display {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+}
+</style>
