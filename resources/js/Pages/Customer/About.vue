@@ -4,22 +4,11 @@ import { computed } from 'vue';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import Footer from '@/Pages/Customer/Components/Landing/Footer.vue';
 import {
-    Heart,
-    Sparkles,
-    Clock,
-    Truck,
-    ShieldCheck,
-    CheckCircle2,
-    Package,
-    CakeSlice,
     ArrowRight,
     MapPin,
     Phone,
-    Calendar,
-    Users,
-    Store,
-    ChefHat,
-    BadgeCheck
+    BadgeCheck,
+    Package
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -85,303 +74,238 @@ const schemaJson = computed(() => JSON.stringify({
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://padukue.store/about" />
         <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link
+            href="https://fonts.bunny.net/css?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap"
+            rel="stylesheet"
+        />
         <component is="script" type="application/ld+json" v-text="schemaJson" />
     </Head>
 
     <CustomerLayout>
-        <div class="py-8 sm:py-12 md:py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- ─── BREADCRUMB ─── -->
-                <nav class="flex items-center gap-2 text-xs text-brown-500 mb-6 font-medium">
-                    <Link href="/" class="hover:text-brand-600 transition-colors">Beranda</Link>
-                    <span>/</span>
-                    <span class="text-brown-800 font-semibold">Tentang Kami</span>
-                </nav>
+        <div class="bg-cream-100">
+            <div class="max-w-4xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
 
-                <!-- ─── HERO INTRO SECTION ─── -->
-                <section class="mb-14 sm:mb-20">
-                    <div class="max-w-3xl">
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/80 text-brand-700 text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
-                            <Sparkles class="w-3.5 h-3.5 text-brand-600" />
-                            <span>Spesialis Snack Box & Aneka Kue Bekasi</span>
+                <!-- ─── HERO ─── -->
+                <header class="mb-14 sm:mb-20">
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-6">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Tentang Padu Kue
+                    </p>
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-[3.4rem] text-brown-900 leading-[1.1] tracking-tight mb-6">
+                        Kue segar, dibuat dengan ketulusan.
+                    </h1>
+                    <p class="text-base sm:text-lg text-brown-600 leading-relaxed max-w-2xl">
+                        Berakar di Setu, Kabupaten Bekasi, <span class="text-brown-900 font-semibold">{{ cms.company_name || 'Padu Kue' }}</span>
+                        lahir dari dapur rumahan yang percaya satu hal sederhana: kue terbaik adalah kue yang dibuat
+                        segar di hari ia disajikan.
+                    </p>
+
+                    <!-- credential strip -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 pt-8 border-t border-brown-900/10">
+                        <div class="flex items-start gap-3.5">
+                            <MapPin class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+                            <div>
+                                <p class="text-sm font-semibold text-brown-900">Setu, Kabupaten Bekasi</p>
+                                <p class="text-[13px] text-brown-600 mt-0.5">Basis operasional kami</p>
+                            </div>
                         </div>
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-brown-900 tracking-tight leading-[1.18] mb-5">
-                            Menyajikan Kelezatan Segar untuk Setiap Momen Istimewa Anda.
-                        </h1>
-                        <p class="text-base sm:text-lg text-brown-700 leading-relaxed font-normal">
-                            Berakar di Setu, Kabupaten Bekasi, <strong class="text-brown-900 font-semibold">{{ cms.company_name || 'Padu Kue' }}</strong> hadir sebagai solusi tepercaya bagi keluarga, perkantoran, dan panitia acara yang menginginkan suguhan kue basah lezat, donat lembut, dan custom snack box berkualitas tanpa repot.
+                        <div class="flex items-start gap-3.5">
+                            <BadgeCheck class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+                            <div>
+                                <p class="text-sm font-semibold text-brown-900">100% Halal & Fresh Harian</p>
+                                <p class="text-[13px] text-brown-600 mt-0.5">Tanpa pengawet, dibuat pagi hari</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3.5">
+                            <Package class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+                            <div>
+                                <p class="text-sm font-semibold text-brown-900">Custom Snack Box</p>
+                                <p class="text-[13px] text-brown-600 mt-0.5">Rakit sendiri isi box sesukamu</p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- ─── CERITA KAMI ─── -->
+                <section class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-16 sm:mb-24">
+                    <div class="md:col-span-4">
+                        <p class="md:sticky md:top-24 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700">
+                            <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                            Cerita kami
+                        </p>
+                    </div>
+                    <div class="md:col-span-8 space-y-5 text-[15px] sm:text-base text-brown-600 leading-[1.85]">
+                        <p>
+                            Setiap perayaan — arisan keluarga, syukuran aqiqah, pengajian, hingga rapat penting perusahaan —
+                            selalu ditandai dengan satu hal: hidangan pembuka yang menyatukan obrolan hangat.
+                        </p>
+                        <p>
+                            Kami memahami betul bahwa memilih kue untuk puluhan hingga ratusan tamu sering kali
+                            membingungkan. Paket snack box di pasaran kerap kaku, dengan pilihan yang itu-itu saja.
+                        </p>
+                        <p>
+                            Karena itulah kami memperkenalkan konsep
+                            <span class="text-brown-900 font-semibold">Custom Snack Box Fleksibel</span>:
+                            Anda memegang kendali penuh memilih kombinasi kue manis dan gurih favorit —
+                            sesuai selera tamu dan anggaran acara — diproduksi segar pada hari pengiriman.
                         </p>
                     </div>
                 </section>
 
-                <!-- ─── EDITORIAL STORY & STATS (ASYMMETRIC BENTO) ─── -->
-                <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mb-16 sm:mb-24 items-stretch">
-                    <!-- Left: Narrative Story Card -->
-                    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 border border-cream-200/90 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center gap-2.5 text-brand-600 text-xs font-bold uppercase tracking-wider mb-3">
-                                <ChefHat class="w-4 h-4" />
-                                <span>Cerita Kami</span>
-                            </div>
-                            <h2 class="text-2xl sm:text-3xl font-extrabold text-brown-900 mb-5 tracking-tight leading-snug">
-                                Berawal dari Tradisi Kehangatan Dapur dan Rasa Saling Berbagi
-                            </h2>
-                            <div class="space-y-4 text-brown-700 text-sm sm:text-base leading-relaxed">
-                                <p>
-                                    Setiap perayaan — mulai dari arisan keluarga, syukuran aqiqah, pengajian, hingga rapat penting perusahaan — selalu ditandai dengan satu hal: hidangan pembuka yang menyatukan obrolan hangat.
-                                </p>
-                                <p>
-                                    Di Padu Kue, kami memahami bahwa memilih kue untuk puluhan hingga ratusan tamu sering kali membingungkan. Paket snack box di pasaran kerap kaku dengan pilihan yang itu-itu saja.
-                                </p>
-                                <p>
-                                    Karena itulah kami memperkenalkan konsep <strong>Custom Snack Box Fleksibel</strong>: Anda memegang kendali penuh untuk memilih sendiri kombinasi kue manis dan gurih favorit sesuai selera tamu dan anggaran acara, diproduksi segar pada hari pengiriman di wilayah Bekasi.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-cream-200/80 flex flex-wrap items-center gap-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
-                                    <MapPin class="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p class="text-xs text-brown-500 font-medium">Basis Operasional</p>
-                                    <p class="text-sm font-bold text-brown-900">Setu, Bekasi, Jawa Barat</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                                    <BadgeCheck class="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p class="text-xs text-brown-500 font-medium">Jaminan Rasa & Mutu</p>
-                                    <p class="text-sm font-bold text-brown-900">100% Halal & Fresh Harian</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: Quick Highlight Bento Pillars -->
-                    <div class="lg:col-span-5 flex flex-col gap-6">
-                        <!-- Stat Card 1 -->
-                        <div class="bg-gradient-to-br from-brand-500 to-brand-600 rounded-3xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden flex-1">
-                            <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
-                            <Package class="w-8 h-8 text-brand-200 mb-4" />
-                            <h3 class="text-xl sm:text-2xl font-bold mb-2">
-                                Custom Tanpa Batas Menu Kaku
-                            </h3>
-                            <p class="text-brand-100 text-sm leading-relaxed mb-4">
-                                Susun sendiri isi snack box dari pilihan kue basah, jajanan tradisional, donat aneka topping, hingga pastry renyah.
-                            </p>
-                            <Link
-                                href="/snack-box"
-                                class="inline-flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider hover:translate-x-1 transition-transform"
-                            >
-                                <span>Coba Rakit Box</span>
-                                <ArrowRight class="w-4 h-4" />
-                            </Link>
-                        </div>
-
-                        <!-- Stat Card 2 -->
-                        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-cream-200/90 shadow-sm flex-1">
-                            <Clock class="w-8 h-8 text-emerald-600 mb-4" />
-                            <h3 class="text-xl font-bold text-brown-900 mb-2">
-                                Produksi Pagi di Hari H
-                            </h3>
-                            <p class="text-brown-600 text-sm leading-relaxed">
-                                Kue tidak diinapkan atau disimpan berhari-hari. Tim kami memproses dan mengemas pesanan tepat sebelum waktu antar untuk cita rasa terbaik.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ─── 4 PILAR KEUNGGULAN (BENTO GRID) ─── -->
+                <!-- ─── PRINSIP KAMI ─── -->
                 <section class="mb-16 sm:mb-24">
-                    <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-                        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60 inline-block mb-2">
-                            Komitmen Layanan
-                        </span>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brown-900 tracking-tight">
-                            Mengapa Pelanggan di Bekasi Memilih Padu Kue?
-                        </h2>
-                    </div>
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-2">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Yang kami pegang
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-10">
+                        Empat hal yang tidak kami tawar.
+                    </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Pillar 1 -->
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 hover:border-brand-300 transition-all shadow-2xs hover:shadow-sm">
-                            <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mb-5">
-                                <Sparkles class="w-6 h-6" />
+                    <div class="border-t border-brown-900/10">
+                        <div class="grid grid-cols-12 gap-4 py-7 border-b border-brown-900/10">
+                            <span class="col-span-2 sm:col-span-1 font-display text-lg text-brand-600">01</span>
+                            <div class="col-span-10 sm:col-span-11">
+                                <h3 class="text-base sm:text-lg font-semibold text-brown-900 mb-1.5">Kebebasan memilih isi box</h3>
+                                <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-2xl">
+                                    Susun sendiri 2 hingga 5 varian kue per kotak — dari kue basah tradisional,
+                                    jajanan pasar, donat aneka topping, hingga pastry renyah.
+                                </p>
                             </div>
-                            <h3 class="text-lg font-bold text-brown-900 mb-2">Rakit Box Bebas</h3>
-                            <p class="text-brown-600 text-sm leading-relaxed">
-                                Kebebasan memilih isi 2 hingga 5 varian kue per kotak. Sesuaikan komposisi rasa manis, gurih, dan asin sesuai preferensi tamu Anda.
-                            </p>
                         </div>
-
-                        <!-- Pillar 2 -->
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 hover:border-brand-300 transition-all shadow-2xs hover:shadow-sm">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5">
-                                <ShieldCheck class="w-6 h-6" />
+                        <div class="grid grid-cols-12 gap-4 py-7 border-b border-brown-900/10">
+                            <span class="col-span-2 sm:col-span-1 font-display text-lg text-brand-600">02</span>
+                            <div class="col-span-10 sm:col-span-11">
+                                <h3 class="text-base sm:text-lg font-semibold text-brown-900 mb-1.5">Bahan yang jujur</h3>
+                                <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-2xl">
+                                    Bahan baku alami dan higienis, tanpa pengawet sintetis.
+                                    Aman dinikmati anak-anak hingga orang tua.
+                                </p>
                             </div>
-                            <h3 class="text-lg font-bold text-brown-900 mb-2">Bahan Berkualitas & Halal</h3>
-                            <p class="text-brown-600 text-sm leading-relaxed">
-                                Mengutamakan bahan baku alami, higienis, dan tanpa bahan pengawet sintetis. Aman dan nikmat untuk anak-anak hingga orang tua.
-                            </p>
                         </div>
-
-                        <!-- Pillar 3 -->
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 hover:border-brand-300 transition-all shadow-2xs hover:shadow-sm">
-                            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-5">
-                                <Package class="w-6 h-6" />
+                        <div class="grid grid-cols-12 gap-4 py-7 border-b border-brown-900/10">
+                            <span class="col-span-2 sm:col-span-1 font-display text-lg text-brand-600">03</span>
+                            <div class="col-span-10 sm:col-span-11">
+                                <h3 class="text-base sm:text-lg font-semibold text-brown-900 mb-1.5">Kemasan yang pantas</h3>
+                                <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-2xl">
+                                    Box karton kokoh dengan tatakan higienis — rapi dan berkelas,
+                                    untuk acara formal maupun santai.
+                                </p>
                             </div>
-                            <h3 class="text-lg font-bold text-brown-900 mb-2">Kemasan Rapi & Eksklusif</h3>
-                            <p class="text-brown-600 text-sm leading-relaxed">
-                                Box karton kokoh dengan desain anggun dan tatakan higienis. Memberikan kesan berkelas dan profesional untuk acara formal maupun santai.
-                            </p>
                         </div>
-
-                        <!-- Pillar 4 -->
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 hover:border-brand-300 transition-all shadow-2xs hover:shadow-sm">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5">
-                                <Truck class="w-6 h-6" />
-                            </div>
-                            <h3 class="text-lg font-bold text-brown-900 mb-2">Tepat Waktu se-Bekasi</h3>
-                            <p class="text-brown-600 text-sm leading-relaxed">
-                                Pengiriman terorganisir ke seluruh Setu, Grand Residence, Tambun, Cikarang, Cibitung, Mustika Jaya, hingga pusat Kota Bekasi.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ─── ACARA YANG COCOK DILAYANI ─── -->
-                <section class="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-cream-200/90 shadow-sm mb-16 sm:mb-24">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                        <div class="lg:col-span-5">
-                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60 inline-block mb-3">
-                                Siap untuk Ragam Acara
-                            </span>
-                            <h2 class="text-2xl sm:text-3xl font-extrabold text-brown-900 mb-4 tracking-tight">
-                                Solusi Catering Snack Box untuk Berbagai Kebutuhan
-                            </h2>
-                            <p class="text-brown-600 text-sm sm:text-base leading-relaxed mb-6">
-                                Kami siap melayani pesanan snack box skala kecil puluhan box hingga pesanan massal ratusan box dengan standar kualitas yang konsisten.
-                            </p>
-                            <a
-                                :href="waConsultUrl"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-sm shadow-md shadow-brand-500/20 transition-all"
-                            >
-                                <Phone class="w-4 h-4" />
-                                <span>Konsultasikan Acara Anda</span>
-                            </a>
-                        </div>
-
-                        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="p-4 rounded-2xl bg-cream-50/70 border border-cream-200 flex items-start gap-3.5">
-                                <CheckCircle2 class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 class="font-bold text-brown-900 text-sm mb-1">Rapat Kantor & Corporate</h4>
-                                    <p class="text-brown-600 text-xs leading-relaxed">Meeting, coffee break, seminar, dan workshop instansi pemerintah maupun swasta.</p>
-                                </div>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-cream-50/70 border border-cream-200 flex items-start gap-3.5">
-                                <CheckCircle2 class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 class="font-bold text-brown-900 text-sm mb-1">Pengajian & Tahlilan</h4>
-                                    <p class="text-brown-600 text-xs leading-relaxed">Suguhan kue basah tradisional yang disukai para jamaah, praktis dibagikan.</p>
-                                </div>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-cream-50/70 border border-cream-200 flex items-start gap-3.5">
-                                <CheckCircle2 class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 class="font-bold text-brown-900 text-sm mb-1">Arisan & Kumpul Warga</h4>
-                                    <p class="text-brown-600 text-xs leading-relaxed">Pilihan donat, bolu, dan jajanan pasar lezat yang membuat suasana semakin akrab.</p>
-                                </div>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-cream-50/70 border border-cream-200 flex items-start gap-3.5">
-                                <CheckCircle2 class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 class="font-bold text-brown-900 text-sm mb-1">Syukuran, Aqiqah & Hajatan</h4>
-                                    <p class="text-brown-600 text-xs leading-relaxed">Bingkisan snack box rapi untuk mempermanis momen bahagia bersama keluarga besar.</p>
-                                </div>
+                        <div class="grid grid-cols-12 gap-4 py-7 border-b border-brown-900/10">
+                            <span class="col-span-2 sm:col-span-1 font-display text-lg text-brand-600">04</span>
+                            <div class="col-span-10 sm:col-span-11">
+                                <h3 class="text-base sm:text-lg font-semibold text-brown-900 mb-1.5">Tepat waktu, se-Bekasi</h3>
+                                <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-2xl">
+                                    Pengiriman terorganisir ke Setu, Tambun, Cikarang, Cibitung,
+                                    Mustika Jaya, hingga pusat Kota Bekasi.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- ─── ALUR PEMESANAN MUDAH (NO FORCED LOGIN) ─── -->
+                <!-- ─── UNTUK SETIAP ACARA ─── -->
                 <section class="mb-16 sm:mb-24">
-                    <div class="text-center max-w-xl mx-auto mb-10">
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight mb-2">
-                            Pesan Mudah Tanpa Perlu Login
-                        </h2>
-                        <p class="text-brown-600 text-sm">
-                            Nikmati pengalaman belanja modern langsung dari ponsel Anda dalam 3 langkah singkat.
-                        </p>
-                    </div>
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-2">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Untuk setiap acara
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-4">
+                        Dari rapat kantor sampai hajatan.
+                    </h2>
+                    <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-2xl mb-10">
+                        Melayani pesanan puluhan hingga ratusan box dengan standar kualitas yang konsisten.
+                    </p>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 relative text-center">
-                            <div class="w-10 h-10 rounded-full bg-brand-50 text-brand-600 font-black text-sm flex items-center justify-center mx-auto mb-4 border border-brand-200">
-                                1
-                            </div>
-                            <h3 class="font-bold text-brown-900 text-base mb-2">Pilih Box atau Kue Satuan</h3>
-                            <p class="text-brown-600 text-xs sm:text-sm leading-relaxed">
-                                Masuk ke menu Custom Snack Box untuk merakit sendiri, atau pilih aneka kue di katalog satuan.
-                            </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10">
+                        <div class="py-5 border-t border-brown-900/10">
+                            <h3 class="text-[15px] font-semibold text-brown-900 mb-1">Rapat Kantor & Corporate</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Meeting, coffee break, seminar, dan workshop instansi maupun swasta.</p>
                         </div>
-
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 relative text-center">
-                            <div class="w-10 h-10 rounded-full bg-brand-50 text-brand-600 font-black text-sm flex items-center justify-center mx-auto mb-4 border border-brand-200">
-                                2
-                            </div>
-                            <h3 class="font-bold text-brown-900 text-base mb-2">Tentukan Tanggal & Alamat</h3>
-                            <p class="text-brown-600 text-xs sm:text-sm leading-relaxed">
-                                Pilih metode pengantaran ke rumah/kantor di Bekasi atau pengambilan langsung di workshop kami.
-                            </p>
+                        <div class="py-5 border-t border-brown-900/10">
+                            <h3 class="text-[15px] font-semibold text-brown-900 mb-1">Pengajian & Tahlilan</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Kue basah tradisional favorit jamaah, praktis dibagikan.</p>
                         </div>
-
-                        <div class="bg-white rounded-2xl p-6 border border-cream-200 relative text-center">
-                            <div class="w-10 h-10 rounded-full bg-brand-50 text-brand-600 font-black text-sm flex items-center justify-center mx-auto mb-4 border border-brand-200">
-                                3
-                            </div>
-                            <h3 class="font-bold text-brown-900 text-base mb-2">Konfirmasi Instan via WhatsApp</h3>
-                            <p class="text-brown-600 text-xs sm:text-sm leading-relaxed">
-                                Rincian pesanan langsung tersusun rapi untuk dikonfirmasi ke admin WhatsApp kami. Cepat dan aman.
-                            </p>
+                        <div class="py-5 border-t border-brown-900/10">
+                            <h3 class="text-[15px] font-semibold text-brown-900 mb-1">Arisan & Kumpul Warga</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Donat, bolu, dan jajanan pasar yang bikin suasana makin akrab.</p>
+                        </div>
+                        <div class="py-5 border-t border-brown-900/10 sm:border-b">
+                            <h3 class="text-[15px] font-semibold text-brown-900 mb-1">Syukuran, Aqiqah & Hajatan</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Bingkisan snack box rapi untuk momen bahagia bersama keluarga besar.</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- ─── BOTTOM CTA BANNER ─── -->
-                <section class="bg-gradient-to-r from-brown-900 via-brown-800 to-brown-900 rounded-3xl p-8 sm:p-12 text-white text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg mb-12">
-                    <div class="max-w-xl">
-                        <h2 class="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">
-                            Siap Menyiapkan Snack Box untuk Acara Anda?
-                        </h2>
-                        <p class="text-cream-200 text-sm sm:text-base leading-relaxed">
-                            Mulai pilih aneka kue favorit sekarang atau hubungi tim kami untuk konsultasi jumlah dan rekomendasi menu.
-                        </p>
+                <!-- ─── CARA MEMESAN ─── -->
+                <section class="mb-16 sm:mb-24">
+                    <p class="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-700 mb-2">
+                        <span class="inline-block w-10 h-px bg-brand-700/50"></span>
+                        Cara memesan
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-10">
+                        Tiga langkah, tanpa perlu login.
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                        <div class="border-t-2 border-brand-600 pt-5">
+                            <span class="font-display text-4xl text-brand-200">1</span>
+                            <h3 class="text-[15px] font-semibold text-brown-900 mt-3 mb-1.5">Pilih box atau kue satuan</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Rakit sendiri snack box impianmu, atau pilih aneka kue di katalog satuan.</p>
+                        </div>
+                        <div class="border-t-2 border-brand-200 pt-5">
+                            <span class="font-display text-4xl text-brand-200">2</span>
+                            <h3 class="text-[15px] font-semibold text-brown-900 mt-3 mb-1.5">Tentukan tanggal & alamat</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Antar ke rumah/kantor di Bekasi, atau ambil langsung di workshop kami.</p>
+                        </div>
+                        <div class="border-t-2 border-brand-200 pt-5">
+                            <span class="font-display text-4xl text-brand-200">3</span>
+                            <h3 class="text-[15px] font-semibold text-brown-900 mt-3 mb-1.5">Konfirmasi via WhatsApp</h3>
+                            <p class="text-sm text-brown-600 leading-relaxed">Rincian pesanan tersusun rapi, tinggal kirim ke admin kami. Cepat dan aman.</p>
+                        </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto">
+                </section>
+
+                <!-- ─── CTA ─── -->
+                <section class="text-center py-14 sm:py-16 border-t border-brown-900/10">
+                    <h2 class="font-display text-3xl sm:text-4xl text-brown-900 tracking-tight mb-4">
+                        Siap menyiapkan snack box untuk acaramu?
+                    </h2>
+                    <p class="text-sm sm:text-[15px] text-brown-600 leading-relaxed max-w-xl mx-auto mb-8">
+                        Mulai pilih aneka kue favorit sekarang, atau konsultasikan dulu jumlah dan menu dengan tim kami.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                         <Link
                             href="/snack-box"
-                            class="w-full sm:w-auto px-6 py-3.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-sm text-center shadow-md shadow-brand-500/20 transition-all"
+                            class="inline-flex items-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 text-white rounded-full font-semibold text-sm transition-colors"
                         >
-                            Rakit Snack Box Sekarang
+                            <span>Rakit Snack Box</span>
+                            <ArrowRight class="w-4 h-4" />
                         </Link>
-                        <Link
-                            href="/contact"
-                            class="w-full sm:w-auto px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-semibold text-sm text-center transition-all"
+                        <a
+                            :href="waConsultUrl"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 px-7 py-3.5 border border-brown-900/20 hover:border-brown-900/40 text-brown-900 rounded-full font-semibold text-sm transition-colors"
                         >
-                            Hubungi Kontak Kami
-                        </Link>
+                            <Phone class="w-4 h-4" />
+                            <span>Chat WhatsApp</span>
+                        </a>
                     </div>
                 </section>
+
             </div>
         </div>
 
         <Footer />
     </CustomerLayout>
 </template>
+
+<style scoped>
+.font-display {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+}
+</style>
