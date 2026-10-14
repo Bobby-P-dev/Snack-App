@@ -1,5 +1,19 @@
 <template>
-    <Head :title="`${category.name} - Padu Kue`" />
+    <Head>
+        <title>{{ `${category.name} - Padu Kue | Katalog Kue Bekasi` }}</title>
+        <meta
+            name="description"
+            :content="`Koleksi kue kategori ${category.name} di Padu Kue Bekasi. Pilih aneka kue favorit dan pesan online dengan mudah.`"
+        />
+        <meta property="og:title" :content="`${category.name} - Padu Kue`" />
+        <meta
+            property="og:description"
+            :content="`Koleksi kue kategori ${category.name} — pesan online di Padu Kue Bekasi.`"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" :content="`https://padukue.store/shop/category/${category.slug}`" />
+        <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+    </Head>
     <CustomerLayout>
         <div class="min-h-screen bg-cream-100 py-8 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto">
