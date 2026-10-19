@@ -56,13 +56,6 @@ class SitemapService
         ];
 
         $urls[] = [
-            'loc' => $baseUrl . '/tracking',
-            'lastmod' => Carbon::now()->format('Y-m-d'),
-            'changefreq' => 'monthly',
-            'priority' => '0.5',
-        ];
-
-        $urls[] = [
             'loc' => $baseUrl . '/about',
             'lastmod' => Carbon::now()->format('Y-m-d'),
             'changefreq' => 'monthly',

@@ -55,6 +55,12 @@
                             <p class="text-gray-500 text-sm leading-relaxed mb-6">
                                 {{ pkg.description || `Pilihan bebas ${pkg.capacity} kue dalam satu box eksklusif.` }}
                             </p>
+                            <div v-if="pkg.box_price" class="mb-5">
+                                <span class="text-xs text-gray-500">Mulai dari</span>
+                                <p class="text-2xl font-extrabold text-brand-600">
+                                    Rp {{ Number(pkg.box_price).toLocaleString('id-ID') }}<span class="text-sm font-medium text-gray-500">/box</span>
+                                </p>
+                            </div>
 
                             <div class="space-y-3 py-4 border-t border-gray-100 text-sm text-gray-600">
                                 <div class="flex items-center gap-2.5">
