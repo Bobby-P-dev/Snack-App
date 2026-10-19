@@ -1,5 +1,7 @@
 <template>
-    <Head :title="`Lacak Pesanan - ${cms.company_name || 'Padu Kue'}`" />
+    <Head :title="`Lacak Pesanan - ${cms.company_name || 'Padu Kue'}`">
+        <meta name="robots" content="noindex, follow" />
+    </Head>
     <CustomerLayout>
         <div class="min-h-screen bg-gradient-to-b from-cream-50 via-cream-100/80 to-cream-200/50 py-6 sm:py-10 relative overflow-hidden">
             <!-- Ambient Warm Glow Backgrounds -->

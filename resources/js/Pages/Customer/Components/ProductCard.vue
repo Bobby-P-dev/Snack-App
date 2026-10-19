@@ -33,7 +33,7 @@
                 {{ product.name }}
             </h3>
             <p class="text-[10px] sm:text-xs text-brown-600/80 line-clamp-2 mb-2 sm:mb-3 flex-1 leading-tight sm:leading-relaxed">
-                {{ product.description || 'Pilihan lezat untuk acara spesial Anda dengan cita rasa khas dan higienis.' }}
+                {{ product.description || (product.name + ' — pilihan lezat untuk acara spesial Anda, dibuat segar dengan cita rasa khas dan higienis.') }}
             </p>
             
             <div class="mb-2.5 sm:mb-3.5">
