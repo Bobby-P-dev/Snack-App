@@ -1,5 +1,19 @@
 <template>
-    <Head title="Katalog Kue Satuan - Padu Kue" />
+    <Head>
+        <title>Katalog Kue Satuan - Padu Kue | Jajanan Pasar Bekasi</title>
+        <meta
+            name="description"
+            content="Katalog aneka kue satuan Padu Kue: lontong oncom, pie buah, tahu isi, kue sus, pastel, lemper ayam dan jajanan pasar favorit lainnya. Pesan online, min. 10 pcs."
+        />
+        <meta property="og:title" content="Katalog Kue Satuan - Padu Kue" />
+        <meta
+            property="og:description"
+            content="Aneka kue satuan & jajanan pasar favorit — pesan online dengan mudah di Padu Kue Bekasi."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://padukue.store/shop" />
+        <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+    </Head>
     <CustomerLayout>
         <div class="min-h-screen bg-cream-50/40">
             <!-- Header -->

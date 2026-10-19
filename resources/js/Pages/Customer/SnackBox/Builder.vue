@@ -1,5 +1,19 @@
 <template>
-    <Head :title="`Rakit ${package.name} - Padu Kue`" />
+    <Head>
+        <title>{{ `Rakit ${package.name} - Padu Kue | Custom Snack Box` }}</title>
+        <meta
+            name="description"
+            :content="`Rakit ${package.name} sendiri — pilih isi kue favorit untuk snack box acara Anda. Custom snack box Bekasi, pesan online mudah.`"
+        />
+        <meta property="og:title" :content="`Rakit ${package.name} - Padu Kue`" />
+        <meta
+            property="og:description"
+            :content="`Susun sendiri isi ${package.name} sesuai selera — custom snack box Bekasi di Padu Kue.`"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" :content="`https://padukue.store/snack-box/${package.slug}`" />
+        <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+    </Head>
     <CustomerLayout>
         <div class="min-h-screen bg-cream-100 py-6 sm:py-10 px-4 sm:px-6 lg:px-8 pb-48 md:pb-12">
             <div class="max-w-7xl mx-auto">

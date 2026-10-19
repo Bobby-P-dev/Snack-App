@@ -1,5 +1,19 @@
 <template>
-    <Head title="Pilihan Paket Snack Box - Padu Kue" />
+    <Head>
+        <title>Pilihan Paket Snack Box - Padu Kue | Custom Snack Box Bekasi</title>
+        <meta
+            name="description"
+            content="Pilih paket snack box isi 3, 4, atau 5 kue — rakit sendiri isi box sesuai selera untuk rapat, syukuran, dan acara Anda. Custom snack box Bekasi termurah."
+        />
+        <meta property="og:title" content="Pilihan Paket Snack Box - Padu Kue" />
+        <meta
+            property="og:description"
+            content="Rakit snack box isi 3, 4, atau 5 kue sesuai kebutuhan acara Anda di Padu Kue Bekasi."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://padukue.store/snack-box" />
+        <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+    </Head>
     <CustomerLayout>
         <div class="min-h-screen bg-cream-100 py-10 px-4 sm:px-6 lg:px-8">
             <div class="max-w-6xl mx-auto">

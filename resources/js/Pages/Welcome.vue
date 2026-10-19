@@ -37,10 +37,54 @@ const floatingWaUrl = computed(() => {
 });
 
 const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
+
+// JSON-LD Structured Data untuk SEO Google (homepage)
+const schemaJson = computed(() => JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": cms.value.company_name || "Padu Kue",
+    "url": "https://padukue.store/",
+    "description": "Toko kue & custom snack box online. Pesan aneka kue basah, jajanan pasar, dan rakit snack box untuk acara Anda.",
+    "inLanguage": "id-ID",
+    "publisher": {
+        "@type": "Bakery",
+        "name": cms.value.company_name || "Padu Kue",
+        "image": "https://padukue.store/images/padukue-logo.png",
+        "url": "https://padukue.store/",
+        "telephone": cms.value.contact_phone || "+6285155337991",
+        "priceRange": "Rp 2.000 - Rp 50.000",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Setu, Kabupaten Bekasi",
+            "addressRegion": "Jawa Barat",
+            "addressCountry": "ID"
+        }
+    }
+}));
 </script>
 
 <template>
-    <Head :title="`${cms.company_name || 'Padu Kue'} - Toko Kue & Custom Snack Box`" />
+    <Head>
+        <title>{{ `${cms.company_name || 'Padu Kue'} - Toko Kue & Custom Snack Box Bekasi` }}</title>
+        <meta
+            name="description"
+            content="Pesan kue dan snack box jadi lebih mudah. Pilih aneka kue favorit dan susun isi snack box sesuai kebutuhan Anda — semua bisa dipesan langsung secara online di Padu Kue Bekasi."
+        />
+        <meta
+            name="keywords"
+            content="toko kue bekasi, snack box bekasi, custom snack box, kue basah bekasi, jajanan pasar bekasi, pesan kue online, snack box acara, padu kue"
+        />
+        <meta property="og:title" :content="`${cms.company_name || 'Padu Kue'} - Toko Kue & Custom Snack Box`" />
+        <meta
+            property="og:description"
+            content="Pesan kue dan snack box jadi lebih mudah. Pilih aneka kue favorit dan susun isi snack box sesuai kebutuhan Anda."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://padukue.store/" />
+        <meta property="og:image" content="https://padukue.store/images/padukue-logo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <component is="script" type="application/ld+json" v-text="schemaJson" />
+    </Head>
     <CustomerLayout>
         <!-- ─── WHATSAPP FLOATING ─── -->
         <a

@@ -1,5 +1,21 @@
 <template>
-    <Head :title="`${product.name} - Padu Kue`" />
+    <Head>
+        <title>{{ `${product.name} - Padu Kue | Harga & Pesan Online` }}</title>
+        <meta
+            name="description"
+            :content="`${product.name} Rp${formatNumber(product.sell_price)}/pcs — pesan online di Padu Kue Bekasi. Kue favorit untuk acara, rapat, dan syukuran. Min. pemesanan 10 pcs.`"
+        />
+        <meta property="og:title" :content="`${product.name} - Padu Kue`" />
+        <meta
+            property="og:description"
+            :content="`${product.name} Rp${formatNumber(product.sell_price)}/pcs — pesan online di Padu Kue Bekasi.`"
+        />
+        <meta property="og:type" content="product" />
+        <meta property="og:url" :content="`https://padukue.store/shop/${product.id}`" />
+        <meta property="og:image" :content="product.image_url || 'https://padukue.store/images/padukue-logo.png'" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <component is="script" type="application/ld+json" v-text="schemaJson" />
+    </Head>
     <CustomerLayout>
         <div class="min-h-screen bg-cream-100 py-8 px-4 sm:px-6 lg:px-8">
             <div class="max-w-6xl mx-auto">
@@ -195,7 +211,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import { useCartStore } from '@/Stores/CartStore.js';
@@ -221,6 +237,23 @@ const qty = ref(10);
 const { addToCart } = useCartStore();
 
 const formatNumber = (val) => new Intl.NumberFormat('id-ID').format(val || 0);
+
+// JSON-LD Product schema untuk rich snippet Google
+const schemaJson = computed(() => JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": props.product.name,
+    "image": props.product.image_url || "https://padukue.store/images/padukue-logo.png",
+    "description": `${props.product.name} — kue favorit dari Padu Kue Bekasi. Pesan online, min. 10 pcs.`,
+    "brand": { "@type": "Brand", "name": "Padu Kue" },
+    "offers": {
+        "@type": "Offer",
+        "url": `https://padukue.store/shop/${props.product.id}`,
+        "priceCurrency": "IDR",
+        "price": props.product.sell_price,
+        "availability": "https://schema.org/InStock"
+    }
+}));
 
 const handleAddToCart = () => {
     addToCart({
